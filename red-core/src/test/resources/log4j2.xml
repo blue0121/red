@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+	
+	<Appenders>
+		<Console name="con" target="SYSTEM_OUT">
+			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] [%c{2.}] %p - %m%n" />
+		</Console>
+	</Appenders>
+	
+	<Loggers>
+		<Logger name="com.red.core" level="debug" includeLocation="false" additivity="false">
+			<AppenderRef ref="con" />
+		</Logger>
+		
+		<Root level="info" includeLocation="false">
+			<AppenderRef ref="con" />
+		</Root>
+	</Loggers>
+
+</Configuration>
