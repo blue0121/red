@@ -1,5 +1,7 @@
 package com.red.core.util;
 
+import com.red.core.message.Version;
+
 /**
  * @author Jin Zheng
  * @since 2019-05-01

@@ -1,4 +1,6 @@
-package com.red.core.util;
+package com.red.core.message;
+
+import com.red.core.util.Constant;
 
 /**
  * @author Jin Zheng

@@ -1,5 +1,6 @@
 package com.red.core.util;
 
+import com.red.core.message.Version;
 import org.junit.Assert;
 import org.junit.Test;
 

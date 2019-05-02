@@ -1,4 +1,6 @@
-package com.red.core.util;
+package com.red.core.message;
+
+import com.red.core.util.Constant;
 
 /**
  * @author Jin Zheng
@@ -23,7 +25,7 @@ public enum Protocol
 	{
 		for (Protocol protocol : Protocol.values())
 		{
-			if (protocol.originalValue == value)
+			if (protocol.originalValue == value || protocol.value == value)
 				return protocol;
 		}
 		return null;
@@ -39,4 +41,9 @@ public enum Protocol
 		return this.originalValue;
 	}
 
+	@Override
+	public String toString()
+	{
+		return String.format("Protocol[0x%x: %s]", value, this.name());
+	}
 }

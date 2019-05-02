@@ -1,7 +1,6 @@
 package com.red.core.message;
 
 import com.red.core.util.Constant;
-import com.red.core.util.Protocol;
 import org.junit.Assert;
 import org.junit.Test;
 

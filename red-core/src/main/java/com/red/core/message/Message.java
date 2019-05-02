@@ -1,8 +1,5 @@
 package com.red.core.message;
 
-import com.red.core.util.Protocol;
-import com.red.core.util.Version;
-
 /**
  * @author Jin Zheng
  * @since 2019-05-01
