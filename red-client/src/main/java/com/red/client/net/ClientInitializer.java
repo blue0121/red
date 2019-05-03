@@ -1,4 +1,4 @@
-package com.red.server.net;
+package com.red.client.net;
 
 import com.red.core.codec.MessageCodeFactory;
 import com.red.core.codec.MessageDecoder;
@@ -13,12 +13,15 @@ import io.netty.handler.timeout.IdleStateHandler;
 
 /**
  * @author Jin Zheng
- * @since 2019-05-02
+ * @since 2019-05-03
  */
-public class ServerInitializer extends ChannelInitializer<SocketChannel>
+public class ClientInitializer extends ChannelInitializer<SocketChannel>
 {
-	public ServerInitializer()
+	private final NettyConnectionClient client;
+
+	public ClientInitializer(NettyConnectionClient client)
 	{
+		this.client = client;
 	}
 
 	@Override
@@ -29,10 +32,10 @@ public class ServerInitializer extends ChannelInitializer<SocketChannel>
 		cp.addLast(new IdleStateHandler(30, 10, 10));
 		cp.addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0, 4, 0, 4));
 		cp.addLast(new LengthFieldPrepender(4));
-		cp.addLast(new MessageEncoder(factory.getServerEncoderMap()));
-		cp.addLast(new MessageDecoder(factory.getServerDecoderMap()));
+		cp.addLast(new MessageEncoder(factory.getClientEncoderMap()));
+		cp.addLast(new MessageDecoder(factory.getClientDecoderMap()));
 		cp.addLast(new HeartbeatHandler());
-		cp.addLast(new HandshakeHandler("token"));
+		cp.addLast(new HandshakeHandler(client));
 	}
 
 }

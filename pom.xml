@@ -8,7 +8,7 @@
 	<artifactId>red</artifactId>
 	<packaging>pom</packaging>
 	<version>1.0</version>
-	<name>blue</name>
+	<name>red</name>
 	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

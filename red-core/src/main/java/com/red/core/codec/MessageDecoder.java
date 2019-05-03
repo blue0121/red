@@ -32,12 +32,14 @@ public class MessageDecoder extends ByteToMessageDecoder
 		if (protocol == null)
 		{
 			logger.warn("Protocol mismatch");
+			in.resetReaderIndex();
 			return;
 		}
 		MessageCodec codec = codecMap.get(protocol);
 		if (codec == null)
 		{
 			logger.error("No found MessageCodec from: {}", protocol);
+			in.resetReaderIndex();
 			return;
 		}
 		Message message = codec.decode(protocol, in);

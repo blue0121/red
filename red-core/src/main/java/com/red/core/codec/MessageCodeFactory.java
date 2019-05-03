@@ -81,7 +81,7 @@ public class MessageCodeFactory
 
 	private void initServerDecoder()
 	{
-		serverEncoderMap.put(Protocol.HANDSHAKE, new HandshakeMessageCodec());
+		serverDecoderMap.put(Protocol.HANDSHAKE, new HandshakeMessageCodec());
 		serverDecoderMap.put(Protocol.HEARTBEAT, new HeartbeatMessageCodec());
 	}
 

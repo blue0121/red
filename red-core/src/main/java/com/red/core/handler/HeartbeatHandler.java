@@ -32,7 +32,7 @@ public class HeartbeatHandler extends SimpleChannelInboundHandler<HeartbeatMessa
 		{
 			if (logger.isDebugEnabled())
 			{
-				logger.debug("Receive PING: {} from {}", Long.toHexString(message.getMessageId()), remoteAddress);
+				logger.debug("Receive PING: 0x{} from {}", Long.toHexString(message.getMessageId()), remoteAddress);
 			}
 			HeartbeatMessage pong = message.toPong();
 			ctx.writeAndFlush(pong);
@@ -59,7 +59,7 @@ public class HeartbeatHandler extends SimpleChannelInboundHandler<HeartbeatMessa
 				ctx.writeAndFlush(ping);
 				if (logger.isDebugEnabled())
 				{
-					logger.debug("Send PING: {} to {}", Long.toHexString(ping.getMessageId()), remoteAddress);
+					logger.debug("Send PING: 0x{} to {}", Long.toHexString(ping.getMessageId()), remoteAddress);
 				}
 			}
 		}
