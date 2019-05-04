@@ -24,6 +24,7 @@
 		<spring.version>5.1.4.RELEASE</spring.version>
 		<cglib.version>3.2.8</cglib.version>
 		<aspectjweaver.version>1.9.1</aspectjweaver.version>
+		<caffeine.version>2.7.0</caffeine.version>
 		
 		<!-- test -->
 		<junit.version>4.12</junit.version>

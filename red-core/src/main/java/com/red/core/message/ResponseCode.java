@@ -6,9 +6,9 @@ package com.red.core.message;
  */
 public enum  ResponseCode
 {
-	SUCCESS(0),
-	ERROR(1),
-	HANDSHAKE(2);
+	SUCCESS(0x0),
+	ERROR(0x1),
+	HANDSHAKE(0x2);
 
 	private int code;
 

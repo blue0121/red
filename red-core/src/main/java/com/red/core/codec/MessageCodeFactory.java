@@ -65,24 +65,28 @@ public class MessageCodeFactory
 	{
 		clientEncoderMap.put(Protocol.HANDSHAKE, new HandshakeMessageCodec());
 		clientEncoderMap.put(Protocol.HEARTBEAT, new HeartbeatMessageCodec());
+		clientEncoderMap.put(Protocol.REGISTRY, new ResponseMessageCodec());
 	}
 
 	private void initClientDecoder()
 	{
 		clientDecoderMap.put(Protocol.HANDSHAKE, new ResponseMessageCodec());
 		clientDecoderMap.put(Protocol.HEARTBEAT, new HeartbeatMessageCodec());
+		clientDecoderMap.put(Protocol.REGISTRY, new ResponseMessageCodec());
 	}
 
 	private void initServerEncoder()
 	{
 		serverEncoderMap.put(Protocol.HANDSHAKE, new ResponseMessageCodec());
 		serverEncoderMap.put(Protocol.HEARTBEAT, new HeartbeatMessageCodec());
+		serverEncoderMap.put(Protocol.REGISTRY, new ResponseMessageCodec());
 	}
 
 	private void initServerDecoder()
 	{
 		serverDecoderMap.put(Protocol.HANDSHAKE, new HandshakeMessageCodec());
 		serverDecoderMap.put(Protocol.HEARTBEAT, new HeartbeatMessageCodec());
+		serverDecoderMap.put(Protocol.REGISTRY, new ResponseMessageCodec());
 	}
 
 }

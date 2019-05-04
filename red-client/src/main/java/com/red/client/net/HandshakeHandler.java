@@ -40,7 +40,7 @@ public class HandshakeHandler extends SimpleChannelInboundHandler<Response>
 			}
 			else
 			{
-				logger.warn("{}: {}", response.getCode().code(), response.getMessage());
+				logger.warn("0x{}: {}", Integer.toHexString(response.getCode().code()), response.getMessage());
 				client.stop();
 			}
 		}

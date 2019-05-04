@@ -10,7 +10,8 @@ public enum Protocol
 {
 	HANDSHAKE(0x1),
 	HEARTBEAT(0x2),
-	CACHE(0x10);
+	CACHE(0x11),
+	REGISTRY(0x12);
 
 	private int value;
 	private int originalValue;

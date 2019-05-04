@@ -4,8 +4,6 @@ import com.red.core.message.Message;
 import com.red.core.message.Response;
 import io.netty.buffer.ByteBuf;
 
-import java.nio.charset.StandardCharsets;
-
 /**
  * @author Jin Zheng
  * @since 2019-05-02
@@ -21,15 +19,7 @@ public class ResponseMessageCodec extends AbstractMessageCodec
 	{
 		Response response = (Response) message;
 		out.writeInt(response.getCode().code());
-		if (response.getMessage() == null || response.getMessage().isEmpty())
-		{
-			out.writeInt(0);
-		}
-		else
-		{
-			out.writeInt(response.getMessage().length());
-			out.writeCharSequence(response.getMessage(), StandardCharsets.UTF_8);
-		}
+		this.writeString(response.getMessage(), out);
 	}
 
 	@Override
@@ -37,12 +27,7 @@ public class ResponseMessageCodec extends AbstractMessageCodec
 	{
 		Response response = (Response) message;
 		response.setCode(in.readInt());
-		int len = in.readInt();
-		if (len > 0)
-		{
-			CharSequence msg = in.readCharSequence(len, StandardCharsets.UTF_8);
-			response.setMessage(msg.toString());
-		}
+		response.setMessage(this.readString(in));
 	}
 
 	@Override

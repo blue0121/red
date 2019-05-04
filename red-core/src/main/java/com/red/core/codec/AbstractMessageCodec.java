@@ -4,6 +4,8 @@ import com.red.core.message.Message;
 import com.red.core.message.Protocol;
 import io.netty.buffer.ByteBuf;
 
+import java.nio.charset.StandardCharsets;
+
 /**
  * @author Jin Zheng
  * @since 2019-05-02
@@ -37,5 +39,29 @@ public abstract class AbstractMessageCodec implements MessageCodec
 	protected abstract void encodeBody(Message message, ByteBuf out);
 
 	protected abstract void decodeBody(Message message, ByteBuf in);
+
+	protected void writeString(String text, ByteBuf out)
+	{
+		if (text == null || text.isEmpty())
+		{
+			out.writeInt(0);
+		}
+		else
+		{
+			out.writeInt(text.length());
+			out.writeCharSequence(text, StandardCharsets.UTF_8);
+		}
+	}
+
+	protected String readString(ByteBuf in)
+	{
+		int len = in.readInt();
+		if (len > 0)
+		{
+			CharSequence text = in.readCharSequence(len, StandardCharsets.UTF_8);
+			return text.toString();
+		}
+		return null;
+	}
 
 }
