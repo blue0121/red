@@ -12,7 +12,7 @@ import java.util.List;
 public class RegistryMessage extends Response
 {
 	private String name;
-	private List<RegistryItem> registryItemList = new ArrayList<>();
+	private List<String> itemList = new ArrayList<>();
 
 	public RegistryMessage()
 	{
@@ -29,27 +29,22 @@ public class RegistryMessage extends Response
 		return message;
 	}
 
-	public void addRegistryItem(RegistryItem item)
+	public void addItem(String item)
 	{
-		registryItemList.add(item);
+		itemList.add(item);
 	}
 
-	public void addRegistryItem(String ip, int port)
+	public String getItem()
 	{
-		this.addRegistryItem(RegistryItem.create(ip, port));
-	}
-
-	public RegistryItem getRegistryItem()
-	{
-		if (registryItemList == null || registryItemList.isEmpty())
+		if (itemList.isEmpty())
 			return null;
 
-		return registryItemList.get(0);
+		return itemList.get(0);
 	}
 
-	public int registryItemSize()
+	public int itemSize()
 	{
-		return registryItemList.size();
+		return itemList.size();
 	}
 
 	public String getName()
@@ -62,8 +57,8 @@ public class RegistryMessage extends Response
 		this.name = name;
 	}
 
-	public List<RegistryItem> getRegistryItemList()
+	public List<String> getItemList()
 	{
-		return registryItemList;
+		return itemList;
 	}
 }

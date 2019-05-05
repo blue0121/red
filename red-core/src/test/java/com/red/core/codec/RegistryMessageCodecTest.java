@@ -1,7 +1,6 @@
 package com.red.core.codec;
 
 import com.red.core.message.Protocol;
-import com.red.core.message.RegistryItem;
 import com.red.core.message.RegistryMessage;
 import com.red.core.message.ResponseCode;
 import io.netty.buffer.ByteBuf;
@@ -46,18 +45,18 @@ public class RegistryMessageCodecTest
 		Assert.assertEquals(ResponseCode.SUCCESS, message2.getCode());
 		Assert.assertNull(message2.getMessage());
 		Assert.assertEquals("blue", message2.getName());
-		Assert.assertTrue(message2.getRegistryItemList().isEmpty());
-		Assert.assertNull(message2.getRegistryItem());
+		Assert.assertTrue(message2.getItemList().isEmpty());
+		Assert.assertNull(message2.getItem());
 	}
 
 	@Test
 	public void test2()
 	{
 		RegistryMessage message = RegistryMessage.create("blue");
-		message.addRegistryItem("127.0.0.1", 8080);
-		message.addRegistryItem("127.0.0.1", 8081);
+		message.addItem("127.0.0.1:8080");
+		message.addItem("127.0.0.1:8081");
 		codec.encode(message, buf);
-		Assert.assertEquals(70, buf.readableBytes());
+		Assert.assertEquals(72, buf.readableBytes());
 
 		Protocol protocol = Protocol.valueOf(buf.readInt());
 		RegistryMessage message2 = (RegistryMessage) codec.decode(protocol, buf);
@@ -68,13 +67,11 @@ public class RegistryMessageCodecTest
 		Assert.assertEquals(ResponseCode.SUCCESS, message2.getCode());
 		Assert.assertNull(message2.getMessage());
 		Assert.assertEquals("blue", message2.getName());
-		Assert.assertEquals(2, message2.getRegistryItemList().size());
-		RegistryItem item0 = message2.getRegistryItem();
-		Assert.assertEquals("127.0.0.1", item0.getIp());
-		Assert.assertEquals(8080, item0.getPort());
-		RegistryItem item1 = message2.getRegistryItemList().get(1);
-		Assert.assertEquals("127.0.0.1", item1.getIp());
-		Assert.assertEquals(8081, item1.getPort());
+		Assert.assertEquals(2, message2.getItemList().size());
+		String item0 = message2.getItem();
+		Assert.assertEquals("127.0.0.1:8080", item0);
+		String item1 = message2.getItemList().get(1);
+		Assert.assertEquals("127.0.0.1:8081", item1);
 	}
 
 }
