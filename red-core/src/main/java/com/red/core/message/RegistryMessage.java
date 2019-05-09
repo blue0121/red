@@ -11,6 +11,7 @@ import java.util.List;
  */
 public class RegistryMessage extends Response
 {
+	private RegistryCommand command;
 	private String name;
 	private List<String> itemList = new ArrayList<>();
 
@@ -18,15 +19,29 @@ public class RegistryMessage extends Response
 	{
 	}
 
-	public static RegistryMessage create(String name)
+	public static RegistryMessage create(RegistryCommand command, String name)
 	{
 		RegistryMessage message = new RegistryMessage();
 		message.setProtocol(Protocol.REGISTRY);
 		message.setVersion(Constant.DEFAULT_VERSION);
 		message.setMessageId(SingleSnowflakeId.getInstance().nextId());
 		message.setCode(ResponseCode.SUCCESS);
+		message.setCommand(command);
 		message.setName(name);
 		return message;
+	}
+
+	public RegistryMessage toResponse(ResponseCode code, String message)
+	{
+		RegistryMessage response = new RegistryMessage();
+		response.setProtocol(protocol);
+		response.setVersion(version);
+		response.setMessageId(messageId);
+		response.setCode(code);
+		response.setMessage(message);
+		response.setCommand(command);
+		response.setName(name);
+		return response;
 	}
 
 	public void addItem(String item)
@@ -45,6 +60,26 @@ public class RegistryMessage extends Response
 	public int itemSize()
 	{
 		return itemList.size();
+	}
+
+	public void setCommand(short command)
+	{
+		this.command = RegistryCommand.valueOf(command);
+	}
+
+	public RegistryCommand getCommand()
+	{
+		return command;
+	}
+
+	public void setCommand(RegistryCommand command)
+	{
+		this.command = command;
+	}
+
+	public void setItemList(List<String> itemList)
+	{
+		this.itemList = itemList;
 	}
 
 	public String getName()

@@ -33,6 +33,7 @@ public class ServerInitializer extends ChannelInitializer<SocketChannel>
 		cp.addLast(new MessageDecoder(factory.getServerDecoderMap()));
 		cp.addLast(new HeartbeatHandler());
 		cp.addLast(new HandshakeHandler("token"));
+		cp.addLast(new RegistryHandler());
 	}
 
 }

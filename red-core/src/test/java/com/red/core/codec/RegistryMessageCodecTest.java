@@ -1,6 +1,7 @@
 package com.red.core.codec;
 
 import com.red.core.message.Protocol;
+import com.red.core.message.RegistryCommand;
 import com.red.core.message.RegistryMessage;
 import com.red.core.message.ResponseCode;
 import io.netty.buffer.ByteBuf;
@@ -32,9 +33,9 @@ public class RegistryMessageCodecTest
 	@Test
 	public void test1()
 	{
-		RegistryMessage message = RegistryMessage.create("blue");
+		RegistryMessage message = RegistryMessage.create(RegistryCommand.LIST, "blue");
 		codec.encode(message, buf);
-		Assert.assertEquals(36, buf.readableBytes());
+		Assert.assertEquals(38, buf.readableBytes());
 
 		Protocol protocol = Protocol.valueOf(buf.readInt());
 		RegistryMessage message2 = (RegistryMessage) codec.decode(protocol, buf);
@@ -52,11 +53,11 @@ public class RegistryMessageCodecTest
 	@Test
 	public void test2()
 	{
-		RegistryMessage message = RegistryMessage.create("blue");
+		RegistryMessage message = RegistryMessage.create(RegistryCommand.SAVE, "blue");
 		message.addItem("127.0.0.1:8080");
 		message.addItem("127.0.0.1:8081");
 		codec.encode(message, buf);
-		Assert.assertEquals(72, buf.readableBytes());
+		Assert.assertEquals(74, buf.readableBytes());
 
 		Protocol protocol = Protocol.valueOf(buf.readInt());
 		RegistryMessage message2 = (RegistryMessage) codec.decode(protocol, buf);

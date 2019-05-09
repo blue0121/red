@@ -36,6 +36,7 @@ public class ClientInitializer extends ChannelInitializer<SocketChannel>
 		cp.addLast(new MessageDecoder(factory.getClientDecoderMap()));
 		cp.addLast(new HeartbeatHandler());
 		cp.addLast(new HandshakeHandler(client));
+		cp.addLast(new MessageHandler(client));
 	}
 
 }

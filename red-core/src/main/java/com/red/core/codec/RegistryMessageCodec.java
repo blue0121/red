@@ -21,6 +21,7 @@ public class RegistryMessageCodec extends ResponseMessageCodec
 	{
 		super.encodeBody(message, out);
 		RegistryMessage registry = (RegistryMessage) message;
+		out.writeShort(registry.getCommand().value());
 		this.writeString(registry.getName(), out);
 		List<String> itemList = registry.getItemList();
 		out.writeInt(itemList.size());
@@ -35,6 +36,7 @@ public class RegistryMessageCodec extends ResponseMessageCodec
 	{
 		super.decodeBody(message, in);
 		RegistryMessage registry = (RegistryMessage) message;
+		registry.setCommand(in.readShort());
 		registry.setName(this.readString(in));
 		int size = in.readInt();
 		for (int i = 0; i < size; i++)
