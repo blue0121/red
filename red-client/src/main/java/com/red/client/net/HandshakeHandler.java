@@ -36,7 +36,7 @@ public class HandshakeHandler extends SimpleChannelInboundHandler<Response>
 			if (response.getCode() == ResponseCode.SUCCESS)
 			{
 				logger.info("Handshake successful");
-				client.setHandshake(true);
+				client.getChannelClient().addChannel(channel);
 			}
 			else
 			{

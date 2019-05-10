@@ -11,9 +11,9 @@ import java.util.concurrent.Future;
 public interface HandlerClient
 {
 
-	Future<Message> invoke(Message request);
+	Future<Message> sendMessage(Message request);
 
-	Future<Message> invoke(Message request, CallbackClient callback);
+	Future<Message> sendMessage(Message request, CallbackClient callback);
 
 	void onReceive(CallbackClient callback);
 

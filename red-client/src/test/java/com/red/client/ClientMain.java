@@ -32,7 +32,6 @@ public class ClientMain
 		try
 		{
 			client.start();
-			Thread.sleep(1_000);
 			registry(client);
 
 			Thread.sleep(50_000);
@@ -47,7 +46,7 @@ public class ClientMain
 	{
 		RegistryMessage request = RegistryMessage.create(RegistryCommand.LIST, "blue");
 		request.addItem("localhost:8080");
-		Future<Message> future = client.invoke(request, r ->
+		Future<Message> future = client.sendMessage(request, r ->
 		{
 			logger.info("Response: {}, 0x{}", r.getProtocol(), Long.toHexString(r.getMessageId()));
 		});
