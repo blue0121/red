@@ -2,6 +2,7 @@ package com.red.server.registry;
 
 import io.netty.channel.Channel;
 
+import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -11,7 +12,7 @@ import java.util.Set;
 public interface RegistryStorage
 {
 
-	void save(String name, Set<String> itemList);
+	void save(String name, Collection<String> itemList);
 
 	void delete(String name, String item);
 

@@ -3,21 +3,18 @@ package com.red.server.registry;
 import com.red.core.message.RegistryMessage;
 import com.red.core.message.ResponseCode;
 import io.netty.channel.Channel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import java.util.Set;
 
 /**
  * @author Jin Zheng
- * @since 1.0 2019-05-10
+ * @since 2019-05-11
  */
-public class SaveRegistryHandler implements RegistryHandler
+public class ListRegistryHandler implements RegistryHandler
 {
-	private static Logger logger = LoggerFactory.getLogger(SaveRegistryHandler.class);
-
 	private final RegistryStorage storage;
 
-	public SaveRegistryHandler(RegistryStorage storage)
+	public ListRegistryHandler(RegistryStorage storage)
 	{
 		this.storage = storage;
 	}
@@ -27,9 +24,10 @@ public class SaveRegistryHandler implements RegistryHandler
 	{
 		ResponseCode code = ResponseCode.SUCCESS;
 		String msg = "Save successful";
+		Set<String> itemSet = null;
 		try
 		{
-			storage.save(message.getName(), message.getItemList());
+			itemSet = storage.list(message.getName());
 		}
 		catch (RegistryStorageException e)
 		{
@@ -42,7 +40,13 @@ public class SaveRegistryHandler implements RegistryHandler
 			msg = "Unknown exception";
 		}
 		RegistryMessage response = message.toResponse(code, msg);
+		if (itemSet != null && !itemSet.isEmpty())
+		{
+			for (String item : itemSet)
+			{
+				response.addItem(item);
+			}
+		}
 		channel.writeAndFlush(response);
 	}
-
 }

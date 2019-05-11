@@ -1,7 +1,7 @@
 package com.red.server.net;
 
 import com.red.core.message.RegistryMessage;
-import com.red.core.message.ResponseCode;
+import com.red.server.registry.RegistryHandlerFactory;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.slf4j.Logger;
@@ -22,13 +22,11 @@ public class RegistryHandler extends SimpleChannelInboundHandler<RegistryMessage
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, RegistryMessage message) throws Exception
 	{
-		logger.info("Receive registry message, command: {}, name: {}, item: {}", message.getCommand(), message.getName(), message.getItemList());
-		RegistryMessage response = message.toResponse(ResponseCode.SUCCESS, "success");
-		for (String item : message.getItemList())
+		if (logger.isDebugEnabled())
 		{
-			response.addItem(item);
+			logger.debug("Receive registry message, command: {}, name: {}, item: {}", message.getCommand(), message.getName(), message.getItemList());
 		}
-		ctx.writeAndFlush(response);
+		RegistryHandlerFactory.getFactory().handle(message, ctx.channel());
 	}
 
 }

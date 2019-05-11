@@ -4,10 +4,7 @@ import io.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -30,13 +27,12 @@ public class MemoryRegistryStorage implements RegistryStorage
 	}
 
 	@Override
-	public void save(String name, Set<String> itemSet)
+	public void save(String name, Collection<String> itemList)
 	{
-		if (name == null || name.isEmpty() || itemSet == null || itemSet.isEmpty())
-		{
-			logger.warn("Name or itemList is empty");
-			return;
-		}
+		if (name == null || name.isEmpty())
+			throw new RegistryStorageException("Name must be not empty");
+		if (itemList == null || itemList.isEmpty())
+			throw new RegistryStorageException("Item list must be not empty");
 
 		ReadWriteLock lock = this.getReadWriteLock(name);
 		Lock writeLock = lock.writeLock();
@@ -49,7 +45,7 @@ public class MemoryRegistryStorage implements RegistryStorage
 				set = new HashSet<>();
 				registryMap.put(name, set);
 			}
-			set.addAll(itemSet);
+			set.addAll(itemList);
 		}
 		finally
 		{
@@ -60,11 +56,10 @@ public class MemoryRegistryStorage implements RegistryStorage
 	@Override
 	public void delete(String name, String item)
 	{
-		if (name == null || name.isEmpty() || item == null || item.isEmpty())
-		{
-			logger.warn("Name or item is empty");
-			return;
-		}
+		if (name == null || name.isEmpty())
+			throw new RegistryStorageException("Name must be not empty");
+		if (item == null || item.isEmpty())
+			throw new RegistryStorageException("Item must be not empty");
 
 		ReadWriteLock lock = this.getReadWriteLock(name);
 		Lock writeLock = lock.writeLock();
@@ -86,13 +81,10 @@ public class MemoryRegistryStorage implements RegistryStorage
 	@Override
 	public Set<String> list(String name)
 	{
-		Set<String> itemSet = new HashSet<>();
 		if (name == null || name.isEmpty())
-		{
-			logger.warn("Name is empty");
-			return itemSet;
-		}
+			throw new RegistryStorageException("Name must be not empty");
 
+		Set<String> itemSet = new HashSet<>();
 		ReadWriteLock lock = this.getReadWriteLock(name);
 		Lock readLock = lock.readLock();
 		readLock.lock();
@@ -114,6 +106,8 @@ public class MemoryRegistryStorage implements RegistryStorage
 	@Override
 	public void watch(String name, Channel channel)
 	{
+		if (name == null || name.isEmpty())
+			throw new RegistryStorageException("Name must be not empty");
 
 	}
 

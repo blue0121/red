@@ -44,13 +44,19 @@ public class ClientMain
 
 	private static void registry(NettyConnectionClient client) throws Exception
 	{
-		RegistryMessage request = RegistryMessage.create(RegistryCommand.LIST, "blue");
+		RegistryMessage request = RegistryMessage.create(RegistryCommand.SAVE, "blue");
 		request.addItem("localhost:8080");
 		Future<Message> future = client.sendMessage(request, r ->
 		{
 			logger.info("Response: {}, 0x{}", r.getProtocol(), Long.toHexString(r.getMessageId()));
 		});
 		RegistryMessage response = (RegistryMessage) future.get(10, TimeUnit.SECONDS);
+		logger.info("Response: {}, 0x{}, name: {}, items: {}", response.getProtocol(), Long.toHexString(response.getMessageId()),
+				response.getName(), response.getItemList());
+
+		request = RegistryMessage.create(RegistryCommand.LIST, "blue");
+		future = client.sendMessage(request);
+		response = (RegistryMessage) future.get(10, TimeUnit.SECONDS);
 		logger.info("Response: {}, 0x{}, name: {}, items: {}", response.getProtocol(), Long.toHexString(response.getMessageId()),
 				response.getName(), response.getItemList());
 	}

@@ -1,8 +1,8 @@
 package com.red.server.registry;
 
 import com.red.core.message.RegistryMessage;
+import io.netty.channel.Channel;
 
-import java.nio.channels.Channel;
 
 /**
  * @author Jin Zheng

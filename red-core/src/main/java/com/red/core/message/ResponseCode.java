@@ -8,7 +8,8 @@ public enum  ResponseCode
 {
 	SUCCESS(0x0),
 	ERROR(0x1),
-	HANDSHAKE(0x2);
+	HANDSHAKE(0x2),
+	REGISTRY(0x3);
 
 	private int code;
 

@@ -46,7 +46,10 @@ public class RegistryMessage extends Response
 
 	public void addItem(String item)
 	{
-		itemList.add(item);
+		if (!itemList.contains(item))
+		{
+			itemList.add(item);
+		}
 	}
 
 	public String getItem()
