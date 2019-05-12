@@ -92,11 +92,6 @@ public class RegistryMessage extends Response
 		this.command = command;
 	}
 
-	public void setItemList(List<String> itemList)
-	{
-		this.itemList = itemList;
-	}
-
 	public String getName()
 	{
 		return name;
