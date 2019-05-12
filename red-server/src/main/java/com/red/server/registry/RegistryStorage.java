@@ -4,6 +4,7 @@ import io.netty.channel.Channel;
 
 import java.util.Collection;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
 
 /**
  * @author Jin Zheng
@@ -19,5 +20,9 @@ public interface RegistryStorage
 	Set<String> list(String name);
 
 	void watch(String name, Channel channel);
+
+	void unwatch(String name, Channel channel);
+
+	ExecutorService getExecutorService();
 
 }

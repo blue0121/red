@@ -29,4 +29,11 @@ public class RegistryHandler extends SimpleChannelInboundHandler<RegistryMessage
 		RegistryHandlerFactory.getFactory().handle(message, ctx.channel());
 	}
 
+	@Override
+	public void channelInactive(ChannelHandlerContext ctx) throws Exception
+	{
+		RegistryHandlerFactory.getFactory().removeChannel(ctx.channel());
+
+		super.channelInactive(ctx);
+	}
 }

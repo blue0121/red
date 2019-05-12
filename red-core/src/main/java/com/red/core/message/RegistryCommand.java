@@ -9,7 +9,8 @@ public enum RegistryCommand
 	SAVE((short)0x1),
 	DELETE((short)0x2),
 	LIST((short)0x3),
-	WATCH((short)0x11);
+	WATCH((short)0x11),
+	UNWATCH((short)0x12);
 
 	private short value;
 

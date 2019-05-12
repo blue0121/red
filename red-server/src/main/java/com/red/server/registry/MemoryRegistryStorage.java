@@ -5,9 +5,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * @author Jin Zheng
@@ -18,12 +17,14 @@ public class MemoryRegistryStorage implements RegistryStorage
 	private static Logger logger = LoggerFactory.getLogger(MemoryRegistryStorage.class);
 
 	private final Map<String, Set<String>> registryMap;
-	private final Map<String, ReadWriteLock> lockMap;
+	private final RegistryChannelGroup channelGroup;
+	private final ExecutorService executorService;
 
-	public MemoryRegistryStorage()
+	public MemoryRegistryStorage(RegistryChannelGroup channelGroup)
 	{
 		this.registryMap = new HashMap<>();
-		this.lockMap = new HashMap<>();
+		this.channelGroup = channelGroup;
+		this.executorService = Executors.newSingleThreadExecutor();
 	}
 
 	@Override
@@ -34,22 +35,17 @@ public class MemoryRegistryStorage implements RegistryStorage
 		if (itemList == null || itemList.isEmpty())
 			throw new RegistryStorageException("Item list must be not empty");
 
-		ReadWriteLock lock = this.getReadWriteLock(name);
-		Lock writeLock = lock.writeLock();
-		writeLock.lock();
-		try
+		Set<String> set = registryMap.get(name);
+		if (set == null)
 		{
-			Set<String> set = registryMap.get(name);
-			if (set == null)
-			{
-				set = new HashSet<>();
-				registryMap.put(name, set);
-			}
-			set.addAll(itemList);
+			set = new HashSet<>();
+			registryMap.put(name, set);
 		}
-		finally
+		set.addAll(itemList);
+		channelGroup.notify(name, set);
+		if (logger.isDebugEnabled())
 		{
-			writeLock.unlock();
+			logger.debug("Save registry message, name: {}, itemList: {}", name, itemList);
 		}
 	}
 
@@ -61,20 +57,15 @@ public class MemoryRegistryStorage implements RegistryStorage
 		if (item == null || item.isEmpty())
 			throw new RegistryStorageException("Item must be not empty");
 
-		ReadWriteLock lock = this.getReadWriteLock(name);
-		Lock writeLock = lock.writeLock();
-		writeLock.lock();
-		try
+		Set<String> set = registryMap.get(name);
+		if (set != null && !set.isEmpty())
 		{
-			Set<String> set = registryMap.get(name);
-			if (set != null && !set.isEmpty())
-			{
-				set.remove(item);
-			}
+			set.remove(item);
 		}
-		finally
+		channelGroup.notify(name, set);
+		if (logger.isDebugEnabled())
 		{
-			writeLock.unlock();
+			logger.debug("Delete registry message, name: {}, item: {}", name, item);
 		}
 	}
 
@@ -85,20 +76,14 @@ public class MemoryRegistryStorage implements RegistryStorage
 			throw new RegistryStorageException("Name must be not empty");
 
 		Set<String> itemSet = new HashSet<>();
-		ReadWriteLock lock = this.getReadWriteLock(name);
-		Lock readLock = lock.readLock();
-		readLock.lock();
-		try
+		Set<String> set = registryMap.get(name);
+		if (set != null && !set.isEmpty())
 		{
-			Set<String> set = registryMap.get(name);
-			if (set != null && !set.isEmpty())
-			{
-				itemSet.addAll(set);
-			}
+			itemSet.addAll(set);
 		}
-		finally
+		if (logger.isDebugEnabled())
 		{
-			readLock.unlock();
+			logger.debug("List registry message, name: {}, itemList: {}", name, itemSet);
 		}
 		return itemSet;
 	}
@@ -109,24 +94,23 @@ public class MemoryRegistryStorage implements RegistryStorage
 		if (name == null || name.isEmpty())
 			throw new RegistryStorageException("Name must be not empty");
 
+		channelGroup.addChannel(name, channel);
 	}
 
-	private ReadWriteLock getReadWriteLock(String name)
+	@Override
+	public void unwatch(String name, Channel channel)
 	{
-		ReadWriteLock lock = lockMap.get(name);
-		if (lock == null)
-		{
-			synchronized (this)
-			{
-				lock = lockMap.get(name);
-				if (lock == null)
-				{
-					lock = new ReentrantReadWriteLock();
-					lockMap.put(name, lock);
-				}
-			}
-		}
-		return lock;
+		if (name == null || name.isEmpty())
+			throw new RegistryStorageException("Name must be not empty");
+
+		channelGroup.removeChannel(name, channel);
 	}
+
+	@Override
+	public ExecutorService getExecutorService()
+	{
+		return executorService;
+	}
+
 
 }

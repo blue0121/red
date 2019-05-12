@@ -34,7 +34,7 @@ public class ClientMain
 			client.start();
 			registry(client);
 
-			Thread.sleep(50_000);
+			Thread.sleep(15_000);
 		}
 		finally
 		{

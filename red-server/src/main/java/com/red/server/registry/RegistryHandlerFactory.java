@@ -18,14 +18,19 @@ public class RegistryHandlerFactory
 	private static Logger logger = LoggerFactory.getLogger(RegistryHandlerFactory.class);
 	private static RegistryHandlerFactory factory;
 
-	private Map<RegistryCommand, RegistryHandler> handlerMap = new HashMap<>();
+	private final Map<RegistryCommand, RegistryHandler> handlerMap = new HashMap<>();
+	private final RegistryChannelGroup channelGroup;
+	private final RegistryStorage registryStorage;
 
 	private RegistryHandlerFactory()
 	{
-		RegistryStorage storage = new MemoryRegistryStorage();
-		handlerMap.put(RegistryCommand.SAVE, new SaveRegistryHandler(storage));
-		handlerMap.put(RegistryCommand.DELETE, new DeleteRegistoryHandler(storage));
-		handlerMap.put(RegistryCommand.LIST, new ListRegistryHandler(storage));
+		channelGroup = new RegistryChannelGroup();
+		registryStorage = new MemoryRegistryStorage(channelGroup);
+		handlerMap.put(RegistryCommand.SAVE, new SaveRegistryHandler(registryStorage));
+		handlerMap.put(RegistryCommand.DELETE, new DeleteRegistryHandler(registryStorage));
+		handlerMap.put(RegistryCommand.LIST, new ListRegistryHandler(registryStorage));
+		handlerMap.put(RegistryCommand.WATCH, new WatchRegistryHandler(registryStorage));
+		handlerMap.put(RegistryCommand.UNWATCH, new UnwatchRegistryHandler(registryStorage));
 	}
 
 	public static RegistryHandlerFactory getFactory()
@@ -51,7 +56,15 @@ public class RegistryHandlerFactory
 			logger.error("Missing RegistryHandler: {}", message.getCommand());
 			return;
 		}
-		handler.handle(message, channel);
+		registryStorage.getExecutorService().submit(() ->
+		{
+			handler.handle(message, channel);
+		});
+	}
+
+	public void removeChannel(Channel channel)
+	{
+		channelGroup.removeChannel(channel);
 	}
 
 }

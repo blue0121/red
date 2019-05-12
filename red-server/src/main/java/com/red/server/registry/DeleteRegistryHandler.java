@@ -8,11 +8,11 @@ import io.netty.channel.Channel;
  * @author Jin Zheng
  * @since 2019-05-11
  */
-public class DeleteRegistoryHandler implements RegistryHandler
+public class DeleteRegistryHandler implements RegistryHandler
 {
 	private final RegistryStorage storage;
 
-	public DeleteRegistoryHandler(RegistryStorage storage)
+	public DeleteRegistryHandler(RegistryStorage storage)
 	{
 		this.storage = storage;
 	}

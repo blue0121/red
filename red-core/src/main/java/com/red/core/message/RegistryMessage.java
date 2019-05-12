@@ -3,6 +3,7 @@ package com.red.core.message;
 import com.red.core.util.Constant;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -49,6 +50,17 @@ public class RegistryMessage extends Response
 		if (!itemList.contains(item))
 		{
 			itemList.add(item);
+		}
+	}
+
+	public void addItemList(Collection<String> itemList)
+	{
+		if (itemList == null || itemList.isEmpty())
+			return;
+
+		for (String item : itemList)
+		{
+			this.itemList.add(item);
 		}
 	}
 
