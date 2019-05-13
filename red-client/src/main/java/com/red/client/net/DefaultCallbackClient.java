@@ -30,6 +30,10 @@ public class DefaultCallbackClient implements CallbackClient
 		{
 			RegistryInstance instance = RegistryInstance.from((RegistryMessage) message);
 			registryCallback.onReceive(instance);
+			if (logger.isDebugEnabled())
+			{
+				logger.debug("Receive registry message, prefix: {}, name: {}, host: {}", instance.getPrefix(), instance.getName(), instance.getHostList());
+			}
 		}
 	}
 

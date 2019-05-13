@@ -13,4 +13,8 @@ public class RedClientException extends RuntimeException
 		super(message);
 	}
 
+	public RedClientException(Throwable cause)
+	{
+		super(cause);
+	}
 }

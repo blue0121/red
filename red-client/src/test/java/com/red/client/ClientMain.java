@@ -1,14 +1,10 @@
 package com.red.client;
 
 import com.red.client.net.NettyConnectionClient;
-import com.red.core.message.Message;
-import com.red.core.message.RegistryCommand;
-import com.red.core.message.RegistryMessage;
+import com.red.client.registry.RegistryClientTest;
+import com.red.client.registry.RegistryInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author Jin Zheng
@@ -34,7 +30,7 @@ public class ClientMain
 			client.start();
 			registry(client);
 
-			Thread.sleep(15_000);
+			Thread.sleep(25_000);
 		}
 		finally
 		{
@@ -44,21 +40,25 @@ public class ClientMain
 
 	private static void registry(NettyConnectionClient client) throws Exception
 	{
-		RegistryMessage request = RegistryMessage.create(RegistryCommand.SAVE, "blue");
-		request.addItem("localhost:8080");
-		Future<Message> future = client.sendMessage(request, r ->
-		{
-			logger.info("Response: {}, 0x{}", r.getProtocol(), Long.toHexString(r.getMessageId()));
-		});
-		RegistryMessage response = (RegistryMessage) future.get(10, TimeUnit.SECONDS);
-		logger.info("Response: {}, 0x{}, name: {}, items: {}", response.getProtocol(), Long.toHexString(response.getMessageId()),
-				response.getName(), response.getItemList());
+		String prefix = "blue";
+		String name = "com.blue.Hello";
+		String host = "localhost";
+		int port = 8080;
+		int port2 = 8082;
 
-		request = RegistryMessage.create(RegistryCommand.LIST, "blue");
-		future = client.sendMessage(request);
-		response = (RegistryMessage) future.get(10, TimeUnit.SECONDS);
-		logger.info("Response: {}, 0x{}, name: {}, items: {}", response.getProtocol(), Long.toHexString(response.getMessageId()),
-				response.getName(), response.getItemList());
+		RegistryClientTest registryClient = new RegistryClientTest(client);
+		registryClient.save(prefix, name, host, port);
+		registryClient.save(prefix, name, host, port2);
+		RegistryInstance instance = registryClient.list(prefix, name);
+		logger.info("host: {}", instance.getHostList());
+		registryClient.watch(prefix, name);
+		registryClient.delete(prefix, name, host, port);
+		registryClient.save(prefix, name, host, port);
+		//registryClient.unwatch(prefix, name);
+		registryClient.delete(prefix, name, host, port);
+		registryClient.delete(prefix, name, host, port2);
+		instance = registryClient.list(prefix, name);
+		logger.info("host: {}", instance.getHostList());
 	}
 
 }

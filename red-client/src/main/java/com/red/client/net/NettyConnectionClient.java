@@ -119,7 +119,13 @@ public class NettyConnectionClient implements ConnectionClient, HandlerClient
 	@Override
 	public Future<Message> sendMessage(Message message, CallbackClient callback)
 	{
-		return channelClient.sendMessage(message, callback);
+		Future<Message> future = channelClient.sendMessage(message, callback);
+		Message response = channelClient.getMessage(message.getMessageId());
+		if (response != null)
+		{
+			((FutureClient)future).done(response);
+		}
+		return future;
 	}
 
 	@Override

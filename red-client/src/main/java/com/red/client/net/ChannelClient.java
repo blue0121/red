@@ -29,7 +29,8 @@ public class ChannelClient
 
 	private final ChannelGroup channelGroup;
 	private final Random random;
-	private final Cache<Long, FutureClient> requestCache;
+	private final Cache<Long, FutureClient> futureCache;
+	private final Cache<Long, Message> messageCache;
 	private final CountDownLatch latch;
 
 	public ChannelClient()
@@ -37,7 +38,8 @@ public class ChannelClient
 		this.channelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 		this.random = new Random();
 		this.latch = new CountDownLatch(1);
-		requestCache = Caffeine.newBuilder().expireAfterWrite(Duration.ofMinutes(10)).build();
+		this.futureCache = Caffeine.newBuilder().expireAfterWrite(Duration.ofMinutes(10)).build();
+		this.messageCache = Caffeine.newBuilder().expireAfterWrite(Duration.ofMinutes(10)).build();
 	}
 
 	public void waitHandshake()
@@ -61,11 +63,18 @@ public class ChannelClient
 
 	public boolean returnMessage(Message message)
 	{
-		FutureClient future = requestCache.getIfPresent(message.getMessageId());
+		FutureClient future = futureCache.getIfPresent(message.getMessageId());
 		if (future == null)
+		{
+			messageCache.put(message.getMessageId(), message);
+			if (logger.isDebugEnabled())
+			{
+				logger.debug("No found future from: {}, 0x{}", message.getProtocol(), Long.toHexString(message.getMessageId()));
+			}
 			return false;
+		}
 
-		requestCache.invalidate(message.getMessageId());
+		futureCache.invalidate(message.getMessageId());
 		future.done(message);
 		return true;
 	}
@@ -90,8 +99,13 @@ public class ChannelClient
 			channels[index].writeAndFlush(message).addListener(new SenderListener(message));
 		}
 		FutureClient future = new FutureClient(message, callback);
-		requestCache.put(message.getMessageId(), future);
+		futureCache.put(message.getMessageId(), future);
 		return future;
+	}
+
+	public Message getMessage(long messageId)
+	{
+		return messageCache.getIfPresent(messageId);
 	}
 
 	class SenderListener implements ChannelFutureListener
