@@ -15,6 +15,8 @@ public interface HandlerClient
 
 	Future<Message> sendMessage(Message request, CallbackClient callback);
 
-	void onReceive(CallbackClient callback);
+	CallbackClient getCallback();
+
+	void setRegistryCallback(CallbackClient registryCallback);
 
 }

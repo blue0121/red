@@ -37,9 +37,12 @@ public class RegistryInstance
 	{
 		RegistryInstance instance = new RegistryInstance();
 		int index = message.getName().indexOf(SPLIT);
-		if (index == -1)
+		if (index != -1)
 		{
-			// TODO
+			String prefix = message.getName().substring(0, index);
+			String name = message.getName().substring(index + 1);
+			instance.setPrefix(prefix);
+			instance.setName(name);
 		}
 		else
 		{

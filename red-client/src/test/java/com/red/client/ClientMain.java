@@ -54,9 +54,9 @@ public class ClientMain
 		registryClient.watch(prefix, name);
 		registryClient.delete(prefix, name, host, port);
 		registryClient.save(prefix, name, host, port);
-		//registryClient.unwatch(prefix, name);
 		registryClient.delete(prefix, name, host, port);
 		registryClient.delete(prefix, name, host, port2);
+		registryClient.unwatch(prefix, name);
 		instance = registryClient.list(prefix, name);
 		logger.info("host: {}", instance.getHostList());
 	}

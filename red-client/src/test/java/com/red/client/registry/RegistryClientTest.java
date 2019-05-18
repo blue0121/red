@@ -2,8 +2,6 @@ package com.red.client.registry;
 
 import com.red.client.net.NettyConnectionClient;
 
-import java.util.concurrent.Future;
-
 /**
  * @author Jin Zheng
  * @since 1.0 2019-05-13
@@ -23,23 +21,20 @@ public class RegistryClientTest
 	{
 		RegistryInstance instance = new RegistryInstance(prefix, name);
 		instance.addHost(ip, port);
-		Future<RegistryInstance> future = client.saveAsync(instance, callback);
-		future.get();
+		client.saveSync(instance);
 	}
 
 	public void delete(String prefix, String name, String ip, int port) throws Exception
 	{
 		RegistryInstance instance = new RegistryInstance(prefix, name);
 		instance.addHost(ip, port);
-		Future<RegistryInstance> future = client.deleteAsync(instance, callback);
-		future.get();
+		client.deleteSync(instance);
 	}
 
 	public RegistryInstance list(String prefix, String name) throws Exception
 	{
 		RegistryInstance instance = new RegistryInstance(prefix, name);
-		Future<RegistryInstance> future = client.listAsync(instance, callback);
-		return future.get();
+		return client.listSync(instance);
 	}
 
 	public void watch(String prefix, String name)

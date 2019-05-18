@@ -108,11 +108,14 @@ public class RegistryChannelGroup
 		{
 			if (future.isSuccess())
 			{
-				logger.debug("Notify registry message successful: {}, ", message.getName());
+				if (logger.isDebugEnabled())
+				{
+					logger.debug("Notify registry message successful: name: {}, itemList: {}", message.getName(), message.getItemList());
+				}
 			}
 			else
 			{
-				logger.warn("Notify registry message failure: {}, ", message.getName());
+				logger.warn("Notify registry message failure: {}, itemList: {}", message.getName(), message.getItemList());
 			}
 			Throwable throwable = future.cause();
 			if (throwable != null)

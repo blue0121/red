@@ -1,6 +1,7 @@
 package com.red.server.registry;
 
 import com.red.core.message.RegistryMessage;
+import com.red.core.message.ResponseCode;
 import io.netty.channel.Channel;
 
 /**
@@ -20,5 +21,7 @@ public class UnwatchRegistryHandler implements RegistryHandler
 	public void handle(RegistryMessage message, Channel channel)
 	{
 		storage.unwatch(message.getName(), channel);
+		RegistryMessage response = message.toResponse(ResponseCode.SUCCESS, ResponseCode.SUCCESS.name());
+		channel.writeAndFlush(response);
 	}
 }

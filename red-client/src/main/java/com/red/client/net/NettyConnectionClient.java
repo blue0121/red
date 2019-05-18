@@ -34,12 +34,12 @@ public class NettyConnectionClient implements ConnectionClient, HandlerClient
 	private final InetSocketAddress remoteAddress;
 	private ClientInitializer initializer;
 
-	private CallbackClient callback;
 	private boolean stop = false;
 	private Bootstrap bootstrap;
 	private EventLoopGroup workerGroup;
 	private ChannelFuture channelFuture;
 	private final ChannelClient channelClient;
+	private final DefaultCallbackClient callback;
 
 	public NettyConnectionClient(int timeout, String token, String address)
 	{
@@ -54,6 +54,7 @@ public class NettyConnectionClient implements ConnectionClient, HandlerClient
 		this.random = new Random();
 		this.remoteAddress = new InetSocketAddress(addrs[0], Integer.parseInt(addrs[1]));
 		this.initializer = new ClientInitializer(this);
+		this.callback = new DefaultCallbackClient();
 	}
 
 	@Override
@@ -129,9 +130,15 @@ public class NettyConnectionClient implements ConnectionClient, HandlerClient
 	}
 
 	@Override
-	public void onReceive(CallbackClient callback)
+	public void setRegistryCallback(CallbackClient registryCallback)
 	{
-		this.callback = callback;
+		this.callback.setRegistryCallback(registryCallback);
+	}
+
+	@Override
+	public CallbackClient getCallback()
+	{
+		return this.callback;
 	}
 
 	public boolean isStop()
@@ -152,11 +159,6 @@ public class NettyConnectionClient implements ConnectionClient, HandlerClient
 	public InetSocketAddress getRemoteAddress()
 	{
 		return remoteAddress;
-	}
-
-	public CallbackClient getCallback()
-	{
-		return callback;
 	}
 
 	public ChannelClient getChannelClient()

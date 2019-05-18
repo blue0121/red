@@ -4,6 +4,7 @@ import com.red.client.HandlerClient;
 import com.red.core.message.Message;
 import com.red.core.message.RegistryCommand;
 import com.red.core.message.RegistryMessage;
+import com.red.core.util.AssertUtil;
 
 import java.util.concurrent.Future;
 
@@ -14,10 +15,13 @@ import java.util.concurrent.Future;
 public class DefaultRegistryClient implements RegistryClient
 {
 	private final HandlerClient handlerClient;
+	private final RegistryCallbackClient callbackClient;
 
 	public DefaultRegistryClient(HandlerClient handlerClient)
 	{
 		this.handlerClient = handlerClient;
+		this.callbackClient = new RegistryCallbackClient();
+		this.handlerClient.setRegistryCallback(callbackClient);
 	}
 
 	@Override
@@ -70,15 +74,30 @@ public class DefaultRegistryClient implements RegistryClient
 
 	private FutureRegistryInstance invokeAsync(RegistryCommand command, RegistryInstance instance, RegistryCallback callback)
 	{
+		AssertUtil.notNull(command, "RegistryCommand");
+		AssertUtil.notNull(instance, "RegistryInstance");
 		RegistryMessage message = instance.build(command);
 		RegistryCallbackClient callbackClient = null;
 		if (callback != null)
 		{
 			callbackClient = new RegistryCallbackClient(callback);
 		}
+		this.registryCallback(message, callback);
 		Future<Message> future = handlerClient.sendMessage(message, callbackClient);
 		FutureRegistryInstance futureRegistryInstance = new FutureRegistryInstance(future);
 		return futureRegistryInstance;
+	}
+
+	private void registryCallback(RegistryMessage message, RegistryCallback callback)
+	{
+		if (message.getCommand() == RegistryCommand.WATCH)
+		{
+			callbackClient.addRegistryCallback(message.getName(), callback);
+		}
+		else if (message.getCommand() == RegistryCommand.UNWATCH)
+		{
+			callbackClient.removeRegistryCallback(message.getName());
+		}
 	}
 
 	private RegistryInstance invokeSync(RegistryCommand command, RegistryInstance instance)
