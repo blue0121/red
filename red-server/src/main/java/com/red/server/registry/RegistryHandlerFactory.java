@@ -64,7 +64,10 @@ public class RegistryHandlerFactory
 
 	public void removeChannel(Channel channel)
 	{
-		channelGroup.removeChannel(channel);
+		registryStorage.getExecutorService().submit(() ->
+		{
+			channelGroup.removeChannel(channel);
+		});
 	}
 
 }

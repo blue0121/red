@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SnowflakeId
 {
-	public static final long EPOCH = 1525104000000L; // 开始时间戳 (2018-05-01)
+	public static final long EPOCH = 1556640000000L; // 开始时间戳 (2019-05-01)
 	protected static Logger logger = LoggerFactory.getLogger(SnowflakeId.class);
 
 	protected final long machineIdBits; // 机器ID位数
