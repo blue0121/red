@@ -2,9 +2,9 @@ package com.red.core.message;
 
 import com.red.core.util.Constant;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Jin Zheng
@@ -13,14 +13,14 @@ import java.util.List;
 public class RegistryMessage extends Response
 {
 	private RegistryCommand command;
-	private String name;
-	private List<String> itemList = new ArrayList<>();
+	private Set<String> nameSet = new HashSet<>();
+	private Set<String> itemSet = new HashSet<>();
 
 	public RegistryMessage()
 	{
 	}
 
-	public static RegistryMessage create(RegistryCommand command, String name)
+	public static RegistryMessage create(RegistryCommand command, String...names)
 	{
 		RegistryMessage message = new RegistryMessage();
 		message.setProtocol(Protocol.REGISTRY);
@@ -28,7 +28,10 @@ public class RegistryMessage extends Response
 		message.setMessageId(SingleSnowflakeId.getInstance().nextId());
 		message.setCode(ResponseCode.SUCCESS);
 		message.setCommand(command);
-		message.setName(name);
+		for (String name : names)
+		{
+			message.addName(name);
+		}
 		return message;
 	}
 
@@ -41,16 +44,13 @@ public class RegistryMessage extends Response
 		response.setCode(code);
 		response.setMessage(message);
 		response.setCommand(command);
-		response.setName(name);
+		response.addNameList(nameSet);
 		return response;
 	}
 
 	public void addItem(String item)
 	{
-		if (!itemList.contains(item))
-		{
-			itemList.add(item);
-		}
+		itemSet.add(item);
 	}
 
 	public void addItemList(Collection<String> itemList)
@@ -58,23 +58,46 @@ public class RegistryMessage extends Response
 		if (itemList == null || itemList.isEmpty())
 			return;
 
-		for (String item : itemList)
-		{
-			this.itemList.add(item);
-		}
+		itemSet.addAll(itemList);
 	}
 
 	public String getItem()
 	{
-		if (itemList.isEmpty())
+		if (itemSet.isEmpty())
 			return null;
 
-		return itemList.get(0);
+		return itemSet.iterator().next();
+	}
+
+	public void addName(String name)
+	{
+		nameSet.add(name);
+	}
+
+	public void addNameList(Collection<String> nameList)
+	{
+		if (nameList == null || nameList.isEmpty())
+			return;
+
+		nameSet.addAll(nameList);
+	}
+
+	public String getName()
+	{
+		if (nameSet.isEmpty())
+			return null;
+
+		return nameSet.iterator().next();
 	}
 
 	public int itemSize()
 	{
-		return itemList.size();
+		return itemSet.size();
+	}
+
+	public int nameSet()
+	{
+		return nameSet.size();
 	}
 
 	public void setCommand(short command)
@@ -92,18 +115,13 @@ public class RegistryMessage extends Response
 		this.command = command;
 	}
 
-	public String getName()
+	public Set<String> getNameSet()
 	{
-		return name;
+		return nameSet;
 	}
 
-	public void setName(String name)
+	public Set<String> getItemSet()
 	{
-		this.name = name;
-	}
-
-	public List<String> getItemList()
-	{
-		return itemList;
+		return itemSet;
 	}
 }

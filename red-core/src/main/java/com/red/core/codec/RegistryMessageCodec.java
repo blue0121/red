@@ -4,7 +4,7 @@ import com.red.core.message.Message;
 import com.red.core.message.RegistryMessage;
 import io.netty.buffer.ByteBuf;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * @author Jin Zheng
@@ -22,10 +22,17 @@ public class RegistryMessageCodec extends ResponseMessageCodec
 		super.encodeBody(message, out);
 		RegistryMessage registry = (RegistryMessage) message;
 		out.writeShort(registry.getCommand().value());
-		this.writeString(registry.getName(), out);
-		List<String> itemList = registry.getItemList();
-		out.writeInt(itemList.size());
-		for (String item : itemList)
+
+		Set<String> nameSet = registry.getNameSet();
+		out.writeShort(nameSet.size());
+		for (String name : nameSet)
+		{
+			this.writeString(name, out);
+		}
+
+		Set<String> itemSet = registry.getItemSet();
+		out.writeShort(itemSet.size());
+		for (String item : itemSet)
 		{
 			this.writeString(item, out);
 		}
@@ -37,12 +44,17 @@ public class RegistryMessageCodec extends ResponseMessageCodec
 		super.decodeBody(message, in);
 		RegistryMessage registry = (RegistryMessage) message;
 		registry.setCommand(in.readShort());
-		registry.setName(this.readString(in));
-		int size = in.readInt();
-		for (int i = 0; i < size; i++)
+
+		short nameSize = in.readShort();
+		for (short i = 0; i < nameSize; i++)
 		{
-			String item = this.readString(in);
-			registry.addItem(item);
+			registry.addName(this.readString(in));
+		}
+
+		short itemSize = in.readShort();
+		for (short i = 0; i < itemSize; i++)
+		{
+			registry.addItem(this.readString(in));
 		}
 	}
 

@@ -10,6 +10,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * @author Jin Zheng
  * @since 2019-05-04
@@ -26,7 +29,7 @@ public class RegistryMessageCodecTest
 	@Before
 	public void before()
 	{
-		buf = Unpooled.buffer(100);
+		buf = Unpooled.buffer(200);
 		codec = new RegistryMessageCodec();
 	}
 
@@ -46,7 +49,7 @@ public class RegistryMessageCodecTest
 		Assert.assertEquals(ResponseCode.SUCCESS, message2.getCode());
 		Assert.assertNull(message2.getMessage());
 		Assert.assertEquals("blue", message2.getName());
-		Assert.assertTrue(message2.getItemList().isEmpty());
+		Assert.assertTrue(message2.getItemSet().isEmpty());
 		Assert.assertNull(message2.getItem());
 	}
 
@@ -67,12 +70,40 @@ public class RegistryMessageCodecTest
 		Assert.assertEquals(message.getMessageId(), message2.getMessageId());
 		Assert.assertEquals(ResponseCode.SUCCESS, message2.getCode());
 		Assert.assertNull(message2.getMessage());
-		Assert.assertEquals("blue", message2.getName());
-		Assert.assertEquals(2, message2.getItemList().size());
-		String item0 = message2.getItem();
-		Assert.assertEquals("127.0.0.1:8080", item0);
-		String item1 = message2.getItemList().get(1);
-		Assert.assertEquals("127.0.0.1:8081", item1);
+
+		Set<String> itemSet = new HashSet<>();
+		itemSet.add("127.0.0.1:8080");
+		itemSet.add("127.0.0.1:8081");
+		Assert.assertEquals(itemSet, message2.getItemSet());
+	}
+
+	@Test
+	public void test3()
+	{
+		RegistryMessage message = RegistryMessage.create(RegistryCommand.SAVE, "blue", "red2");
+		message.addItem("127.0.0.1:8080");
+		message.addItem("127.0.0.1:8081");
+		codec.encode(message, buf);
+		Assert.assertEquals(82, buf.readableBytes());
+
+		Protocol protocol = Protocol.valueOf(buf.readInt());
+		RegistryMessage message2 = (RegistryMessage) codec.decode(protocol, buf);
+		Assert.assertNotNull(message2);
+		Assert.assertEquals(message.getProtocol(), message2.getProtocol());
+		Assert.assertEquals(message.getVersion(), message2.getVersion());
+		Assert.assertEquals(message.getMessageId(), message2.getMessageId());
+		Assert.assertEquals(ResponseCode.SUCCESS, message2.getCode());
+		Assert.assertNull(message2.getMessage());
+
+		Set<String> itemSet = new HashSet<>();
+		itemSet.add("127.0.0.1:8080");
+		itemSet.add("127.0.0.1:8081");
+		Assert.assertEquals(itemSet, message2.getItemSet());
+
+		Set<String> nameSet = new HashSet<>();
+		nameSet.add("blue");
+		nameSet.add("red2");
+		Assert.assertEquals(nameSet, message2.getNameSet());
 	}
 
 }

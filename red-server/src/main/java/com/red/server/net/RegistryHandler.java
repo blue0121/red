@@ -24,7 +24,8 @@ public class RegistryHandler extends SimpleChannelInboundHandler<RegistryMessage
 	{
 		if (logger.isDebugEnabled())
 		{
-			logger.debug("Receive registry message, command: {}, name: {}, item: {}", message.getCommand(), message.getName(), message.getItemList());
+			logger.debug("Receive registry message, command: {}, name: {}, item: {}", message.getCommand(),
+					message.getNameSet(), message.getItemSet());
 		}
 		RegistryHandlerFactory.getFactory().handle(message, ctx.channel());
 	}
