@@ -5,6 +5,9 @@ import com.red.core.message.RegistryMessage;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * @author Jin Zheng
  * @since 1.0 2019-05-14
@@ -18,21 +21,19 @@ public class RegistryInstanceTest
 	@Test
 	public void testFrom()
 	{
-		RegistryMessage message = RegistryMessage.create(RegistryCommand.SAVE, "blue:com.blue.hello");
+		RegistryMessage message = RegistryMessage.create(RegistryCommand.SAVE, "com.blue.hello");
 		message.addItem("localhost:8080");
 		message.addItem("127.0.0.1:9000");
 		RegistryInstance instance = RegistryInstance.from(message);
 		Assert.assertNotNull(instance);
-		Assert.assertEquals("blue", instance.getPrefix());
+		Assert.assertEquals(1, instance.getNameSet().size());
 		Assert.assertEquals("com.blue.hello", instance.getName());
-		Assert.assertEquals(2, instance.getHostList().size());
+		Assert.assertEquals(2, instance.getHostSet().size());
 
-		Host host0 = instance.getHostList().get(0);
-		Assert.assertEquals("localhost", host0.getIp());
-		Assert.assertEquals(8080, host0.getPort());
-		Host host1 = instance.getHostList().get(1);
-		Assert.assertEquals("127.0.0.1", host1.getIp());
-		Assert.assertEquals(9000, host1.getPort());
+		Set<Host> hostSet = new HashSet<>();
+		hostSet.add(new Host("localhost", 8080));
+		hostSet.add(new Host("127.0.0.1", 9000));
+		Assert.assertEquals(hostSet, instance.getHostSet());
 	}
 
 	@Test
@@ -51,11 +52,11 @@ public class RegistryInstanceTest
 	@Test
 	public void testBuild2()
 	{
-		RegistryInstance instance = new RegistryInstance("blue", "com.blue.hello");
+		RegistryInstance instance = new RegistryInstance("com.blue.hello");
 		RegistryMessage message = instance.build(RegistryCommand.SAVE);
 		Assert.assertNotNull(message);
 		Assert.assertEquals(RegistryCommand.SAVE, message.getCommand());
-		Assert.assertEquals("blue:com.blue.hello", message.getName());
+		Assert.assertEquals("com.blue.hello", message.getName());
 		Assert.assertEquals(0, message.itemSize());
 	}
 

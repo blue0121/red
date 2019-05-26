@@ -18,6 +18,6 @@ public class RegistryCallbackTest implements RegistryCallback
 	@Override
 	public void onReceive(RegistryInstance instance)
 	{
-		logger.info("Receive registry message, prefix: {}, name: {}, host: {}", instance.getPrefix(), instance.getName(), instance.getHostList());
+		logger.info("Receive registry message, name: {}, host: {}", instance.getNameSet(), instance.getHostSet());
 	}
 }

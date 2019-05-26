@@ -3,8 +3,9 @@ package com.red.client.registry;
 import com.red.core.message.RegistryCommand;
 import com.red.core.message.RegistryMessage;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Jin Zheng
@@ -14,41 +15,26 @@ public class RegistryInstance
 {
 	public static final String SPLIT = ":";
 
-	private String prefix;
-	private String name;
-	private List<Host> hostList = new ArrayList<>();
+	private Set<String> nameSet = new HashSet<>();
+	private Set<Host> hostSet = new HashSet<>();
 
 	public RegistryInstance()
 	{
 	}
 
-	public RegistryInstance(String name)
+	public RegistryInstance(String...names)
 	{
-		this.name = name;
-	}
-
-	public RegistryInstance(String prefix, String name)
-	{
-		this.prefix = prefix;
-		this.name = name;
+		for (String name : names)
+		{
+			nameSet.add(name);
+		}
 	}
 
 	public static RegistryInstance from(RegistryMessage message)
 	{
 		RegistryInstance instance = new RegistryInstance();
-		int index = message.getName().indexOf(SPLIT);
-		if (index != -1)
-		{
-			String prefix = message.getName().substring(0, index);
-			String name = message.getName().substring(index + 1);
-			instance.setPrefix(prefix);
-			instance.setName(name);
-		}
-		else
-		{
-			instance.setName(message.getName());
-		}
-		for (String item : message.getItemList())
+		instance.addNameList(message.getNameSet());
+		for (String item : message.getItemSet())
 		{
 			String[] items = item.split(SPLIT);
 			instance.addHost(items[0], Integer.parseInt(items[1]));
@@ -58,14 +44,8 @@ public class RegistryInstance
 
 	public RegistryMessage build(RegistryCommand command)
 	{
-		StringBuilder str = new StringBuilder();
-		if (prefix != null && !prefix.isEmpty())
-		{
-			str.append(prefix).append(SPLIT);
-		}
-		str.append(name);
-		RegistryMessage message = RegistryMessage.create(command, str.toString());
-		for (Host host : hostList)
+		RegistryMessage message = RegistryMessage.create(command, nameSet.toArray(new String[0]));
+		for (Host host : hostSet)
 		{
 			message.addItem(host.toString());
 		}
@@ -74,47 +54,58 @@ public class RegistryInstance
 
 	public void addHost(Host host)
 	{
-		if (!hostList.contains(host))
-		{
-			hostList.add(host);
-		}
+		hostSet.add(host);
 	}
 
 	public void addHost(String ip, int port)
 	{
-		this.addHost(new Host(ip, port));
+		hostSet.add(new Host(ip, port));
+	}
+
+	public void addHostList(Collection<Host> hostList)
+	{
+		if (hostList == null || hostList.isEmpty())
+			return;
+
+		hostSet.addAll(hostList);
+	}
+
+	public void addName(String name)
+	{
+		nameSet.add(name);
+	}
+
+	public void addNameList(Collection<String> nameList)
+	{
+		if (nameList == null || nameList.isEmpty())
+			return;
+
+		nameSet.addAll(nameList);
 	}
 
 	public Host getHost()
 	{
-		if (hostList.isEmpty())
+		if (hostSet.isEmpty())
 			return null;
 
-		return hostList.get(0);
-	}
-
-	public String getPrefix()
-	{
-		return prefix;
-	}
-
-	public void setPrefix(String prefix)
-	{
-		this.prefix = prefix;
+		return hostSet.iterator().next();
 	}
 
 	public String getName()
 	{
-		return name;
+		if (nameSet.isEmpty())
+			return null;
+
+		return nameSet.iterator().next();
 	}
 
-	public void setName(String name)
+	public Set<Host> getHostSet()
 	{
-		this.name = name;
+		return hostSet;
 	}
 
-	public List<Host> getHostList()
+	public Set<String> getNameSet()
 	{
-		return hostList;
+		return nameSet;
 	}
 }

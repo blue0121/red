@@ -85,7 +85,7 @@ public class RegistryCallbackClient implements CallbackClient
 			}
 			if (logger.isDebugEnabled())
 			{
-				logger.debug("Receive registry message, prefix: {}, name: {}, host: {}", instance.getPrefix(), instance.getName(), instance.getHostList());
+				logger.debug("Receive registry message, name: {}, host: {}", instance.getNameSet(), instance.getHostSet());
 			}
 			for (RegistryCallback callback : set)
 			{

@@ -29,7 +29,7 @@ public class SaveRegistryHandler implements RegistryHandler
 		String msg = "Save successful";
 		try
 		{
-			storage.save(message.getName(), message.getItemList());
+			storage.save(message.getNameSet(), message.getItem(), channel);
 		}
 		catch (RegistryStorageException e)
 		{

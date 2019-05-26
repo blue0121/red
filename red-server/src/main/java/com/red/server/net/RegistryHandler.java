@@ -33,7 +33,7 @@ public class RegistryHandler extends SimpleChannelInboundHandler<RegistryMessage
 	@Override
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception
 	{
-		RegistryHandlerFactory.getFactory().removeChannel(ctx.channel());
+		RegistryHandlerFactory.getFactory().disconnect(ctx.channel());
 
 		super.channelInactive(ctx);
 	}

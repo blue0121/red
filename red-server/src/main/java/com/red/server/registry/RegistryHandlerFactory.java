@@ -62,11 +62,11 @@ public class RegistryHandlerFactory
 		});
 	}
 
-	public void removeChannel(Channel channel)
+	public void disconnect(Channel channel)
 	{
 		registryStorage.getExecutorService().submit(() ->
 		{
-			channelGroup.removeChannel(channel);
+			registryStorage.disconnect(channel);
 		});
 	}
 

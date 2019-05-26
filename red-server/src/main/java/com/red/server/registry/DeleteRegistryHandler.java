@@ -21,10 +21,10 @@ public class DeleteRegistryHandler implements RegistryHandler
 	public void handle(RegistryMessage message, Channel channel)
 	{
 		ResponseCode code = ResponseCode.SUCCESS;
-		String msg = "Save successful";
+		String msg = "Delete successful";
 		try
 		{
-			storage.delete(message.getName(), message.getItem());
+			storage.delete(message.getNameSet(), message.getItem(), channel);
 		}
 		catch (RegistryStorageException e)
 		{

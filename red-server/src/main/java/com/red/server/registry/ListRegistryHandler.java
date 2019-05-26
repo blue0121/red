@@ -23,7 +23,7 @@ public class ListRegistryHandler implements RegistryHandler
 	public void handle(RegistryMessage message, Channel channel)
 	{
 		ResponseCode code = ResponseCode.SUCCESS;
-		String msg = "Save successful";
+		String msg = "List successful";
 		Set<String> itemSet = null;
 		try
 		{

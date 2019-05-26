@@ -2,7 +2,6 @@ package com.red.server.registry;
 
 import io.netty.channel.Channel;
 
-import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 
@@ -13,15 +12,17 @@ import java.util.concurrent.ExecutorService;
 public interface RegistryStorage
 {
 
-	void save(String name, Collection<String> itemList);
+	void save(Set<String> nameSet, String item, Channel channel);
 
-	void delete(String name, String item);
+	void delete(Set<String> nameSet, String item, Channel channel);
 
 	Set<String> list(String name);
 
 	void watch(String name, Channel channel);
 
 	void unwatch(String name, Channel channel);
+
+	void disconnect(Channel channel);
 
 	ExecutorService getExecutorService();
 

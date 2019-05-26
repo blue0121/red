@@ -4,7 +4,10 @@ import io.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -28,44 +31,58 @@ public class MemoryRegistryStorage implements RegistryStorage
 	}
 
 	@Override
-	public void save(String name, Collection<String> itemList)
+	public void save(Set<String> nameSet, String item, Channel channel)
 	{
-		if (name == null || name.isEmpty())
-			throw new RegistryStorageException("Name must be not empty");
-		if (itemList == null || itemList.isEmpty())
-			throw new RegistryStorageException("Item list must be not empty");
+		if (nameSet == null || nameSet.isEmpty())
+			throw new RegistryStorageException("nameSet is empty");
+		if (item == null || item.isEmpty())
+			throw new RegistryStorageException("item is empty");
 
-		Set<String> set = registryMap.get(name);
-		if (set == null)
+		boolean isNotify = channelGroup.bindChannel(item, channel);
+		for (String name : nameSet)
 		{
-			set = new HashSet<>();
-			registryMap.put(name, set);
+			Set<String> set = registryMap.get(name);
+			if (set == null)
+			{
+				set = new HashSet<>();
+				registryMap.put(name, set);
+			}
+			set.add(item);
+			if (!isNotify)
+			{
+				channelGroup.notify(name, set);
+			}
 		}
-		set.addAll(itemList);
-		channelGroup.notify(name, set);
 		if (logger.isDebugEnabled())
 		{
-			logger.debug("Save registry message, name: {}, itemList: {}", name, itemList);
+			logger.debug("Save registry message, nameSet: {}, item: {}", nameSet, item);
 		}
 	}
 
 	@Override
-	public void delete(String name, String item)
+	public void delete(Set<String> nameSet, String item, Channel channel)
 	{
-		if (name == null || name.isEmpty())
-			throw new RegistryStorageException("Name must be not empty");
+		if (nameSet == null || nameSet.isEmpty())
+			throw new RegistryStorageException("nameSet is empty");
 		if (item == null || item.isEmpty())
-			throw new RegistryStorageException("Item must be not empty");
+			throw new RegistryStorageException("item is empty");
 
-		Set<String> set = registryMap.get(name);
-		if (set != null && !set.isEmpty())
+		boolean isNotify = channelGroup.bindChannel(item, channel);
+		for (String name : nameSet)
 		{
-			set.remove(item);
+			Set<String> set = registryMap.get(name);
+			if (set != null && !set.isEmpty())
+			{
+				set.remove(item);
+			}
+			if (!isNotify)
+			{
+				channelGroup.notify(name, set);
+			}
 		}
-		channelGroup.notify(name, set);
 		if (logger.isDebugEnabled())
 		{
-			logger.debug("Delete registry message, name: {}, item: {}", name, item);
+			logger.debug("Delete registry message, name: {}, item: {}", nameSet, item);
 		}
 	}
 
@@ -73,7 +90,7 @@ public class MemoryRegistryStorage implements RegistryStorage
 	public Set<String> list(String name)
 	{
 		if (name == null || name.isEmpty())
-			throw new RegistryStorageException("Name must be not empty");
+			throw new RegistryStorageException("name is empty");
 
 		Set<String> itemSet = new HashSet<>();
 		Set<String> set = registryMap.get(name);
@@ -92,18 +109,36 @@ public class MemoryRegistryStorage implements RegistryStorage
 	public void watch(String name, Channel channel)
 	{
 		if (name == null || name.isEmpty())
-			throw new RegistryStorageException("Name must be not empty");
+			throw new RegistryStorageException("name is empty");
 
-		channelGroup.addChannel(name, channel);
+		channelGroup.watchChannel(name, channel);
 	}
 
 	@Override
 	public void unwatch(String name, Channel channel)
 	{
 		if (name == null || name.isEmpty())
-			throw new RegistryStorageException("Name must be not empty");
+			throw new RegistryStorageException("name is empty");
 
-		channelGroup.removeChannel(name, channel);
+		channelGroup.unwatchChannel(name, channel);
+	}
+
+	@Override
+	public void disconnect(Channel channel)
+	{
+		String item = channelGroup.disconnect(channel);
+		for (Map.Entry<String, Set<String>> entry : registryMap.entrySet())
+		{
+			Set<String> itemSet = entry.getValue();
+			if (itemSet == null || itemSet.isEmpty())
+				continue;
+
+			boolean result = itemSet.remove(item);
+			if (result)
+			{
+				channelGroup.notify(entry.getKey(), itemSet);
+			}
+		}
 	}
 
 	@Override
@@ -111,6 +146,5 @@ public class MemoryRegistryStorage implements RegistryStorage
 	{
 		return executorService;
 	}
-
 
 }

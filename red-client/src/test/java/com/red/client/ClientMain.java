@@ -40,25 +40,24 @@ public class ClientMain
 
 	private static void registry(NettyConnectionClient client) throws Exception
 	{
-		String prefix = "blue";
 		String name = "com.blue.Hello";
 		String host = "localhost";
 		int port = 8080;
 		int port2 = 8082;
 
 		RegistryClientTest registryClient = new RegistryClientTest(client);
-		registryClient.save(prefix, name, host, port);
-		registryClient.save(prefix, name, host, port2);
-		RegistryInstance instance = registryClient.list(prefix, name);
-		logger.info("host: {}", instance.getHostList());
-		registryClient.watch(prefix, name);
-		registryClient.delete(prefix, name, host, port);
-		registryClient.save(prefix, name, host, port);
-		registryClient.delete(prefix, name, host, port);
-		registryClient.delete(prefix, name, host, port2);
-		registryClient.unwatch(prefix, name);
-		instance = registryClient.list(prefix, name);
-		logger.info("host: {}", instance.getHostList());
+		registryClient.save(name, host, port);
+		registryClient.save(name, host, port2);
+		RegistryInstance instance = registryClient.list(name);
+		logger.info("host: {}", instance.getHostSet());
+		registryClient.watch(name);
+		registryClient.delete(name, host, port);
+		registryClient.save(name, host, port);
+		registryClient.delete(name, host, port);
+		registryClient.delete(name, host, port2);
+		registryClient.unwatch(name);
+		instance = registryClient.list(name);
+		logger.info("host: {}", instance.getHostSet());
 	}
 
 }

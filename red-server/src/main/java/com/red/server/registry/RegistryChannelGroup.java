@@ -24,14 +24,37 @@ public class RegistryChannelGroup
 
 	private final ChannelGroup channelGroup;
 	private final Map<String, Set<ChannelId>> nameCache;
+	private final Map<String, ChannelId> itemMap;
+	private final Map<ChannelId, String> idMap;
 
 	public RegistryChannelGroup()
 	{
 		this.channelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 		this.nameCache = new HashMap<>();
+		this.itemMap = new HashMap<>();
+		this.idMap = new HashMap<>();
 	}
 
-	public void addChannel(String name, Channel channel)
+	public boolean bindChannel(String item, Channel channel)
+	{
+		channelGroup.add(channel);
+		ChannelId id = channel.id();
+		ChannelId oldId = itemMap.get(item);
+		String oldItem = idMap.get(id);
+		boolean isBind = id.equals(oldId) && item.equals(oldItem);
+		if (!isBind)
+		{
+			itemMap.remove(oldItem);
+			idMap.remove(oldId);
+			itemMap.put(item, id);
+			idMap.put(id, item);
+			logger.debug("Bind channel [{}] to [{}]", id, item);
+		}
+
+		return isBind;
+	}
+
+	public void watchChannel(String name, Channel channel)
 	{
 		channelGroup.add(channel);
 		Set<ChannelId> idSet = nameCache.get(name);
@@ -41,10 +64,10 @@ public class RegistryChannelGroup
 			nameCache.put(name, idSet);
 		}
 		idSet.add(channel.id());
-		logger.debug("Bind channel [{}] to [{}]", channel.id(), name);
+		logger.debug("Watch channel [{}] to [{}]", channel.id(), name);
 	}
 
-	public void removeChannel(String name, Channel channel)
+	public void unwatchChannel(String name, Channel channel)
 	{
 		Set<ChannelId> idSet = nameCache.get(name);
 		if (idSet == null)
@@ -53,24 +76,33 @@ public class RegistryChannelGroup
 		boolean result = idSet.remove(channel.id());
 		if (result)
 		{
-			logger.debug("Unbind channel [{}] from [{}]", channel.id(), name);
+			logger.debug("Unwatch channel [{}] from [{}]", channel.id(), name);
 		}
 	}
 
-	public void removeChannel(Channel channel)
+	public String disconnect(Channel channel)
 	{
+		ChannelId id = channel.id();
 		for (Map.Entry<String, Set<ChannelId>> entry : nameCache.entrySet())
 		{
 			Set<ChannelId> idSet = entry.getValue();
 			if (idSet == null || idSet.isEmpty())
 				continue;
 
-			boolean result = idSet.remove(channel.id());
+			boolean result = idSet.remove(id);
 			if (result)
 			{
-				logger.debug("Remove channel [{}] from [{}]", channel.id(), entry.getKey());
+				logger.debug("Disconnect channel [{}] from [{}]", channel.id(), entry.getKey());
 			}
 		}
+		String item = idMap.get(id);
+		if (item != null)
+		{
+			idMap.remove(id);
+			itemMap.remove(item);
+			logger.debug("Unbind channel [{}] from [{}]", id, item);
+		}
+		return item;
 	}
 
 	public void notify(String name, Collection<String> itemList)
@@ -110,12 +142,12 @@ public class RegistryChannelGroup
 			{
 				if (logger.isDebugEnabled())
 				{
-					logger.debug("Notify registry message successful: name: {}, itemList: {}", message.getName(), message.getItemList());
+					logger.debug("Notify registry message successful: name: {}, itemList: {}", message.getName(), message.getItemSet());
 				}
 			}
 			else
 			{
-				logger.warn("Notify registry message failure: {}, itemList: {}", message.getName(), message.getItemList());
+				logger.warn("Notify registry message failure: {}, itemList: {}", message.getName(), message.getItemSet());
 			}
 			Throwable throwable = future.cause();
 			if (throwable != null)
