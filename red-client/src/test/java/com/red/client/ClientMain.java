@@ -24,19 +24,41 @@ public class ClientMain
 
 	public static void main(String[] args) throws Exception
 	{
-		NettyConnectionClient client = new NettyConnectionClient(TIMEOUT, TOKEN, ADDRESS);
-		try
-		{
-			client.start();
-			registry(client);
+		NettyConnectionClient client1 = new NettyConnectionClient(TIMEOUT, TOKEN, ADDRESS);
+		NettyConnectionClient client2 = new NettyConnectionClient(TIMEOUT, TOKEN, ADDRESS);
+		client1.start();
+		client2.start();
 
-			Thread.sleep(25_000);
-		}
-		finally
-		{
-			client.stop();
-		}
+		reg(client1, client2);
 	}
+
+	private static void reg(NettyConnectionClient client1, NettyConnectionClient client2) throws Exception
+	{
+		String name = "com.blue.Hello";
+		String host = "localhost";
+		int port1 = 8000;
+		int port2 = 9000;
+
+		RegistryClientTest registry1 = new RegistryClientTest(client1);
+		RegistryClientTest registry2 = new RegistryClientTest(client2);
+
+		registry1.watch(name);
+		registry2.watch(name);
+
+		registry1.save(name, host, port1);
+		registry2.save(name, host, port2);
+
+		RegistryInstance instance = registry1.list(name);
+		logger.info("host: {}", instance.getHostSet());
+
+		Thread.sleep(10_000);
+		client1.stop();
+
+		Thread.sleep(10_000);
+		client2.stop();
+
+	}
+
 
 	private static void registry(NettyConnectionClient client) throws Exception
 	{
