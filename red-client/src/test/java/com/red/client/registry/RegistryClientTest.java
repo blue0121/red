@@ -8,12 +8,12 @@ import com.red.client.net.NettyConnectionClient;
  */
 public class RegistryClientTest
 {
-	private final RegistryCallback callback;
+	private final RegistryListener callback;
 	private final RegistryClient client;
 
 	public RegistryClientTest(NettyConnectionClient client)
 	{
-		this.callback = new RegistryCallbackTest();
+		this.callback = new RegistryListenerTest();
 		this.client = new DefaultRegistryClient(client);
 	}
 

@@ -7,11 +7,11 @@ import org.slf4j.LoggerFactory;
  * @author Jin Zheng
  * @since 1.0 2019-05-13
  */
-public class RegistryCallbackTest implements RegistryCallback
+public class RegistryListenerTest implements RegistryListener
 {
-	private static Logger logger = LoggerFactory.getLogger(RegistryCallbackTest.class);
+	private static Logger logger = LoggerFactory.getLogger(RegistryListenerTest.class);
 
-	public RegistryCallbackTest()
+	public RegistryListenerTest()
 	{
 	}
 

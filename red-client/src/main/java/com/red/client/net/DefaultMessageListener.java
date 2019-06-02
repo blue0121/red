@@ -14,7 +14,7 @@ public class DefaultMessageListener implements MessageListener
 {
 	private static Logger logger = LoggerFactory.getLogger(DefaultMessageListener.class);
 
-	private MessageListener registryCallback;
+	private MessageListener registryListener;
 
 	public DefaultMessageListener()
 	{
@@ -23,14 +23,14 @@ public class DefaultMessageListener implements MessageListener
 	@Override
 	public void complete(Message message)
 	{
-		if (message.getProtocol() == Protocol.REGISTRY && registryCallback != null)
+		if (message.getProtocol() == Protocol.REGISTRY && registryListener != null)
 		{
-			registryCallback.complete(message);
+			registryListener.complete(message);
 		}
 	}
 
-	public void setRegistryCallback(MessageListener registryCallback)
+	public void setRegistryListener(MessageListener registryListener)
 	{
-		this.registryCallback = registryCallback;
+		this.registryListener = registryListener;
 	}
 }

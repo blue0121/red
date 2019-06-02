@@ -36,7 +36,7 @@ public class NettyConnectionClient implements ConnectionClient, HandlerClient
 	private EventLoopGroup workerGroup;
 	private ChannelFuture channelFuture;
 	private final ChannelClient channelClient;
-	private final DefaultMessageListener callback;
+	private final DefaultMessageListener messageListener;
 
 	public NettyConnectionClient(int timeout, String token, String address)
 	{
@@ -51,7 +51,7 @@ public class NettyConnectionClient implements ConnectionClient, HandlerClient
 		this.random = new Random();
 		this.remoteAddress = new InetSocketAddress(addrs[0], Integer.parseInt(addrs[1]));
 		this.initializer = new ClientInitializer(this);
-		this.callback = new DefaultMessageListener();
+		this.messageListener = new DefaultMessageListener();
 	}
 
 	@Override
@@ -133,15 +133,15 @@ public class NettyConnectionClient implements ConnectionClient, HandlerClient
 	}
 
 	@Override
-	public void setRegistryCallback(MessageListener registryCallback)
+	public void setRegistryListener(MessageListener registryListener)
 	{
-		this.callback.setRegistryCallback(registryCallback);
+		this.messageListener.setRegistryListener(registryListener);
 	}
 
 	@Override
-	public MessageListener getCallback()
+	public MessageListener getMessageListener()
 	{
-		return this.callback;
+		return this.messageListener;
 	}
 
 	public boolean isStop()

@@ -21,7 +21,7 @@ public class DefaultRegistryClient implements RegistryClient
 	{
 		this.handlerClient = handlerClient;
 		this.callbackClient = new RegistryMessageListener();
-		this.handlerClient.setRegistryCallback(callbackClient);
+		this.handlerClient.setRegistryListener(callbackClient);
 	}
 
 	@Override
@@ -31,7 +31,7 @@ public class DefaultRegistryClient implements RegistryClient
 	}
 
 	@Override
-	public Future<RegistryInstance> saveAsync(RegistryInstance instance, RegistryCallback callback)
+	public Future<RegistryInstance> saveAsync(RegistryInstance instance, RegistryListener callback)
 	{
 		return this.invokeAsync(RegistryCommand.SAVE, instance, callback);
 	}
@@ -43,7 +43,7 @@ public class DefaultRegistryClient implements RegistryClient
 	}
 
 	@Override
-	public Future<RegistryInstance> deleteAsync(RegistryInstance instance, RegistryCallback callback)
+	public Future<RegistryInstance> deleteAsync(RegistryInstance instance, RegistryListener callback)
 	{
 		return this.invokeAsync(RegistryCommand.DELETE, instance, callback);
 	}
@@ -55,13 +55,13 @@ public class DefaultRegistryClient implements RegistryClient
 	}
 
 	@Override
-	public Future<RegistryInstance> listAsync(RegistryInstance instance, RegistryCallback callback)
+	public Future<RegistryInstance> listAsync(RegistryInstance instance, RegistryListener callback)
 	{
 		return this.invokeAsync(RegistryCommand.LIST, instance, callback);
 	}
 
 	@Override
-	public void watch(RegistryInstance instance, RegistryCallback callback)
+	public void watch(RegistryInstance instance, RegistryListener callback)
 	{
 		this.invokeAsync(RegistryCommand.WATCH, instance, callback);
 	}
@@ -72,27 +72,27 @@ public class DefaultRegistryClient implements RegistryClient
 		this.invokeSync(RegistryCommand.UNWATCH, instance);
 	}
 
-	private FutureRegistryInstance invokeAsync(RegistryCommand command, RegistryInstance instance, RegistryCallback callback)
+	private FutureRegistryInstance invokeAsync(RegistryCommand command, RegistryInstance instance, RegistryListener listener)
 	{
 		AssertUtil.notNull(command, "RegistryCommand");
 		AssertUtil.notNull(instance, "RegistryInstance");
 		RegistryMessage message = instance.build(command);
-		RegistryMessageListener callbackClient = null;
-		if (callback != null)
+		RegistryMessageListener messageListener = null;
+		if (listener != null)
 		{
-			callbackClient = new RegistryMessageListener(callback);
+			messageListener = new RegistryMessageListener(listener);
 		}
-		this.registryCallback(message, callback);
-		Future<Message> future = handlerClient.sendMessage(message, callbackClient);
+		this.registryListener(message, listener);
+		Future<Message> future = handlerClient.sendMessage(message, messageListener);
 		FutureRegistryInstance futureRegistryInstance = new FutureRegistryInstance(future);
 		return futureRegistryInstance;
 	}
 
-	private void registryCallback(RegistryMessage message, RegistryCallback callback)
+	private void registryListener(RegistryMessage message, RegistryListener listener)
 	{
 		if (message.getCommand() == RegistryCommand.WATCH)
 		{
-			callbackClient.addRegistryCallback(message.getName(), callback);
+			callbackClient.addRegistryCallback(message.getName(), listener);
 		}
 		else if (message.getCommand() == RegistryCommand.UNWATCH)
 		{

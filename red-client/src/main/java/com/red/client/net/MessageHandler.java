@@ -30,9 +30,9 @@ public class MessageHandler extends SimpleChannelInboundHandler<Message>
 		}
 
 		boolean returnMessage = client.getChannelClient().returnMessage(message);
-		if (!returnMessage && client.getCallback() != null)
+		if (!returnMessage && client.getMessageListener() != null)
 		{
-			client.getCallback().complete(message);
+			client.getMessageListener().complete(message);
 		}
 	}
 

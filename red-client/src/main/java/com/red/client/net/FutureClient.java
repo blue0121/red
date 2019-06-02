@@ -12,7 +12,7 @@ import java.util.concurrent.*;
 public class FutureClient implements Future<Message>
 {
 	private CountDownLatch latch;
-	private MessageListener callback;
+	private MessageListener listener;
 
 	private Message request;
 	private Message response;
@@ -23,10 +23,10 @@ public class FutureClient implements Future<Message>
 		this(request, null);
 	}
 
-	public FutureClient(Message request, MessageListener callback)
+	public FutureClient(Message request, MessageListener listener)
 	{
 		this.request = request;
-		this.callback = callback;
+		this.listener = listener;
 
 		this.latch = new CountDownLatch(1);
 		this.start = System.currentTimeMillis();
@@ -37,9 +37,9 @@ public class FutureClient implements Future<Message>
 		this.response = response;
 		this.latch.countDown();
 
-		if (callback != null)
+		if (listener != null)
 		{
-			callback.complete(response);
+			listener.complete(response);
 		}
 	}
 

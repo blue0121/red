@@ -87,7 +87,7 @@ public class ChannelClient
 		return true;
 	}
 
-	public Future<Message> sendMessage(Message message, MessageListener callback)
+	public Future<Message> sendMessage(Message message, MessageListener listener)
 	{
 		AssertUtil.notNull(message, "Message");
 
@@ -105,7 +105,7 @@ public class ChannelClient
 			int index = random.nextInt(channels.length);
 			channels[index].writeAndFlush(message).addListener(new SenderListener(message));
 		}
-		FutureClient future = new FutureClient(message, callback);
+		FutureClient future = new FutureClient(message, listener);
 		futureCache.put(message.getMessageId(), future);
 		return future;
 	}

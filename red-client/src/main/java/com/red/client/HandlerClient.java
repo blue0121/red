@@ -15,10 +15,10 @@ public interface HandlerClient
 
 	Future<Message> sendMessage(Message request, MessageListener listener);
 
-	MessageListener getCallback();
+	MessageListener getMessageListener();
 
 	void addConnectionListener(ConnectionListener listener);
 
-	void setRegistryCallback(MessageListener registryCallback);
+	void setRegistryListener(MessageListener registryListener);
 
 }

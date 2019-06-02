@@ -21,43 +21,43 @@ public class RegistryMessageListener implements MessageListener
 {
 	private static Logger logger = LoggerFactory.getLogger(RegistryMessageListener.class);
 
-	private RegistryCallback callback;
-	private Map<String, Set<RegistryCallback>> callbackMap;
+	private RegistryListener listener;
+	private Map<String, Set<RegistryListener>> listenerMap;
 
 	public RegistryMessageListener()
 	{
-		this.callbackMap = new ConcurrentHashMap<>();
+		this.listenerMap = new ConcurrentHashMap<>();
 	}
 
-	public RegistryMessageListener(RegistryCallback callback)
+	public RegistryMessageListener(RegistryListener listener)
 	{
-		this.callback = callback;
+		this.listener = listener;
 	}
 
-	public void addRegistryCallback(String name, RegistryCallback callback)
+	public void addRegistryCallback(String name, RegistryListener listener)
 	{
 		AssertUtil.notEmpty(name, "name");
-		AssertUtil.notNull(callback, "RegistryCall");
-		AssertUtil.notNull(callbackMap, "RegistryCallbackMap");
+		AssertUtil.notNull(listener, "RegistryListener");
+		AssertUtil.notNull(listenerMap, "RegistryListenerMap");
 
-		Set<RegistryCallback> set = callbackMap.putIfAbsent(name, new CopyOnWriteArraySet<>());
+		Set<RegistryListener> set = listenerMap.putIfAbsent(name, new CopyOnWriteArraySet<>());
 		if (set == null)
 		{
-			set = callbackMap.get(name);
+			set = listenerMap.get(name);
 		}
-		boolean result = set.add(callback);
+		boolean result = set.add(listener);
 		if (result)
 		{
-			logger.info("Add new RegistryCallback for {}", name);
+			logger.info("Add new RegistryListener for {}", name);
 		}
 	}
 
 	public void removeRegistryCallback(String name)
 	{
 		AssertUtil.notEmpty(name, "name");
-		AssertUtil.notNull(callbackMap, "RegistryCallbackMap");
+		AssertUtil.notNull(listenerMap, "RegistryListenerMap");
 
-		callbackMap.remove(name);
+		listenerMap.remove(name);
 	}
 
 	@Override
@@ -68,18 +68,18 @@ public class RegistryMessageListener implements MessageListener
 
 		RegistryMessage registryMessage = (RegistryMessage) message;
 		RegistryInstance instance = RegistryInstance.from(registryMessage);
-		if (callback != null)
+		if (listener != null)
 		{
-			callback.onReceive(instance);
+			listener.onReceive(instance);
 		}
 		else
 		{
-			Set<RegistryCallback> set = callbackMap.get(registryMessage.getName());
+			Set<RegistryListener> set = listenerMap.get(registryMessage.getName());
 			if (set == null || set.isEmpty())
 			{
 				if (logger.isDebugEnabled())
 				{
-					logger.debug("There is no RegistryCallback for {}", registryMessage.getName());
+					logger.debug("There is no RegistryListener for {}", registryMessage.getName());
 				}
 				return;
 			}
@@ -87,9 +87,9 @@ public class RegistryMessageListener implements MessageListener
 			{
 				logger.debug("Receive registry message, name: {}, host: {}", instance.getNameSet(), instance.getHostSet());
 			}
-			for (RegistryCallback callback : set)
+			for (RegistryListener listener : set)
 			{
-				callback.onReceive(instance);
+				listener.onReceive(instance);
 			}
 		}
 	}
