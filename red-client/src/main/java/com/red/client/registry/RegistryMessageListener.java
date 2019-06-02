@@ -1,6 +1,6 @@
 package com.red.client.registry;
 
-import com.red.client.CallbackClient;
+import com.red.client.MessageListener;
 import com.red.core.message.Message;
 import com.red.core.message.Protocol;
 import com.red.core.message.RegistryMessage;
@@ -17,19 +17,19 @@ import java.util.concurrent.CopyOnWriteArraySet;
  * @author Jin Zheng
  * @since 1.0 2019-05-13
  */
-public class RegistryCallbackClient implements CallbackClient
+public class RegistryMessageListener implements MessageListener
 {
-	private static Logger logger = LoggerFactory.getLogger(RegistryCallbackClient.class);
+	private static Logger logger = LoggerFactory.getLogger(RegistryMessageListener.class);
 
 	private RegistryCallback callback;
 	private Map<String, Set<RegistryCallback>> callbackMap;
 
-	public RegistryCallbackClient()
+	public RegistryMessageListener()
 	{
 		this.callbackMap = new ConcurrentHashMap<>();
 	}
 
-	public RegistryCallbackClient(RegistryCallback callback)
+	public RegistryMessageListener(RegistryCallback callback)
 	{
 		this.callback = callback;
 	}

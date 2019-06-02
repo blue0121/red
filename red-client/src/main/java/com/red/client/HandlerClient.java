@@ -13,10 +13,12 @@ public interface HandlerClient
 
 	Future<Message> sendMessage(Message request);
 
-	Future<Message> sendMessage(Message request, CallbackClient callback);
+	Future<Message> sendMessage(Message request, MessageListener listener);
 
-	CallbackClient getCallback();
+	MessageListener getCallback();
 
-	void setRegistryCallback(CallbackClient registryCallback);
+	void addConnectionListener(ConnectionListener listener);
+
+	void setRegistryCallback(MessageListener registryCallback);
 
 }

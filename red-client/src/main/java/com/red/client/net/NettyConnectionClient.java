@@ -1,9 +1,6 @@
 package com.red.client.net;
 
-import com.red.client.CallbackClient;
-import com.red.client.ConnectionClient;
-import com.red.client.HandlerClient;
-import com.red.client.RedClientException;
+import com.red.client.*;
 import com.red.core.message.Message;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
@@ -39,7 +36,7 @@ public class NettyConnectionClient implements ConnectionClient, HandlerClient
 	private EventLoopGroup workerGroup;
 	private ChannelFuture channelFuture;
 	private final ChannelClient channelClient;
-	private final DefaultCallbackClient callback;
+	private final DefaultMessageListener callback;
 
 	public NettyConnectionClient(int timeout, String token, String address)
 	{
@@ -54,7 +51,7 @@ public class NettyConnectionClient implements ConnectionClient, HandlerClient
 		this.random = new Random();
 		this.remoteAddress = new InetSocketAddress(addrs[0], Integer.parseInt(addrs[1]));
 		this.initializer = new ClientInitializer(this);
-		this.callback = new DefaultCallbackClient();
+		this.callback = new DefaultMessageListener();
 	}
 
 	@Override
@@ -118,9 +115,9 @@ public class NettyConnectionClient implements ConnectionClient, HandlerClient
 	}
 
 	@Override
-	public Future<Message> sendMessage(Message message, CallbackClient callback)
+	public Future<Message> sendMessage(Message message, MessageListener listener)
 	{
-		Future<Message> future = channelClient.sendMessage(message, callback);
+		Future<Message> future = channelClient.sendMessage(message, listener);
 		Message response = channelClient.getMessage(message.getMessageId());
 		if (response != null)
 		{
@@ -130,13 +127,19 @@ public class NettyConnectionClient implements ConnectionClient, HandlerClient
 	}
 
 	@Override
-	public void setRegistryCallback(CallbackClient registryCallback)
+	public void addConnectionListener(ConnectionListener listener)
+	{
+		channelClient.addConnectionLister(listener);
+	}
+
+	@Override
+	public void setRegistryCallback(MessageListener registryCallback)
 	{
 		this.callback.setRegistryCallback(registryCallback);
 	}
 
 	@Override
-	public CallbackClient getCallback()
+	public MessageListener getCallback()
 	{
 		return this.callback;
 	}

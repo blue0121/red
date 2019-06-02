@@ -2,9 +2,11 @@ package com.red.client.net;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import com.red.client.CallbackClient;
+import com.red.client.ConnectionListener;
+import com.red.client.MessageListener;
 import com.red.client.RedClientException;
 import com.red.core.message.Message;
+import com.red.core.util.AssertUtil;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
@@ -14,8 +16,11 @@ import io.netty.util.concurrent.GlobalEventExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.InetSocketAddress;
 import java.time.Duration;
 import java.util.Random;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
 
@@ -31,6 +36,7 @@ public class ChannelClient
 	private final Random random;
 	private final Cache<Long, FutureClient> futureCache;
 	private final Cache<Long, Message> messageCache;
+	private final Set<ConnectionListener> connectionListenerSet;
 	private final CountDownLatch latch;
 
 	public ChannelClient()
@@ -40,6 +46,7 @@ public class ChannelClient
 		this.latch = new CountDownLatch(1);
 		this.futureCache = Caffeine.newBuilder().expireAfterWrite(Duration.ofMinutes(10)).build();
 		this.messageCache = Caffeine.newBuilder().expireAfterWrite(Duration.ofMinutes(10)).build();
+		this.connectionListenerSet = new CopyOnWriteArraySet<>();
 	}
 
 	public void waitHandshake()
@@ -57,6 +64,7 @@ public class ChannelClient
 	public void addChannel(Channel channel)
 	{
 		channelGroup.add(channel);
+		this.handlerConnected(channel);
 		this.latch.countDown();
 		logger.info("Add channel: {}", channel.id());
 	}
@@ -79,10 +87,9 @@ public class ChannelClient
 		return true;
 	}
 
-	public Future<Message> sendMessage(Message message, CallbackClient callback)
+	public Future<Message> sendMessage(Message message, MessageListener callback)
 	{
-		if (message == null)
-			throw new NullPointerException("Message must be not null");
+		AssertUtil.notNull(message, "Message");
 
 		int size = channelGroup.size();
 		if (size == 0)
@@ -101,6 +108,36 @@ public class ChannelClient
 		FutureClient future = new FutureClient(message, callback);
 		futureCache.put(message.getMessageId(), future);
 		return future;
+	}
+
+	public void addConnectionLister(ConnectionListener listener)
+	{
+		AssertUtil.notNull(listener, "ConnectionLister");
+		connectionListenerSet.add(listener);
+	}
+
+	private void handlerConnected(Channel channel)
+	{
+		if (connectionListenerSet.isEmpty())
+			return;
+
+		InetSocketAddress address = (InetSocketAddress) channel.remoteAddress();
+		for (ConnectionListener listener : connectionListenerSet)
+		{
+			listener.connected(address);
+		}
+	}
+
+	public void handlerDisconnected(Channel channel)
+	{
+		if (connectionListenerSet.isEmpty())
+			return;
+
+		InetSocketAddress address = (InetSocketAddress) channel.remoteAddress();
+		for (ConnectionListener listener : connectionListenerSet)
+		{
+			listener.disconnected(address);
+		}
 	}
 
 	public Message getMessage(long messageId)

@@ -1,6 +1,6 @@
 package com.red.client.net;
 
-import com.red.client.CallbackClient;
+import com.red.client.MessageListener;
 import com.red.core.message.Message;
 
 import java.util.concurrent.*;
@@ -12,7 +12,7 @@ import java.util.concurrent.*;
 public class FutureClient implements Future<Message>
 {
 	private CountDownLatch latch;
-	private CallbackClient callback;
+	private MessageListener callback;
 
 	private Message request;
 	private Message response;
@@ -23,7 +23,7 @@ public class FutureClient implements Future<Message>
 		this(request, null);
 	}
 
-	public FutureClient(Message request, CallbackClient callback)
+	public FutureClient(Message request, MessageListener callback)
 	{
 		this.request = request;
 		this.callback = callback;

@@ -15,12 +15,12 @@ import java.util.concurrent.Future;
 public class DefaultRegistryClient implements RegistryClient
 {
 	private final HandlerClient handlerClient;
-	private final RegistryCallbackClient callbackClient;
+	private final RegistryMessageListener callbackClient;
 
 	public DefaultRegistryClient(HandlerClient handlerClient)
 	{
 		this.handlerClient = handlerClient;
-		this.callbackClient = new RegistryCallbackClient();
+		this.callbackClient = new RegistryMessageListener();
 		this.handlerClient.setRegistryCallback(callbackClient);
 	}
 
@@ -77,10 +77,10 @@ public class DefaultRegistryClient implements RegistryClient
 		AssertUtil.notNull(command, "RegistryCommand");
 		AssertUtil.notNull(instance, "RegistryInstance");
 		RegistryMessage message = instance.build(command);
-		RegistryCallbackClient callbackClient = null;
+		RegistryMessageListener callbackClient = null;
 		if (callback != null)
 		{
-			callbackClient = new RegistryCallbackClient(callback);
+			callbackClient = new RegistryMessageListener(callback);
 		}
 		this.registryCallback(message, callback);
 		Future<Message> future = handlerClient.sendMessage(message, callbackClient);

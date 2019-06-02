@@ -1,6 +1,6 @@
 package com.red.client.net;
 
-import com.red.client.CallbackClient;
+import com.red.client.MessageListener;
 import com.red.core.message.Message;
 import com.red.core.message.Protocol;
 import org.slf4j.Logger;
@@ -10,13 +10,13 @@ import org.slf4j.LoggerFactory;
  * @author Jin Zheng
  * @since 2019-05-12
  */
-public class DefaultCallbackClient implements CallbackClient
+public class DefaultMessageListener implements MessageListener
 {
-	private static Logger logger = LoggerFactory.getLogger(DefaultCallbackClient.class);
+	private static Logger logger = LoggerFactory.getLogger(DefaultMessageListener.class);
 
-	private CallbackClient registryCallback;
+	private MessageListener registryCallback;
 
-	public DefaultCallbackClient()
+	public DefaultMessageListener()
 	{
 	}
 
@@ -29,7 +29,7 @@ public class DefaultCallbackClient implements CallbackClient
 		}
 	}
 
-	public void setRegistryCallback(CallbackClient registryCallback)
+	public void setRegistryCallback(MessageListener registryCallback)
 	{
 		this.registryCallback = registryCallback;
 	}

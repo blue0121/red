@@ -64,6 +64,7 @@ public class HandshakeHandler extends SimpleChannelInboundHandler<Response>
 	@Override
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception
 	{
+		client.getChannelClient().handlerDisconnected(channel);
 		if (!client.isStop())
 		{
 			logger.warn("Disconnected, reconnect after {} ms: {}", client.getTimeout(), client.getRemoteAddress());
