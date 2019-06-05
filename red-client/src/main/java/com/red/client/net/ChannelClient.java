@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Jin Zheng
@@ -87,24 +88,22 @@ public class ChannelClient
 		return true;
 	}
 
+	public void sendMessageAtFixRate(Message message, long period, TimeUnit unit)
+	{
+		AssertUtil.notNull(message, "Message");
+		AssertUtil.positive(period, "Period");
+		AssertUtil.notNull(unit, "TimeUnit");
+
+		Channel channel = this.getChannel();
+		channel.eventLoop().scheduleAtFixedRate(() -> channel.writeAndFlush(message), 0, period, unit);
+	}
+
 	public Future<Message> sendMessage(Message message, MessageListener listener)
 	{
 		AssertUtil.notNull(message, "Message");
 
-		int size = channelGroup.size();
-		if (size == 0)
-			throw new RedClientException("No handler client!");
-
-		Channel[] channels = channelGroup.toArray(new Channel[0]);
-		if (channels.length == 1)
-		{
-			channels[0].writeAndFlush(message).addListener(new SenderListener(message));
-		}
-		else
-		{
-			int index = random.nextInt(channels.length);
-			channels[index].writeAndFlush(message).addListener(new SenderListener(message));
-		}
+		Channel channel = this.getChannel();
+		channel.writeAndFlush(message).addListener(new SenderListener(message));
 		FutureClient future = new FutureClient(message, listener);
 		futureCache.put(message.getMessageId(), future);
 		return future;
@@ -114,6 +113,24 @@ public class ChannelClient
 	{
 		AssertUtil.notNull(listener, "ConnectionLister");
 		connectionListenerSet.add(listener);
+	}
+
+	private Channel getChannel()
+	{
+		int size = channelGroup.size();
+		if (size == 0)
+			throw new RedClientException("No handler client!");
+
+		Channel[] channels = channelGroup.toArray(new Channel[0]);
+		if (channels.length == 1)
+		{
+			return channels[0];
+		}
+		else
+		{
+			int index = random.nextInt(channels.length);
+			return channels[index];
+		}
 	}
 
 	private void handlerConnected(Channel channel)

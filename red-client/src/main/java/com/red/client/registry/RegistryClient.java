@@ -1,6 +1,7 @@
 package com.red.client.registry;
 
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Jin Zheng
@@ -12,6 +13,8 @@ public interface RegistryClient
 	RegistryInstance saveSync(RegistryInstance instance);
 
 	Future<RegistryInstance> saveAsync(RegistryInstance instance, RegistryListener listener);
+
+	void saveAtRate(RegistryInstance instance, long period, TimeUnit unit);
 
 	RegistryInstance deleteSync(RegistryInstance instance);
 

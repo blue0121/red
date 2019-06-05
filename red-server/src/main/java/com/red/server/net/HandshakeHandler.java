@@ -69,4 +69,10 @@ public class HandshakeHandler extends SimpleChannelInboundHandler<HandshakeMessa
 
 		super.channelInactive(ctx);
 	}
+
+	@Override
+	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception
+	{
+		logger.warn("Error: ", cause);
+	}
 }

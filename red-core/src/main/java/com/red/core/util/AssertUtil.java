@@ -21,6 +21,15 @@ public class AssertUtil
 			throw new NullPointerException(name + " is null.");
 	}
 
+	public static void positive(long num, String name)
+	{
+		if (name == null)
+			name = "";
+
+		if (num <= 0)
+			throw new IllegalArgumentException(name + " is non-positive number");
+	}
+
 	public static void notEmpty(String str, String name)
 	{
 		if (name == null)

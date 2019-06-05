@@ -7,6 +7,7 @@ import com.red.core.message.RegistryMessage;
 import com.red.core.util.AssertUtil;
 
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Jin Zheng
@@ -34,6 +35,14 @@ public class DefaultRegistryClient implements RegistryClient
 	public Future<RegistryInstance> saveAsync(RegistryInstance instance, RegistryListener callback)
 	{
 		return this.invokeAsync(RegistryCommand.SAVE, instance, callback);
+	}
+
+	@Override
+	public void saveAtRate(RegistryInstance instance, long period, TimeUnit unit)
+	{
+		AssertUtil.notNull(instance, "RegistryInstance");
+		RegistryMessage message = instance.build(RegistryCommand.SAVE);
+		handlerClient.sendMessageAtFixRate(message, period, unit);
 	}
 
 	@Override

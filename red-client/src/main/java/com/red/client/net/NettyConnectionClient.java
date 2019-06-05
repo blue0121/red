@@ -127,6 +127,12 @@ public class NettyConnectionClient implements ConnectionClient, HandlerClient
 	}
 
 	@Override
+	public void sendMessageAtFixRate(Message message, long period, TimeUnit unit)
+	{
+		channelClient.sendMessageAtFixRate(message, period, unit);
+	}
+
+	@Override
 	public void addConnectionListener(ConnectionListener listener)
 	{
 		channelClient.addConnectionLister(listener);

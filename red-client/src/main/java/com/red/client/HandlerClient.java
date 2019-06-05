@@ -3,6 +3,7 @@ package com.red.client;
 import com.red.core.message.Message;
 
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Jin Zheng
@@ -14,6 +15,8 @@ public interface HandlerClient
 	Future<Message> sendMessage(Message request);
 
 	Future<Message> sendMessage(Message request, MessageListener listener);
+
+	void sendMessageAtFixRate(Message message, long period, TimeUnit unit);
 
 	MessageListener getMessageListener();
 

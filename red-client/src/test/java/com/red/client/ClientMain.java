@@ -6,6 +6,8 @@ import com.red.client.registry.RegistryInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * @author Jin Zheng
  * @since 2019-05-03
@@ -32,7 +34,26 @@ public class ClientMain
 		client1.start();
 		client2.start();
 
-		reg(client1, client2);
+		rate(client1, client2);
+		//reg(client1, client2);
+	}
+
+	public static void rate(NettyConnectionClient client1, NettyConnectionClient client2) throws Exception
+	{
+		String name = "com.blue.Hello";
+		String host = "localhost";
+		int port1 = 8000;
+
+		RegistryClientTest registry1 = new RegistryClientTest(client1);
+		RegistryClientTest registry2 = new RegistryClientTest(client2);
+
+		registry2.watch(name);
+		registry1.saveRate(name, host, port1, 2, TimeUnit.SECONDS);
+
+
+		Thread.sleep(21_000);
+		client1.stop();
+		client2.stop();
 	}
 
 	private static void reg(NettyConnectionClient client1, NettyConnectionClient client2) throws Exception
