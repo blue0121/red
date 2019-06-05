@@ -24,8 +24,11 @@ public class ClientMain
 
 	public static void main(String[] args) throws Exception
 	{
+		ConnectionListener connectionListener = new ConnectionListenerTest();
 		NettyConnectionClient client1 = new NettyConnectionClient(TIMEOUT, TOKEN, ADDRESS);
+		client1.addConnectionListener(connectionListener);
 		NettyConnectionClient client2 = new NettyConnectionClient(TIMEOUT, TOKEN, ADDRESS);
+		client2.addConnectionListener(connectionListener);
 		client1.start();
 		client2.start();
 
