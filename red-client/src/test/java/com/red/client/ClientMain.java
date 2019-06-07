@@ -1,5 +1,6 @@
 package com.red.client;
 
+import com.red.client.config.RedConfig;
 import com.red.client.net.NettyConnectionClient;
 import com.red.client.registry.RegistryClientTest;
 import com.red.client.registry.RegistryInstance;
@@ -16,8 +17,7 @@ public class ClientMain
 {
 	private static Logger logger = LoggerFactory.getLogger(ClientMain.class);
 
-	public static final int TIMEOUT = 5000;
-	public static final String TOKEN = "token";
+	public static final RedConfig RED_CONFIG = new RedConfig();
 	public static final String ADDRESS = "localhost:7903";
 
 	public ClientMain()
@@ -27,9 +27,9 @@ public class ClientMain
 	public static void main(String[] args) throws Exception
 	{
 		ConnectionListener connectionListener = new ConnectionListenerTest();
-		NettyConnectionClient client1 = new NettyConnectionClient(TIMEOUT, TOKEN, ADDRESS);
+		NettyConnectionClient client1 = new NettyConnectionClient(ADDRESS, RED_CONFIG);
 		client1.addConnectionListener(connectionListener);
-		NettyConnectionClient client2 = new NettyConnectionClient(TIMEOUT, TOKEN, ADDRESS);
+		NettyConnectionClient client2 = new NettyConnectionClient(ADDRESS, RED_CONFIG);
 		client2.addConnectionListener(connectionListener);
 		client1.start();
 		client2.start();

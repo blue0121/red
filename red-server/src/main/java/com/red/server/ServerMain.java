@@ -1,5 +1,6 @@
 package com.red.server;
 
+import com.red.server.config.RedConfig;
 import com.red.server.net.Server;
 
 /**
@@ -14,6 +15,7 @@ public class ServerMain
 
 	public static void main(String[] args) throws Exception
 	{
+		RedConfig.getInstance();
 		Server server = new Server();
 		server.start();
 	}

@@ -1,6 +1,7 @@
 package com.red.client.net;
 
 import com.red.client.*;
+import com.red.client.config.RedConfig;
 import com.red.core.message.Message;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
@@ -13,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
-import java.util.Random;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -25,9 +25,7 @@ public class NettyConnectionClient implements ConnectionClient, HandlerClient
 {
 	private static Logger logger = LoggerFactory.getLogger(NettyConnectionClient.class);
 
-	private final Random random;
-	private final int timeout;
-	private final String token;
+	private final RedConfig redConfig;
 	private final InetSocketAddress remoteAddress;
 	private ClientInitializer initializer;
 
@@ -38,17 +36,15 @@ public class NettyConnectionClient implements ConnectionClient, HandlerClient
 	private final ChannelClient channelClient;
 	private final DefaultMessageListener messageListener;
 
-	public NettyConnectionClient(int timeout, String token, String address)
+	public NettyConnectionClient(String address, RedConfig redConfig)
 	{
-		this.timeout = timeout;
-		this.token = token;
+		this.redConfig = redConfig;
 
 		String[] addrs = address.split(":");
 		if (addrs.length != 2)
 			throw new RedClientException("Invalid address: " + address);
 
 		this.channelClient = new ChannelClient();
-		this.random = new Random();
 		this.remoteAddress = new InetSocketAddress(addrs[0], Integer.parseInt(addrs[1]));
 		this.initializer = new ClientInitializer(this);
 		this.messageListener = new DefaultMessageListener();
@@ -57,13 +53,13 @@ public class NettyConnectionClient implements ConnectionClient, HandlerClient
 	@Override
 	public void start()
 	{
-		workerGroup = new NioEventLoopGroup(4);
+		workerGroup = new NioEventLoopGroup(redConfig.getNettyThread());
 		bootstrap = new Bootstrap();
 		bootstrap.group(workerGroup)
 				.channel(NioSocketChannel.class).
 				option(ChannelOption.SO_KEEPALIVE, true)
 				.option(ChannelOption.TCP_NODELAY, true)
-				.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, timeout)
+				.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, redConfig.getConnectTimeout() * RedConfig.MILLS)
 				.handler(initializer);
 
 		this.connect();
@@ -79,8 +75,8 @@ public class NettyConnectionClient implements ConnectionClient, HandlerClient
 			{
 				if (!future.isSuccess())
 				{
-					logger.warn("Disconnected, reconnect after {} ms: {}", timeout, remoteAddress);
-					future.channel().eventLoop().schedule(() -> connect(), timeout, TimeUnit.MILLISECONDS);
+					logger.warn("Disconnected, reconnect after {} ms: {}", redConfig.getReconnect() * RedConfig.MILLS, remoteAddress);
+					future.channel().eventLoop().schedule(() -> connect(), redConfig.getReconnect() * RedConfig.MILLS, TimeUnit.MILLISECONDS);
 					return;
 				}
 				channelFuture = future;
@@ -155,14 +151,9 @@ public class NettyConnectionClient implements ConnectionClient, HandlerClient
 		return stop;
 	}
 
-	public int getTimeout()
+	public RedConfig getRedConfig()
 	{
-		return timeout;
-	}
-
-	public String getToken()
-	{
-		return token;
+		return redConfig;
 	}
 
 	public InetSocketAddress getRemoteAddress()

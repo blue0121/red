@@ -1,6 +1,8 @@
 package com.red.client.net;
 
+import com.red.client.config.RedConfig;
 import com.red.core.codec.MessageCodeFactory;
+import com.red.core.codec.MessageCodec;
 import com.red.core.codec.MessageDecoder;
 import com.red.core.codec.MessageEncoder;
 import com.red.core.handler.HeartbeatHandler;
@@ -18,10 +20,12 @@ import io.netty.handler.timeout.IdleStateHandler;
 public class ClientInitializer extends ChannelInitializer<SocketChannel>
 {
 	private final NettyConnectionClient client;
+	private final RedConfig redConfig;
 
 	public ClientInitializer(NettyConnectionClient client)
 	{
 		this.client = client;
+		this.redConfig = client.getRedConfig();
 	}
 
 	@Override
@@ -29,9 +33,10 @@ public class ClientInitializer extends ChannelInitializer<SocketChannel>
 	{
 		ChannelPipeline cp = ch.pipeline();
 		MessageCodeFactory factory = MessageCodeFactory.getFactory();
-		cp.addLast(new IdleStateHandler(30, 10, 10));
-		cp.addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0, 4, 0, 4));
-		cp.addLast(new LengthFieldPrepender(4));
+		cp.addLast(new IdleStateHandler(redConfig.getSessionTimeout(), redConfig.getSessionHeartbeat(), redConfig.getSessionHeartbeat()));
+		cp.addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, MessageCodec.ZERO_LENGTH,
+				MessageCodec.LENGTH, MessageCodec.ZERO_LENGTH, MessageCodec.LENGTH));
+		cp.addLast(new LengthFieldPrepender(MessageCodec.LENGTH));
 		cp.addLast(new MessageEncoder(factory.getClientEncoderMap()));
 		cp.addLast(new MessageDecoder(factory.getClientDecoderMap()));
 		cp.addLast(new HeartbeatHandler());

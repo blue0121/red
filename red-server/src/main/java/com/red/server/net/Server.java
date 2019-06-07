@@ -1,5 +1,7 @@
 package com.red.server.net;
 
+import com.red.server.config.RedConfig;
+import com.red.server.config.RedConfigItem;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
@@ -17,24 +19,21 @@ public class Server
 {
 	private static Logger logger = LoggerFactory.getLogger(Server.class);
 
-	private final int port;
+	private final RedConfig redConfig;
 	private final ServerInitializer initializer;
 
 	public Server()
 	{
-		this(7903);
-	}
-
-	public Server(int port)
-	{
-		this.port = port;
+		this.redConfig = RedConfig.getInstance();
 		this.initializer = new ServerInitializer();
 	}
 
 	public void start() throws Exception
 	{
+		int port = redConfig.getInt(RedConfigItem.PORT, RedConfigItem.PORT_VALUE);
+		int thread = redConfig.getInt(RedConfigItem.NETTY_THREAD, RedConfigItem.NETTY_THREAD_VALUE);
 		EventLoopGroup bossGroup = new NioEventLoopGroup(1);
-		EventLoopGroup workerGroup = new NioEventLoopGroup();
+		EventLoopGroup workerGroup = new NioEventLoopGroup(thread);
 		try
 		{
 			ServerBootstrap bootstrap = new ServerBootstrap();

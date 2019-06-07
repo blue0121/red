@@ -10,6 +10,8 @@ import io.netty.buffer.ByteBuf;
  */
 public interface MessageCodec
 {
+	int LENGTH = 4;
+	int ZERO_LENGTH = 0;
 
 	void encode(Message message, ByteBuf out);
 

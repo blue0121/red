@@ -1,5 +1,6 @@
 package com.red.client.net;
 
+import com.red.client.config.RedConfig;
 import com.red.core.message.HandshakeMessage;
 import com.red.core.message.Protocol;
 import com.red.core.message.Response;
@@ -21,11 +22,13 @@ public class HandshakeHandler extends SimpleChannelInboundHandler<Response>
 	private static Logger logger = LoggerFactory.getLogger(HandshakeHandler.class);
 
 	private final NettyConnectionClient client;
+	private final RedConfig redConfig;
 	private Channel channel;
 
 	public HandshakeHandler(NettyConnectionClient client)
 	{
 		this.client = client;
+		this.redConfig = client.getRedConfig();
 	}
 
 	@Override
@@ -54,9 +57,9 @@ public class HandshakeHandler extends SimpleChannelInboundHandler<Response>
 	public void channelActive(ChannelHandlerContext ctx) throws Exception
 	{
 		channel = ctx.channel();
-		HandshakeMessage request = HandshakeMessage.create(client.getToken());
+		HandshakeMessage request = HandshakeMessage.create(redConfig.getToken());
 		ctx.writeAndFlush(request);
-		logger.info("Handshake to {}: {}", client.getRemoteAddress(), client.getToken());
+		logger.info("Handshake to {}: {}", client.getRemoteAddress(), redConfig.getToken());
 
 		super.channelActive(ctx);
 	}
@@ -67,8 +70,8 @@ public class HandshakeHandler extends SimpleChannelInboundHandler<Response>
 		client.getChannelClient().handlerDisconnected(channel);
 		if (!client.isStop())
 		{
-			logger.warn("Disconnected, reconnect after {} ms: {}", client.getTimeout(), client.getRemoteAddress());
-			channel.eventLoop().schedule(() -> client.connect(), client.getTimeout(), TimeUnit.MILLISECONDS);
+			logger.warn("Disconnected, reconnect after {} ms: {}", redConfig.getReconnect() * RedConfig.MILLS, client.getRemoteAddress());
+			channel.eventLoop().schedule(() -> client.connect(), redConfig.getReconnect() * RedConfig.MILLS, TimeUnit.MILLISECONDS);
 		}
 
 		super.channelInactive(ctx);
