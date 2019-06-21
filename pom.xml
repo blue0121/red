@@ -32,6 +32,13 @@
 		<cucumber.version>4.4.0</cucumber.version>
 		<jmeter.version>5.1.1</jmeter.version>
 		
+		<!-- maven plugins -->
+		<compiler.version>3.8.1</compiler.version>
+		<source.version>3.1.0</source.version>
+		<jar.version>3.1.2</jar.version>
+		<dependency.version>3.1.1</dependency.version>
+		<assembly.version>3.1.1</assembly.version>
+		
 	</properties>
 	
 	<build>
@@ -39,7 +46,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.8.0</version>
+				<version>${compiler.version}</version>
 				<configuration>
 					<source>1.8</source>
 					<target>1.8</target>
@@ -54,7 +61,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
-				<version>3.0.1</version>
+				<version>${source.version}</version>
 				<executions>
 					<execution>
 						<id>attach-sources</id>
