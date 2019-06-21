@@ -38,6 +38,7 @@
 		<jar.version>3.1.2</jar.version>
 		<dependency.version>3.1.1</dependency.version>
 		<assembly.version>3.1.1</assembly.version>
+		<surefire.version>2.22.2</surefire.version>
 		
 	</properties>
 	
