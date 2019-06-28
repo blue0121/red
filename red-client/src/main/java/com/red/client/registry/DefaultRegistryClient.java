@@ -83,8 +83,7 @@ public class DefaultRegistryClient implements RegistryClient
 
 	private FutureRegistryInstance invokeAsync(RegistryCommand command, RegistryInstance instance, RegistryListener listener)
 	{
-		AssertUtil.notNull(command, "RegistryCommand");
-		AssertUtil.notNull(instance, "RegistryInstance");
+		this.check(command, instance);
 		RegistryMessage message = instance.build(command);
 		RegistryMessageListener messageListener = null;
 		if (listener != null)
@@ -95,6 +94,20 @@ public class DefaultRegistryClient implements RegistryClient
 		Future<Message> future = handlerClient.sendMessage(message, messageListener);
 		FutureRegistryInstance futureRegistryInstance = new FutureRegistryInstance(future);
 		return futureRegistryInstance;
+	}
+
+	private void check(RegistryCommand command, RegistryInstance instance)
+	{
+		AssertUtil.notNull(instance, "RegistryInstance");
+		if (command == RegistryCommand.LIST && instance.getNameSet().size() != 1)
+			throw new RegistryClientException("name size must be 1");
+
+		if (instance.getNameSet().isEmpty())
+			throw new RegistryClientException("name is empty");
+
+		if ((command == RegistryCommand.SAVE || command == RegistryCommand.DELETE)
+			&& instance.getHostSet().isEmpty())
+			throw new RegistryClientException("host is empty");
 	}
 
 	private void registryListener(RegistryMessage message, RegistryListener listener)

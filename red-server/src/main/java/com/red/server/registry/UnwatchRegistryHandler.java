@@ -20,7 +20,13 @@ public class UnwatchRegistryHandler implements RegistryHandler
 	@Override
 	public void handle(RegistryMessage message, Channel channel)
 	{
-		storage.unwatch(message.getName(), channel);
+		if (message.getNameSet().isEmpty())
+			throw new RegistryStorageException("name is empty");
+
+		for (String name : message.getNameSet())
+		{
+			storage.unwatch(name, channel);
+		}
 		RegistryMessage response = message.toResponse(ResponseCode.SUCCESS, ResponseCode.SUCCESS.name());
 		channel.writeAndFlush(response);
 	}

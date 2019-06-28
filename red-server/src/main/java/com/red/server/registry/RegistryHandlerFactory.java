@@ -2,6 +2,7 @@ package com.red.server.registry;
 
 import com.red.core.message.RegistryCommand;
 import com.red.core.message.RegistryMessage;
+import com.red.core.message.ResponseCode;
 import io.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,7 +59,30 @@ public class RegistryHandlerFactory
 		}
 		registryStorage.getExecutorService().submit(() ->
 		{
-			handler.handle(message, channel);
+			ResponseCode code = ResponseCode.SUCCESS;
+			String msg = "Successful";
+			boolean error = true;
+			try
+			{
+				handler.handle(message, channel);
+				error = false;
+			}
+			catch (RegistryStorageException e)
+			{
+				code = ResponseCode.REGISTRY;
+				msg = e.getMessage();
+			}
+			catch (Throwable e)
+			{
+				code = ResponseCode.ERROR;
+				msg = "Unknown";
+				logger.error("Error: ", e);
+			}
+			if (error)
+			{
+				RegistryMessage response = message.toResponse(code, msg);
+				channel.writeAndFlush(response);
+			}
 		});
 	}
 
@@ -66,7 +90,14 @@ public class RegistryHandlerFactory
 	{
 		registryStorage.getExecutorService().submit(() ->
 		{
-			registryStorage.disconnect(channel);
+			try
+			{
+				registryStorage.disconnect(channel);
+			}
+			catch (Throwable e)
+			{
+				logger.error("Error: ", e);
+			}
 		});
 	}
 

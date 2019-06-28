@@ -22,31 +22,12 @@ public class ListRegistryHandler implements RegistryHandler
 	@Override
 	public void handle(RegistryMessage message, Channel channel)
 	{
-		ResponseCode code = ResponseCode.SUCCESS;
-		String msg = "List successful";
-		Set<String> itemSet = null;
-		try
-		{
-			itemSet = storage.list(message.getName());
-		}
-		catch (RegistryStorageException e)
-		{
-			code = ResponseCode.REGISTRY;
-			msg = e.getMessage();
-		}
-		catch (Exception e)
-		{
-			code = ResponseCode.ERROR;
-			msg = "Unknown exception";
-		}
-		RegistryMessage response = message.toResponse(code, msg);
-		if (itemSet != null && !itemSet.isEmpty())
-		{
-			for (String item : itemSet)
-			{
-				response.addItem(item);
-			}
-		}
+		if (message.getNameSet().size() != 1)
+			throw new RegistryStorageException("name size must be 1");
+
+		Set<String> itemSet = storage.list(message.getName());
+		RegistryMessage response = message.toResponse(ResponseCode.SUCCESS, "List successful");
+		response.addItemList(itemSet);
 		channel.writeAndFlush(response);
 	}
 }

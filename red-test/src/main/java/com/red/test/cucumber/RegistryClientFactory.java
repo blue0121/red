@@ -49,11 +49,14 @@ public class RegistryClientFactory
 		NettyConnectionClient client = new NettyConnectionClient(address, config);
 		client.start();
 		logger.info("start client {}", name);
-		clientMap.put(name, client);
-		registryClientMap.put(name, new DefaultRegistryClient(client));
+		synchronized (this)
+		{
+			clientMap.put(name, client);
+			registryClientMap.put(name, new DefaultRegistryClient(client));
+		}
 	}
 
-	public void stop(String name)
+	public synchronized void stop(String name)
 	{
 		NettyConnectionClient client = clientMap.get(name);
 		if (client == null)
@@ -61,10 +64,11 @@ public class RegistryClientFactory
 
 		client.stop();
 		logger.info("stop client {}", name);
+		clientMap.remove(name);
 		registryClientMap.remove(name);
 	}
 
-	public void stopAll()
+	public synchronized void stopAll()
 	{
 		for (Map.Entry<String, NettyConnectionClient> entry : clientMap.entrySet())
 		{

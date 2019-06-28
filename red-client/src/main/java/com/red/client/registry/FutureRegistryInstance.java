@@ -3,6 +3,7 @@ package com.red.client.registry;
 import com.red.core.message.Message;
 import com.red.core.message.Protocol;
 import com.red.core.message.RegistryMessage;
+import com.red.core.message.ResponseCode;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -44,6 +45,10 @@ public class FutureRegistryInstance implements Future<RegistryInstance>
 	public RegistryInstance get() throws InterruptedException, ExecutionException
 	{
 		Message message = future.get();
+		RuntimeException exception = this.toException(message);
+		if (exception != null)
+			throw exception;
+
 		return this.toInstance(message);
 	}
 
@@ -51,7 +56,23 @@ public class FutureRegistryInstance implements Future<RegistryInstance>
 	public RegistryInstance get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException
 	{
 		Message message = future.get(timeout, unit);
+		RuntimeException exception = this.toException(message);
+		if (exception != null)
+			throw exception;
+
 		return this.toInstance(message);
+	}
+
+	public RuntimeException getException() throws InterruptedException, ExecutionException
+	{
+		Message message = future.get();
+		return this.toException(message);
+	}
+
+	public RuntimeException getException(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException
+	{
+		Message message = future.get(timeout, unit);
+		return this.toException(message);
 	}
 
 	private RegistryInstance toInstance(Message message)
@@ -63,5 +84,23 @@ public class FutureRegistryInstance implements Future<RegistryInstance>
 		return RegistryInstance.from(registryMessage);
 	}
 
+	private RuntimeException toException(Message message)
+	{
+		if (message.getProtocol() != Protocol.REGISTRY)
+			return null;
+
+		RegistryMessage registryMessage = (RegistryMessage) message;
+		RuntimeException exception = null;
+		if (registryMessage.getCode() == ResponseCode.ERROR)
+		{
+			exception = new RuntimeException(registryMessage.getMessage());
+		}
+		else if (registryMessage.getCode() == ResponseCode.REGISTRY)
+		{
+			exception = new RegistryClientException(registryMessage.getMessage());
+		}
+
+		return exception;
+	}
 
 }
