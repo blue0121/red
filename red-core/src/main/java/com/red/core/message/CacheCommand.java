@@ -7,7 +7,8 @@ package com.red.core.message;
 public enum CacheCommand
 {
 	GET((short)0x1),
-	SET((short)0x2);
+	SET((short)0x2),
+	DELETE((short)0x3);
 
 	private short value;
 

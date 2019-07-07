@@ -66,6 +66,7 @@ public class MessageCodeFactory
 		clientEncoderMap.put(Protocol.HANDSHAKE, new HandshakeMessageCodec());
 		clientEncoderMap.put(Protocol.HEARTBEAT, new HeartbeatMessageCodec());
 		clientEncoderMap.put(Protocol.REGISTRY, new RegistryMessageCodec());
+		clientEncoderMap.put(Protocol.CACHE, new CacheMessageCodec());
 	}
 
 	private void initClientDecoder()
@@ -73,6 +74,7 @@ public class MessageCodeFactory
 		clientDecoderMap.put(Protocol.HANDSHAKE, new ResponseMessageCodec());
 		clientDecoderMap.put(Protocol.HEARTBEAT, new HeartbeatMessageCodec());
 		clientDecoderMap.put(Protocol.REGISTRY, new RegistryMessageCodec());
+		clientDecoderMap.put(Protocol.CACHE, new CacheMessageCodec());
 	}
 
 	private void initServerEncoder()
@@ -80,6 +82,7 @@ public class MessageCodeFactory
 		serverEncoderMap.put(Protocol.HANDSHAKE, new ResponseMessageCodec());
 		serverEncoderMap.put(Protocol.HEARTBEAT, new HeartbeatMessageCodec());
 		serverEncoderMap.put(Protocol.REGISTRY, new RegistryMessageCodec());
+		serverEncoderMap.put(Protocol.CACHE, new CacheMessageCodec());
 	}
 
 	private void initServerDecoder()
@@ -87,6 +90,7 @@ public class MessageCodeFactory
 		serverDecoderMap.put(Protocol.HANDSHAKE, new HandshakeMessageCodec());
 		serverDecoderMap.put(Protocol.HEARTBEAT, new HeartbeatMessageCodec());
 		serverDecoderMap.put(Protocol.REGISTRY, new RegistryMessageCodec());
+		serverDecoderMap.put(Protocol.CACHE, new CacheMessageCodec());
 	}
 
 }

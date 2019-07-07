@@ -15,16 +15,16 @@
 		
 		<!-- core -->
 		<red.version>1.0</red.version>
-		<slf4j.version>1.7.25</slf4j.version>
-		<log4j2.version>2.11.1</log4j2.version>
-		<fastjson.version>1.2.52</fastjson.version>
-		<netty.version>4.1.32.Final</netty.version>
+		<slf4j.version>1.7.26</slf4j.version>
+		<log4j2.version>2.11.2</log4j2.version>
+		<fastjson.version>1.2.58</fastjson.version>
+		<netty.version>4.1.36.Final</netty.version>
+		<caffeine.version>2.7.0</caffeine.version>
 		
 		<!-- server -->
 		<spring.version>5.1.4.RELEASE</spring.version>
 		<cglib.version>3.2.8</cglib.version>
 		<aspectjweaver.version>1.9.1</aspectjweaver.version>
-		<caffeine.version>2.7.0</caffeine.version>
 		
 		<!-- test -->
 		<junit.version>4.12</junit.version>

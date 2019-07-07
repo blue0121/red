@@ -64,4 +64,29 @@ public abstract class AbstractMessageCodec implements MessageCodec
 		return null;
 	}
 
+	protected void writeBytes(byte[] bytes, ByteBuf out)
+	{
+		if (bytes == null || bytes.length == 0)
+		{
+			out.writeInt(0);
+		}
+		else
+		{
+			out.writeInt(bytes.length);
+			out.writeBytes(bytes);
+		}
+	}
+
+	protected byte[] readBytes(ByteBuf in)
+	{
+		int len = in.readInt();
+		if (len > 0)
+		{
+			byte[] bytes = new byte[len];
+			in.readBytes(bytes);
+			return bytes;
+		}
+		return null;
+	}
+
 }

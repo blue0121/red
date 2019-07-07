@@ -47,6 +47,7 @@ public class ServerInitializer extends ChannelInitializer<SocketChannel>
 		cp.addLast(new HeartbeatHandler());
 		cp.addLast(new HandshakeHandler(token));
 		cp.addLast(new RegistryHandler());
+		cp.addLast(new CacheHandler());
 	}
 
 }
