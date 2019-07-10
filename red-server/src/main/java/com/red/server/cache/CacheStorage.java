@@ -9,7 +9,7 @@ import java.util.concurrent.ExecutorService;
 public interface CacheStorage
 {
 
-	void save(String key, byte[] value);
+	void save(String key, byte[] value, long ttl);
 
 	byte[] get(String key);
 

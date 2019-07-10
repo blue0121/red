@@ -10,7 +10,9 @@ public enum RegistryCommand
 	DELETE((short)0x2),
 	LIST((short)0x3),
 	WATCH((short)0x11),
-	UNWATCH((short)0x12);
+	UNWATCH((short)0x12),
+	BIND((short)0x13),
+	UNBIND((short)0x14);
 
 	private short value;
 

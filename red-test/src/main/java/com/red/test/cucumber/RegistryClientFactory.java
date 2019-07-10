@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -82,6 +83,15 @@ public class RegistryClientFactory
 	public RegistryClient getRegistryClient(String name)
 	{
 		return registryClientMap.get(name);
+	}
+
+	public RegistryClient getRegistryClient()
+	{
+		if (registryClientMap.isEmpty())
+			return null;
+
+		Iterator<RegistryClient> iterator = registryClientMap.values().iterator();
+		return iterator.next();
 	}
 
 }
