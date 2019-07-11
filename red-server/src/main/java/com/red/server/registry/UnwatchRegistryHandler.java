@@ -10,11 +10,11 @@ import io.netty.channel.Channel;
  */
 public class UnwatchRegistryHandler implements RegistryHandler
 {
-	private final RegistryStorage storage;
+	private final RegistryChannelGroup channelGroup;
 
-	public UnwatchRegistryHandler(RegistryStorage storage)
+	public UnwatchRegistryHandler(RegistryChannelGroup channelGroup)
 	{
-		this.storage = storage;
+		this.channelGroup = channelGroup;
 	}
 
 	@Override
@@ -25,9 +25,9 @@ public class UnwatchRegistryHandler implements RegistryHandler
 
 		for (String name : message.getNameSet())
 		{
-			storage.unwatch(name, channel);
+			channelGroup.unwatchChannel(name, channel);
 		}
-		RegistryMessage response = message.toResponse(ResponseCode.SUCCESS, ResponseCode.SUCCESS.name());
+		RegistryMessage response = message.toResponse(ResponseCode.SUCCESS, "Unwatch successful");
 		channel.writeAndFlush(response);
 	}
 }

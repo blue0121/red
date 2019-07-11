@@ -20,13 +20,10 @@ public class DeleteRegistryHandler implements RegistryHandler
 	@Override
 	public void handle(RegistryMessage message, Channel channel)
 	{
-		if (message.getNameSet().isEmpty() || message.getItemSet().isEmpty())
-			throw new RegistryStorageException("name or item is empty");
+		if (message.getNameSet().isEmpty())
+			throw new RegistryStorageException("name is empty");
 
-		for (String item : message.getItemSet())
-		{
-			storage.delete(message.getNameSet(), item, channel);
-		}
+		storage.delete(message.getNameSet(), channel);
 		RegistryMessage response = message.toResponse(ResponseCode.SUCCESS, "Delete successful");
 		channel.writeAndFlush(response);
 	}

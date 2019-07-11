@@ -35,34 +35,45 @@ public class RegistryChannelGroup
 		this.idMap = new HashMap<>();
 	}
 
-	public boolean bindChannel(String item, Channel channel)
+	public void bindChannel(String item, Channel channel)
 	{
+		if (item == null || item.isEmpty())
+			throw new RegistryChannelException("item is empty");
+
+		if (itemMap.containsKey(item))
+			throw new RegistryChannelException("This host has been bind: " + item);
+
+		ChannelId id = channel.id();
+		itemMap.put(item, id);
+		idMap.put(id, item);
 		channelGroup.add(channel);
+		logger.info("Bind channel, host: {}, channel: {}", item, id);
+	}
+
+	public void unbindChannel(String item, Channel channel)
+	{
+		if (item == null || item.isEmpty())
+			throw new RegistryChannelException("item is empty");
+
 		ChannelId id = channel.id();
 		ChannelId oldId = itemMap.get(item);
-		String oldItem = idMap.get(id);
-		boolean isBind = id.equals(oldId) && item.equals(oldItem);
-		if (!isBind)
-		{
-			itemMap.remove(oldItem);
-			idMap.remove(oldId);
-			itemMap.put(item, id);
-			idMap.put(id, item);
-			logger.debug("Bind channel [{}] to [{}]", id, item);
-		}
+		if (!id.equals(oldId))
+			throw new RegistryChannelException("Can not unbind host: " + item);
 
-		return isBind;
+		itemMap.remove(item);
+		idMap.remove(id);
+		logger.info("Unbind channel, host: {}, channel: {}", item, id);
+	}
+
+	public String getItem(Channel channel)
+	{
+		return idMap.get(channel.id());
 	}
 
 	public void watchChannel(String name, Channel channel)
 	{
 		channelGroup.add(channel);
-		Set<ChannelId> idSet = nameCache.get(name);
-		if (idSet == null)
-		{
-			idSet = new HashSet<>();
-			nameCache.put(name, idSet);
-		}
+		Set<ChannelId> idSet = nameCache.computeIfAbsent(name, k -> new HashSet<>());
 		idSet.add(channel.id());
 		logger.debug("Watch channel [{}] to [{}]", channel.id(), name);
 	}
@@ -76,13 +87,17 @@ public class RegistryChannelGroup
 		boolean result = idSet.remove(channel.id());
 		if (result)
 		{
-			logger.debug("Unwatch channel [{}] from [{}]", channel.id(), name);
+			logger.info("Unwatch channel [{}] from [{}]", channel.id(), name);
 		}
 	}
 
 	public String disconnect(Channel channel)
 	{
 		ChannelId id = channel.id();
+		String item = idMap.get(id);
+		if (item == null || item.isEmpty())
+			return item;
+
 		for (Map.Entry<String, Set<ChannelId>> entry : nameCache.entrySet())
 		{
 			Set<ChannelId> idSet = entry.getValue();
@@ -92,16 +107,13 @@ public class RegistryChannelGroup
 			boolean result = idSet.remove(id);
 			if (result)
 			{
-				logger.debug("Disconnect channel [{}] from [{}]", channel.id(), entry.getKey());
+				logger.info("Disconnect channel [{}] from [{}]", channel.id(), entry.getKey());
 			}
 		}
-		String item = idMap.get(id);
-		if (item != null)
-		{
-			idMap.remove(id);
-			itemMap.remove(item);
-			logger.debug("Unbind channel [{}] from [{}]", id, item);
-		}
+		idMap.remove(id);
+		itemMap.remove(item);
+		logger.info("Unbind channel [{}] from [{}]", id, item);
+
 		return item;
 	}
 

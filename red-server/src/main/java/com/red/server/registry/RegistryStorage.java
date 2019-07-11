@@ -12,15 +12,11 @@ import java.util.concurrent.ExecutorService;
 public interface RegistryStorage
 {
 
-	void save(Set<String> nameSet, String item, Channel channel);
+	void save(Set<String> nameSet, Channel channel);
 
-	void delete(Set<String> nameSet, String item, Channel channel);
+	void delete(Set<String> nameSet, Channel channel);
 
 	Set<String> list(String name);
-
-	void watch(String name, Channel channel);
-
-	void unwatch(String name, Channel channel);
 
 	void disconnect(Channel channel);
 

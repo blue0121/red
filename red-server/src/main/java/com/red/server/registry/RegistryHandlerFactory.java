@@ -3,6 +3,7 @@ package com.red.server.registry;
 import com.red.core.message.RegistryCommand;
 import com.red.core.message.RegistryMessage;
 import com.red.core.message.ResponseCode;
+import com.red.server.common.RedServerException;
 import io.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,8 +31,10 @@ public class RegistryHandlerFactory
 		handlerMap.put(RegistryCommand.SAVE, new SaveRegistryHandler(registryStorage));
 		handlerMap.put(RegistryCommand.DELETE, new DeleteRegistryHandler(registryStorage));
 		handlerMap.put(RegistryCommand.LIST, new ListRegistryHandler(registryStorage));
-		handlerMap.put(RegistryCommand.WATCH, new WatchRegistryHandler(registryStorage));
-		handlerMap.put(RegistryCommand.UNWATCH, new UnwatchRegistryHandler(registryStorage));
+		handlerMap.put(RegistryCommand.WATCH, new WatchRegistryHandler(channelGroup));
+		handlerMap.put(RegistryCommand.UNWATCH, new UnwatchRegistryHandler(channelGroup));
+		handlerMap.put(RegistryCommand.BIND, new BindRegistryHandler(channelGroup));
+		handlerMap.put(RegistryCommand.UNBIND, new UnbindRegistryHandler(channelGroup));
 	}
 
 	public static RegistryHandlerFactory getFactory()
@@ -67,7 +70,7 @@ public class RegistryHandlerFactory
 				handler.handle(message, channel);
 				error = false;
 			}
-			catch (RegistryStorageException e)
+			catch (RedServerException e)
 			{
 				code = ResponseCode.REGISTRY;
 				msg = e.getMessage();
