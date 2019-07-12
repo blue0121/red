@@ -3,6 +3,7 @@ package com.red.client.net;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.red.client.ConnectionListener;
+import com.red.client.Future;
 import com.red.client.MessageListener;
 import com.red.client.RedClientException;
 import com.red.core.message.Message;
@@ -22,7 +23,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -98,7 +98,7 @@ public class ChannelClient
 		channel.eventLoop().scheduleAtFixedRate(() -> channel.writeAndFlush(message), 0, period, unit);
 	}
 
-	public Future<Message> sendMessage(Message message, MessageListener listener)
+	public Future sendMessage(Message message, MessageListener listener)
 	{
 		AssertUtil.notNull(message, "Message");
 

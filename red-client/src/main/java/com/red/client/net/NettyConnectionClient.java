@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -105,15 +104,15 @@ public class NettyConnectionClient implements ConnectionClient, HandlerClient
 	}
 
 	@Override
-	public Future<Message> sendMessage(Message message)
+	public Future sendMessage(Message message)
 	{
 		return channelClient.sendMessage(message, null);
 	}
 
 	@Override
-	public Future<Message> sendMessage(Message message, MessageListener listener)
+	public Future sendMessage(Message message, MessageListener listener)
 	{
-		Future<Message> future = channelClient.sendMessage(message, listener);
+		Future future = channelClient.sendMessage(message, listener);
 		Message response = channelClient.getMessage(message.getMessageId());
 		if (response != null)
 		{

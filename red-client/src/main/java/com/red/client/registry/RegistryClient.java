@@ -24,6 +24,10 @@ public interface RegistryClient
 
 	Future<RegistryInstance> listAsync(RegistryInstance instance, RegistryListener listener);
 
+	void bind(RegistryInstance instance);
+
+	void unbind(RegistryInstance instance);
+
 	void watch(RegistryInstance instance, RegistryListener listener);
 
 	void unwatch(RegistryInstance instance);

@@ -70,6 +70,18 @@ public class DefaultRegistryClient implements RegistryClient
 	}
 
 	@Override
+	public void bind(RegistryInstance instance)
+	{
+		this.invokeSync(RegistryCommand.BIND, instance);
+	}
+
+	@Override
+	public void unbind(RegistryInstance instance)
+	{
+		this.invokeSync(RegistryCommand.UNBIND, instance);
+	}
+
+	@Override
 	public void watch(RegistryInstance instance, RegistryListener callback)
 	{
 		this.invokeAsync(RegistryCommand.WATCH, instance, callback);
@@ -99,23 +111,39 @@ public class DefaultRegistryClient implements RegistryClient
 	private void check(RegistryCommand command, RegistryInstance instance)
 	{
 		AssertUtil.notNull(instance, "RegistryInstance");
-		if (instance.getNameSet().isEmpty())
-			throw new RegistryClientException("name is empty");
 
-		if ((command == RegistryCommand.SAVE || command == RegistryCommand.DELETE)
-			&& instance.getHostSet().isEmpty())
-			throw new RegistryClientException("host is empty");
+		if (command == RegistryCommand.BIND || command == RegistryCommand.UNBIND)
+		{
+			if (instance.getHostSet().isEmpty())
+				throw new RegistryClientException("host is empty");
+		}
+		else if (command == RegistryCommand.LIST)
+		{
+			if (instance.getNameSet().size() != 1)
+				throw new RegistryClientException("name size must be 1");
+		}
+		else
+		{
+			if (instance.getNameSet().isEmpty())
+				throw new RegistryClientException("name is empty");
+		}
 	}
 
 	private void registryListener(RegistryMessage message, RegistryListener listener)
 	{
 		if (message.getCommand() == RegistryCommand.WATCH)
 		{
-			callbackClient.addRegistryCallback(message.getName(), listener);
+			for (String name : message.getNameSet())
+			{
+				callbackClient.addRegistryCallback(name, listener);
+			}
 		}
 		else if (message.getCommand() == RegistryCommand.UNWATCH)
 		{
-			callbackClient.removeRegistryCallback(message.getName());
+			for (String name : message.getNameSet())
+			{
+				callbackClient.removeRegistryCallback(name);
+			}
 		}
 	}
 
