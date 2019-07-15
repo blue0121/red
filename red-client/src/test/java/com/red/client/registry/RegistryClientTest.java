@@ -1,5 +1,7 @@
 package com.red.client.registry;
 
+import com.red.client.ConnectionListener;
+import com.red.client.config.RedConfig;
 import com.red.client.net.NettyConnectionClient;
 
 import java.util.concurrent.TimeUnit;
@@ -11,51 +13,74 @@ import java.util.concurrent.TimeUnit;
 public class RegistryClientTest
 {
 	private final RegistryListener callback;
-	private final RegistryClient client;
+	private final RegistryClient registryClient;
+	private final NettyConnectionClient client;
 
-	public RegistryClientTest(NettyConnectionClient client)
+	public RegistryClientTest(String address, RedConfig config, ConnectionListener listener)
+	{
+		this(new NettyConnectionClient(address, config), listener);
+	}
+
+	public RegistryClientTest(NettyConnectionClient client, ConnectionListener listener)
 	{
 		this.callback = new RegistryListenerTest();
-		this.client = new DefaultRegistryClient(client);
+		this.client = client;
+		this.client.addConnectionListener(listener);
+		this.registryClient = new DefaultRegistryClient(client);
+		this.client.start();
 	}
 
-	public void save(String name, String ip, int port)
+	public void bind(String ip, int port)
 	{
-		RegistryInstance instance = new RegistryInstance(name);
+		RegistryInstance instance = new RegistryInstance();
 		instance.addHost(ip, port);
-		client.saveSync(instance);
+		registryClient.bind(instance);
 	}
 
-	public void saveRate(String name, String ip, int port, long period, TimeUnit unit)
+	public void save(String...names)
 	{
-		RegistryInstance instance = new RegistryInstance(name);
-		instance.addHost(ip, port);
-		client.saveAtRate(instance, period, unit);
+		RegistryInstance instance = new RegistryInstance(names);
+		registryClient.saveSync(instance);
 	}
 
-	public void delete(String name, String ip, int port)
+	public void saveRate(long period, TimeUnit unit, String...names)
 	{
-		RegistryInstance instance = new RegistryInstance(name);
-		instance.addHost(ip, port);
-		client.deleteSync(instance);
+		RegistryInstance instance = new RegistryInstance(names);
+		registryClient.saveAtRate(instance, period, unit);
+	}
+
+	public void delete(String...names)
+	{
+		RegistryInstance instance = new RegistryInstance(names);
+		registryClient.deleteSync(instance);
 	}
 
 	public RegistryInstance list(String name)
 	{
 		RegistryInstance instance = new RegistryInstance(name);
-		return client.listSync(instance);
+		return registryClient.listSync(instance);
 	}
 
-	public void watch(String name)
+	public void watch(String...names)
 	{
-		RegistryInstance instance = new RegistryInstance(name);
-		client.watch(instance, callback);
+		RegistryInstance instance = new RegistryInstance(names);
+		registryClient.watch(instance, callback);
 	}
 
-	public void unwatch(String name)
+	public void unwatch(String...names)
 	{
-		RegistryInstance instance = new RegistryInstance(name);
-		client.unwatch(instance);
+		RegistryInstance instance = new RegistryInstance(names);
+		registryClient.unwatch(instance);
+	}
+
+	public void addConnectionListener(ConnectionListener listener)
+	{
+		this.client.addConnectionListener(listener);
+	}
+
+	public void close()
+	{
+		this.client.stop();
 	}
 
 }

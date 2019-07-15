@@ -1,6 +1,7 @@
 package com.red.client.registry;
 
 import com.red.client.HandlerClient;
+import com.red.client.RedClientException;
 import com.red.core.message.Message;
 import com.red.core.message.RegistryCommand;
 import com.red.core.message.RegistryMessage;
@@ -156,6 +157,9 @@ public class DefaultRegistryClient implements RegistryClient
 		}
 		catch (Exception e)
 		{
+			if (e instanceof RedClientException)
+				throw (RedClientException)e;
+
 			throw new RegistryClientException(e);
 		}
 	}

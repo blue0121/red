@@ -26,12 +26,13 @@ public class RegistryMessageListener implements MessageListener
 
 	public RegistryMessageListener()
 	{
-		this.listenerMap = new ConcurrentHashMap<>();
+		this(null);
 	}
 
 	public RegistryMessageListener(RegistryListener listener)
 	{
 		this.listener = listener;
+		this.listenerMap = new ConcurrentHashMap<>();
 	}
 
 	public void addRegistryCallback(String name, RegistryListener listener)
@@ -74,7 +75,11 @@ public class RegistryMessageListener implements MessageListener
 		}
 		else
 		{
-			Set<RegistryListener> set = listenerMap.get(registryMessage.getName());
+			Set<RegistryListener> set = null;
+			if (registryMessage.getName() != null)
+			{
+				set = listenerMap.get(registryMessage.getName());
+			}
 			if (set == null || set.isEmpty())
 			{
 				if (logger.isDebugEnabled())

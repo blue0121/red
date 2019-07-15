@@ -75,7 +75,7 @@ public class RegistryChannelGroup
 		channelGroup.add(channel);
 		Set<ChannelId> idSet = nameCache.computeIfAbsent(name, k -> new HashSet<>());
 		idSet.add(channel.id());
-		logger.debug("Watch channel [{}] to [{}]", channel.id(), name);
+		logger.info("Watch channel [{}] to [{}]", channel.id(), name);
 	}
 
 	public void unwatchChannel(String name, Channel channel)

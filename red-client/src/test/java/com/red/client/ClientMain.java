@@ -1,13 +1,9 @@
 package com.red.client;
 
 import com.red.client.config.RedConfig;
-import com.red.client.net.NettyConnectionClient;
 import com.red.client.registry.RegistryClientTest;
-import com.red.client.registry.RegistryInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author Jin Zheng
@@ -26,84 +22,46 @@ public class ClientMain
 
 	public static void main(String[] args) throws Exception
 	{
-		ConnectionListener connectionListener = new ConnectionListenerTest();
-		NettyConnectionClient client1 = new NettyConnectionClient(ADDRESS, RED_CONFIG);
-		client1.addConnectionListener(connectionListener);
-		NettyConnectionClient client2 = new NettyConnectionClient(ADDRESS, RED_CONFIG);
-		client2.addConnectionListener(connectionListener);
-		client1.start();
-		client2.start();
+		ConnectionListener listener = new ConnectionListenerTest();
+		RegistryClientTest client1 = new RegistryClientTest(ADDRESS, RED_CONFIG, listener);
+		RegistryClientTest client2 = new RegistryClientTest(ADDRESS, RED_CONFIG, listener);
 
-		rate(client1, client2);
-		//reg(client1, client2);
+		try
+		{
+			save(client1, client2);
+		}
+		catch (RedClientException e)
+		{
+			logger.error("Error", e);
+		}
+
+		Thread.sleep(10000);
+		client2.close();
+		client1.close();
 	}
 
-	public static void rate(NettyConnectionClient client1, NettyConnectionClient client2) throws Exception
+	private static void save2(RegistryClientTest client1)
 	{
-		String name = "com.blue.Hello";
-		String host = "localhost";
-		int port1 = 8000;
-
-		RegistryClientTest registry1 = new RegistryClientTest(client1);
-		RegistryClientTest registry2 = new RegistryClientTest(client2);
-
-		registry2.watch(name);
-		registry1.saveRate(name, host, port1, 2, TimeUnit.SECONDS);
-
-
-		Thread.sleep(21_000);
-		client1.stop();
-		client2.stop();
+		client1.save("blue");
 	}
 
-	private static void reg(NettyConnectionClient client1, NettyConnectionClient client2) throws Exception
+	private static void save(RegistryClientTest client1, RegistryClientTest client2) throws InterruptedException
 	{
-		String name = "com.blue.Hello";
-		String host = "localhost";
-		int port1 = 8000;
-		int port2 = 9000;
+		client1.bind("127.0.0.1", 10000);
+		client2.bind("127.0.0.2", 20000);
 
-		RegistryClientTest registry1 = new RegistryClientTest(client1);
-		RegistryClientTest registry2 = new RegistryClientTest(client2);
+		client1.watch("blue1");
+		client2.watch("red1");
 
-		registry1.watch(name);
-		registry2.watch(name);
+		client1.save("blue1", "blue2", "blue3", "blue4", "blue5");
+		client2.save("red1", "red2", "red3", "red4", "red5");
 
-		registry1.save(name, host, port1);
-		registry2.save(name, host, port2);
+		Thread.sleep(500);
 
-		RegistryInstance instance = registry1.list(name);
-		logger.info("host: {}", instance.getHostSet());
-
-		Thread.sleep(10_000);
-		client1.stop();
-
-		Thread.sleep(10_000);
-		client2.stop();
+		client1.save("red1");
+		client2.save("blue1");
 
 	}
 
-
-	private static void registry(NettyConnectionClient client) throws Exception
-	{
-		String name = "com.blue.Hello";
-		String host = "localhost";
-		int port = 8080;
-		int port2 = 8082;
-
-		RegistryClientTest registryClient = new RegistryClientTest(client);
-		registryClient.save(name, host, port);
-		registryClient.save(name, host, port2);
-		RegistryInstance instance = registryClient.list(name);
-		logger.info("host: {}", instance.getHostSet());
-		registryClient.watch(name);
-		registryClient.delete(name, host, port);
-		registryClient.save(name, host, port);
-		registryClient.delete(name, host, port);
-		registryClient.delete(name, host, port2);
-		registryClient.unwatch(name);
-		instance = registryClient.list(name);
-		logger.info("host: {}", instance.getHostSet());
-	}
 
 }

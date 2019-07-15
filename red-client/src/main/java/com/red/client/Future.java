@@ -8,4 +8,7 @@ import com.red.core.message.Message;
  */
 public interface Future extends java.util.concurrent.Future<Message>
 {
+
+	RedClientException getException();
+
 }

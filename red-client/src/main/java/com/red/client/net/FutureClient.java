@@ -2,7 +2,11 @@ package com.red.client.net;
 
 import com.red.client.Future;
 import com.red.client.MessageListener;
+import com.red.client.RedClientException;
+import com.red.client.registry.RegistryClientException;
 import com.red.core.message.Message;
+import com.red.core.message.Response;
+import com.red.core.message.ResponseCode;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
@@ -71,6 +75,10 @@ public class FutureClient implements Future
 	{
 		latch.await();
 
+		RedClientException exception = this.getException();
+		if (exception != null)
+			throw exception;
+
 		return response;
 	}
 
@@ -80,6 +88,10 @@ public class FutureClient implements Future
 		boolean success = latch.await(timeout, unit);
 		if (!success)
 			throw new TimeoutException("Read timeout!");
+
+		RedClientException exception = this.getException();
+		if (exception != null)
+			throw exception;
 
 		return response;
 	}
@@ -92,5 +104,24 @@ public class FutureClient implements Future
 	public long getStart()
 	{
 		return start;
+	}
+
+	@Override
+	public RedClientException getException()
+	{
+		if (!(response instanceof Response))
+			return null;
+
+		RedClientException exception = null;
+		Response resp = (Response) response;
+		if (resp.getCode() == ResponseCode.ERROR)
+		{
+			exception = new RedClientException(resp.getMessage());
+		}
+		else if (resp.getCode() == ResponseCode.REGISTRY)
+		{
+			exception = new RegistryClientException(resp.getMessage());
+		}
+		return exception;
 	}
 }
