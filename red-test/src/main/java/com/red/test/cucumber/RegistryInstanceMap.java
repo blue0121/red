@@ -19,6 +19,7 @@ public class RegistryInstanceMap
 	private static Logger logger = LoggerFactory.getLogger(RegistryInstanceMap.class);
 
 	private Map<String, Map<String, Set<Host>>> instanceMap = new HashMap<>();
+	private Map<String, Set<String>> exceptionMap = new HashMap<>();
 
 	private static RegistryInstanceMap instance;
 
@@ -78,6 +79,7 @@ public class RegistryInstanceMap
 		if (client == null || client.isEmpty() || instance == null || instance.getNameSet().isEmpty())
 			return;
 
+		exceptionMap.remove(client);
 		Map<String, Set<Host>> hostMap = instanceMap.get(client);
 		for (String name : instance.getNameSet())
 		{
@@ -86,9 +88,21 @@ public class RegistryInstanceMap
 		}
 	}
 
+	public synchronized void add(String client, Exception e)
+	{
+		Set<String> set = exceptionMap.computeIfAbsent(client, k -> new HashSet<>());
+		set.add(e.getClass().getName());
+	}
+
+	public synchronized Set<String> getException(String client)
+	{
+		return exceptionMap.get(client);
+	}
+
 	public synchronized void clear()
 	{
 		instanceMap.clear();
+		exceptionMap.clear();
 		logger.info("clear all");
 	}
 

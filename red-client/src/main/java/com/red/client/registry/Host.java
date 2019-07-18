@@ -21,6 +21,13 @@ public class Host
 		this.port = port;
 	}
 
+	// parse string: host:ip
+	public static Host parse(String strHost)
+	{
+		String[] str = strHost.split(":");
+		return new Host(str[0], Integer.parseInt(str[1]));
+	}
+
 	@Override
 	public String toString()
 	{
