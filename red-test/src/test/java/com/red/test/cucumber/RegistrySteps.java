@@ -26,7 +26,8 @@ public class RegistrySteps
 
 	public static final String NAME = "name";
 	public static final String HOST = "host";
-	public static final String HOST_SPLIT = ",";
+	public static final String HOSTS_SPLIT = ",";
+	public static final String HOST_SPLIT = ":";
 
 	private RegistryClientFactory clientFactory = RegistryClientFactory.getInstance();
 	private RegistryInstanceMap instanceMap = RegistryInstanceMap.getInstance();
@@ -210,10 +211,10 @@ public class RegistrySteps
 			if (host == null || host.isEmpty())
 				continue;
 
-			for (String h : host.split(HOST_SPLIT))
+			for (String h : host.split(HOSTS_SPLIT))
 			{
-				String[] hh = h.split(HOST_SPLIT);
-				instance.addHost(hh[0], Integer.parseInt(hh[1]));
+				String[] hh = h.trim().split(HOST_SPLIT);
+				instance.addHost(hh[0].trim(), Integer.parseInt(hh[1].trim()));
 			}
 		}
 		return map;
