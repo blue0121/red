@@ -18,15 +18,17 @@ public class ScheduledQueue<T extends Message> implements Queue<T>
 {
 	private static Logger logger = LoggerFactory.getLogger(ScheduledQueue.class);
 
+	private final int partition;
 	private final List<QueueHandler<T>> handlerList;
-	private final List<BlockingQueue<T>> queueList;
+	private final List<BlockingQueue<MessageChannel<T>>> queueList;
 	private final List<QueueThread<T>> threadList;
 
 	private HashKey hashKey;
 
-	public ScheduledQueue(List<QueueHandler<T>> handlerList)
+	public ScheduledQueue(int partition, List<QueueHandler<T>> handlerList)
 	{
 		AssertUtil.notEmpty(handlerList, "QueueHandler");
+		this.partition = partition;
 		this.handlerList = handlerList;
 		this.hashKey = new DefaultHashKey();
 
@@ -38,7 +40,7 @@ public class ScheduledQueue<T extends Message> implements Queue<T>
 		}
 
 		this.initThread();
-		logger.info("initialize, partition: {}", handlerList.size());
+		logger.info("initialize, partition: {}, handler: {}", partition, handlerList.size());
 	}
 
 	private void initThread()
@@ -59,13 +61,13 @@ public class ScheduledQueue<T extends Message> implements Queue<T>
 	}
 
 	@Override
-	public void push(T data)
+	public final void push(MessageChannel<T> data)
 	{
 		this.push(null, data);
 	}
 
 	@Override
-	public void push(String key, T data)
+	public final void push(String key, MessageChannel<T> data)
 	{
 		if (handlerList.size() > 1)
 		{
@@ -73,7 +75,7 @@ public class ScheduledQueue<T extends Message> implements Queue<T>
 		}
 		AssertUtil.notNull(data, "message");
 		int index = hashKey.calculate(key, handlerList.size());
-		BlockingQueue<T> queue = queueList.get(index);
+		BlockingQueue<MessageChannel<T>> queue = queueList.get(index);
 		queue.offer(data);
 		logger.debug("push data to queue, index: {}, key: {}", index, key);
 	}

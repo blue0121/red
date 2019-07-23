@@ -9,6 +9,6 @@ import com.red.core.message.Message;
 public interface QueueHandler<T extends Message>
 {
 
-	void handle(T data);
+	void handle(MessageChannel<T> data);
 
 }

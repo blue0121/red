@@ -9,8 +9,8 @@ import com.red.core.message.Message;
 public interface Queue<T extends Message>
 {
 
-	void push(T data);
+	void push(MessageChannel<T> data);
 
-	void push(String key, T data);
+	void push(String key, MessageChannel<T> data);
 
 }

@@ -17,8 +17,9 @@ public class QueueHandlerTest implements QueueHandler<Message>
 	}
 
 	@Override
-	public void handle(Message data)
+	public void handle(MessageChannel<Message> data)
 	{
-		logger.info("receive data: 0x{}, {}", Long.toHexString(data.getMessageId()), data.getProtocol());
+		Message message = data.getMessage();
+		logger.info("receive data: 0x{}, {}", Long.toHexString(message.getMessageId()), message.getProtocol());
 	}
 }

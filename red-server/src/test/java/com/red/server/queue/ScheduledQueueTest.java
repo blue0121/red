@@ -29,12 +29,13 @@ public class ScheduledQueueTest
 		}
 
 
-		ScheduledQueue<Message> queue = new ScheduledQueue<>(handlerList);
+		ScheduledQueue<Message> queue = new ScheduledQueue<>(handlerList.size(), handlerList);
 		for (int i = 0; i < SIZE; i++)
 		{
 			String name = "blue" + i;
 			Message message = RegistryMessage.create(RegistryCommand.SAVE, name);
-			queue.push(name, message);
+
+			queue.push(name, new MessageChannel<>(message, null));
 		}
 
 		Thread.sleep(1000);

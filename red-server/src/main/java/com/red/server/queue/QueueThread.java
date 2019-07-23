@@ -14,10 +14,10 @@ public class QueueThread<T extends Message> extends Thread
 {
 	private static Logger logger = LoggerFactory.getLogger(QueueThread.class);
 
-	private final BlockingQueue<T> queue;
+	private final BlockingQueue<MessageChannel<T>> queue;
 	private final QueueHandler<T> handler;
 
-	public QueueThread(BlockingQueue<T> queue, QueueHandler<T> handler)
+	public QueueThread(BlockingQueue<MessageChannel<T>> queue, QueueHandler<T> handler)
 	{
 		this.queue = queue;
 		this.handler = handler;
@@ -30,10 +30,10 @@ public class QueueThread<T extends Message> extends Thread
 		{
 			while (true)
 			{
-				T data = queue.take();
-				if (logger.isDebugEnabled())
+				MessageChannel<T> data = queue.take();
+				if (logger.isDebugEnabled() && data.getMessage() != null)
 				{
-					logger.debug("take data from queue, id: 0x{}", Long.toHexString(data.getMessageId()));
+					logger.debug("take data from queue, id: 0x{}", Long.toHexString(data.getMessage().getMessageId()));
 				}
 				try
 				{
