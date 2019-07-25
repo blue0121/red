@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -25,10 +26,15 @@ public class ScheduledQueue<T extends Message> implements Queue<T>
 
 	private HashKey hashKey;
 
-	public ScheduledQueue(int partition, List<QueueHandler<T>> handlerList)
+	public ScheduledQueue(QueueHandler<T> handler)
+	{
+		this(Collections.singletonList(handler));
+	}
+
+	public ScheduledQueue(List<QueueHandler<T>> handlerList)
 	{
 		AssertUtil.notEmpty(handlerList, "QueueHandler");
-		this.partition = partition;
+		this.partition = handlerList.size();
 		this.handlerList = handlerList;
 		this.hashKey = new DefaultHashKey();
 
@@ -74,7 +80,7 @@ public class ScheduledQueue<T extends Message> implements Queue<T>
 			AssertUtil.notEmpty(key, "key");
 		}
 		AssertUtil.notNull(data, "message");
-		int index = hashKey.calculate(key, handlerList.size());
+		int index = hashKey.calculate(key, partition);
 		BlockingQueue<MessageChannel<T>> queue = queueList.get(index);
 		queue.offer(data);
 		logger.debug("push data to queue, index: {}, key: {}", index, key);

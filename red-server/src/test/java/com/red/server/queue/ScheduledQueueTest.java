@@ -29,7 +29,7 @@ public class ScheduledQueueTest
 		}
 
 
-		ScheduledQueue<Message> queue = new ScheduledQueue<>(handlerList.size(), handlerList);
+		ScheduledQueue<Message> queue = new ScheduledQueue<>(handlerList);
 		for (int i = 0; i < SIZE; i++)
 		{
 			String name = "blue" + i;

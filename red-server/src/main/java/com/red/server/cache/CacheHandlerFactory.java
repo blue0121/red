@@ -1,13 +1,20 @@
 package com.red.server.cache;
 
+import com.red.core.message.CacheCommand;
 import com.red.core.message.CacheMessage;
-import com.red.core.message.RegistryCommand;
 import com.red.core.message.ResponseCode;
+import com.red.server.config.RedConfig;
+import com.red.server.config.RedConfigItem;
+import com.red.server.queue.MessageChannel;
+import com.red.server.queue.QueueHandler;
+import com.red.server.queue.ScheduledQueue;
 import io.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -19,12 +26,25 @@ public class CacheHandlerFactory
 	private static Logger logger = LoggerFactory.getLogger(CacheHandlerFactory.class);
 	private static CacheHandlerFactory factory;
 
-	private final Map<RegistryCommand, CacheHandler> handlerMap = new HashMap<>();
+	private final RedConfig redConfig = RedConfig.getInstance();
+	private final Map<CacheCommand, CacheHandler> handlerMap = new HashMap<>();
 	private final CacheStorage cacheStorage;
+	private final ScheduledQueue<CacheMessage> queue;
 
 	private CacheHandlerFactory()
 	{
 		this.cacheStorage = new MemoryCacheStorage();
+		handlerMap.put(CacheCommand.GET, new GetCacheHandler(cacheStorage));
+		handlerMap.put(CacheCommand.SET, new SetCacheHandler(cacheStorage));
+		handlerMap.put(CacheCommand.DELETE, new DeleteCacheHandler(cacheStorage));
+
+		List<QueueHandler<CacheMessage>> queueHandlerList = new ArrayList<>();
+		int partition = redConfig.getInt(RedConfigItem.CACHE_MEMORY_PARTITION, RedConfigItem.CACHE_MEMORY_PARTITION_VALUE);
+		for (int i = 0; i < partition; i++)
+		{
+			queueHandlerList.add(new CacheQueueHandler());
+		}
+		this.queue = new ScheduledQueue<>(queueHandlerList);
 	}
 
 	public static CacheHandlerFactory getFactory()
@@ -42,41 +62,23 @@ public class CacheHandlerFactory
 		return factory;
 	}
 
+	public CacheHandler getHandler(CacheCommand command)
+	{
+		return handlerMap.get(command);
+	}
+
 	public void handle(CacheMessage message, Channel channel)
 	{
-		CacheHandler handler = handlerMap.get(message.getCommand());
-		if (handler == null)
+		if (message.getKey() == null || message.getKey().isEmpty())
 		{
-			logger.error("Missing RegistryHandler: {}", message.getCommand());
+			CacheMessage response = message.toResponse(ResponseCode.CACHE, "key is empty");
+			channel.writeAndFlush(response);
 			return;
 		}
-		cacheStorage.getExecutorService().submit(() ->
-		{
-			ResponseCode code = ResponseCode.SUCCESS;
-			String msg = "Successful";
-			boolean error = true;
-			try
-			{
-				handler.handle(message, channel);
-				error = false;
-			}
-			catch (CacheStorageException e)
-			{
-				code = ResponseCode.REGISTRY;
-				msg = e.getMessage();
-			}
-			catch (Throwable e)
-			{
-				code = ResponseCode.ERROR;
-				msg = "Unknown";
-				logger.error("Error: ", e);
-			}
-			if (error)
-			{
-				CacheMessage response = message.toResponse(code, msg);
-				channel.writeAndFlush(response);
-			}
-		});
+
+		MessageChannel<CacheMessage> data = new MessageChannel<>(message, channel);
+		this.queue.push(message.getKey(), data);
+		logger.debug("push data, key: {}", message.getKey());
 	}
 
 }

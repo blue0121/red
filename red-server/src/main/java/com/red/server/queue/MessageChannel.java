@@ -1,8 +1,8 @@
 package com.red.server.queue;
 
 import com.red.core.message.Message;
+import io.netty.channel.Channel;
 
-import java.nio.channels.Channel;
 
 /**
  * @author Jin Zheng

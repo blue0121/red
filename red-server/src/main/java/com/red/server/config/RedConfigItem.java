@@ -19,8 +19,10 @@ public class RedConfigItem
 	public static final String SESSION_TIMEOUT = "session.timeout";
 	public static final int SESSION_TIMEOUT_VALUE = 10;
 
-	public static final String CACHE_MAX_SIZE = "cache.max_size";
-	public static final int CACHE_MAX_SIZE_VALUE = 10_000_000;
+	public static final String CACHE_MEMORY_MAX_SIZE = "cache.memory.max_size";
+	public static final int CACHE_MEMORY_MAX_SIZE_VALUE = 10_000_000;
+	public static final String CACHE_MEMORY_PARTITION = "cache.memory.partition";
+	public static final int CACHE_MEMORY_PARTITION_VALUE = 4;
 
 
 	private RedConfigItem()

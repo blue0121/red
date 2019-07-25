@@ -8,9 +8,6 @@ import com.red.server.config.RedConfigItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 /**
  * @author Jin Zheng
  * @since 2019-07-07
@@ -19,7 +16,6 @@ public class MemoryCacheStorage implements CacheStorage
 {
 	private static Logger logger = LoggerFactory.getLogger(MemoryCacheStorage.class);
 
-	private final ExecutorService executorService;
 	private final Cache<String, CacheObject> cache;
 	private final CacheObjectExpiry expiry;
 	private final RedConfig config;
@@ -27,11 +23,10 @@ public class MemoryCacheStorage implements CacheStorage
 	public MemoryCacheStorage()
 	{
 		this.config = RedConfig.getInstance();
-		this.executorService = Executors.newSingleThreadExecutor();
 		this.expiry = new CacheObjectExpiry();
 		this.cache = Caffeine.newBuilder()
 				.expireAfter(expiry)
-				.maximumSize(config.getInt(RedConfigItem.CACHE_MAX_SIZE, RedConfigItem.CACHE_MAX_SIZE_VALUE))
+				.maximumSize(config.getInt(RedConfigItem.CACHE_MEMORY_MAX_SIZE, RedConfigItem.CACHE_MEMORY_MAX_SIZE_VALUE))
 				.build();
 	}
 
@@ -61,9 +56,4 @@ public class MemoryCacheStorage implements CacheStorage
 		logger.debug("Delete cache message, key: {}", key);
 	}
 
-	@Override
-	public ExecutorService getExecutorService()
-	{
-		return executorService;
-	}
 }
