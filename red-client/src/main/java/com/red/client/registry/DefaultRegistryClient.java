@@ -2,7 +2,6 @@ package com.red.client.registry;
 
 import com.red.client.HandlerClient;
 import com.red.client.RedClientException;
-import com.red.core.message.Message;
 import com.red.core.message.RegistryCommand;
 import com.red.core.message.RegistryMessage;
 import com.red.core.util.AssertUtil;
@@ -104,7 +103,7 @@ public class DefaultRegistryClient implements RegistryClient
 			messageListener = new RegistryMessageListener(listener);
 		}
 		this.registryListener(message, listener);
-		Future<Message> future = handlerClient.sendMessage(message, messageListener);
+		com.red.client.Future future = handlerClient.sendMessage(message, messageListener);
 		FutureRegistryInstance futureRegistryInstance = new FutureRegistryInstance(future);
 		return futureRegistryInstance;
 	}

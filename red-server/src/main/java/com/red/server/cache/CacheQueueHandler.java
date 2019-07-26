@@ -1,5 +1,6 @@
 package com.red.server.cache;
 
+import com.red.core.message.CacheCommand;
 import com.red.core.message.CacheMessage;
 import com.red.core.message.ResponseCode;
 import com.red.server.queue.MessageChannel;
@@ -7,6 +8,9 @@ import com.red.server.queue.QueueHandler;
 import io.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -16,11 +20,16 @@ import org.slf4j.LoggerFactory;
 public class CacheQueueHandler implements QueueHandler<CacheMessage>
 {
 	private static Logger logger = LoggerFactory.getLogger(CacheQueueHandler.class);
-	private CacheHandlerFactory factory;
+
+	private final Map<CacheCommand, CacheHandler> handlerMap = new HashMap<>();
+	private final CacheStorage cacheStorage;
 
 	public CacheQueueHandler()
 	{
-		this.factory = CacheHandlerFactory.getFactory();
+		this.cacheStorage = new MemoryCacheStorage();
+		handlerMap.put(CacheCommand.GET, new GetCacheHandler(cacheStorage));
+		handlerMap.put(CacheCommand.SET, new SetCacheHandler(cacheStorage));
+		handlerMap.put(CacheCommand.DELETE, new DeleteCacheHandler(cacheStorage));
 	}
 
 	@Override
@@ -28,7 +37,7 @@ public class CacheQueueHandler implements QueueHandler<CacheMessage>
 	{
 		CacheMessage message = data.getMessage();
 		Channel channel = data.getChannel();
-		CacheHandler handler = factory.getHandler(message.getCommand());
+		CacheHandler handler = handlerMap.get(message.getCommand());
 		if (handler == null)
 		{
 			logger.error("Missing RegistryHandler: {}", message.getCommand());

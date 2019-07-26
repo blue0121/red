@@ -30,7 +30,7 @@ public class RegistryInstance
 		}
 	}
 
-	public static RegistryInstance from(RegistryMessage message)
+	static RegistryInstance from(RegistryMessage message)
 	{
 		RegistryInstance instance = new RegistryInstance();
 		instance.addNameList(message.getNameSet());
@@ -42,7 +42,7 @@ public class RegistryInstance
 		return instance;
 	}
 
-	public RegistryMessage build(RegistryCommand command)
+	RegistryMessage build(RegistryCommand command)
 	{
 		RegistryMessage message = RegistryMessage.create(command, nameSet.toArray(new String[0]));
 		for (Host host : hostSet)

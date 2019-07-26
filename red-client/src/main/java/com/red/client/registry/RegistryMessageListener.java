@@ -39,7 +39,6 @@ public class RegistryMessageListener implements MessageListener
 	{
 		AssertUtil.notEmpty(name, "name");
 		AssertUtil.notNull(listener, "RegistryListener");
-		AssertUtil.notNull(listenerMap, "RegistryListenerMap");
 
 		Set<RegistryListener> set = listenerMap.putIfAbsent(name, new CopyOnWriteArraySet<>());
 		if (set == null)
@@ -56,7 +55,6 @@ public class RegistryMessageListener implements MessageListener
 	public void removeRegistryCallback(String name)
 	{
 		AssertUtil.notEmpty(name, "name");
-		AssertUtil.notNull(listenerMap, "RegistryListenerMap");
 
 		listenerMap.remove(name);
 	}

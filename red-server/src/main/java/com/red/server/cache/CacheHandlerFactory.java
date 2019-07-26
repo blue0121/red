@@ -1,6 +1,5 @@
 package com.red.server.cache;
 
-import com.red.core.message.CacheCommand;
 import com.red.core.message.CacheMessage;
 import com.red.core.message.ResponseCode;
 import com.red.server.config.RedConfig;
@@ -13,9 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Jin Zheng
@@ -27,17 +24,10 @@ public class CacheHandlerFactory
 	private static CacheHandlerFactory factory;
 
 	private final RedConfig redConfig = RedConfig.getInstance();
-	private final Map<CacheCommand, CacheHandler> handlerMap = new HashMap<>();
-	private final CacheStorage cacheStorage;
 	private final ScheduledQueue<CacheMessage> queue;
 
 	private CacheHandlerFactory()
 	{
-		this.cacheStorage = new MemoryCacheStorage();
-		handlerMap.put(CacheCommand.GET, new GetCacheHandler(cacheStorage));
-		handlerMap.put(CacheCommand.SET, new SetCacheHandler(cacheStorage));
-		handlerMap.put(CacheCommand.DELETE, new DeleteCacheHandler(cacheStorage));
-
 		List<QueueHandler<CacheMessage>> queueHandlerList = new ArrayList<>();
 		int partition = redConfig.getInt(RedConfigItem.CACHE_MEMORY_PARTITION, RedConfigItem.CACHE_MEMORY_PARTITION_VALUE);
 		for (int i = 0; i < partition; i++)
@@ -60,11 +50,6 @@ public class CacheHandlerFactory
 			}
 		}
 		return factory;
-	}
-
-	public CacheHandler getHandler(CacheCommand command)
-	{
-		return handlerMap.get(command);
 	}
 
 	public void handle(CacheMessage message, Channel channel)

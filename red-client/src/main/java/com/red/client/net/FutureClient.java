@@ -3,6 +3,7 @@ package com.red.client.net;
 import com.red.client.Future;
 import com.red.client.MessageListener;
 import com.red.client.RedClientException;
+import com.red.client.cache.CacheClientException;
 import com.red.client.registry.RegistryClientException;
 import com.red.core.message.Message;
 import com.red.core.message.Response;
@@ -112,16 +113,26 @@ public class FutureClient implements Future
 		if (!(response instanceof Response))
 			return null;
 
+		return getException((Response) response);
+	}
+
+	public static RedClientException getException(Response response)
+	{
 		RedClientException exception = null;
-		Response resp = (Response) response;
-		if (resp.getCode() == ResponseCode.ERROR)
+		if (response.getCode() == ResponseCode.ERROR)
 		{
-			exception = new RedClientException(resp.getMessage());
+			exception = new RedClientException(response.getMessage());
 		}
-		else if (resp.getCode() == ResponseCode.REGISTRY)
+		else if (response.getCode() == ResponseCode.REGISTRY)
 		{
-			exception = new RegistryClientException(resp.getMessage());
+			exception = new RegistryClientException(response.getMessage());
+		}
+		else if (response.getCode() == ResponseCode.CACHE)
+		{
+			exception = new CacheClientException(response.getMessage());
 		}
 		return exception;
 	}
+
+
 }
