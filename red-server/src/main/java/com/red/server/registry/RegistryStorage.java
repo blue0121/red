@@ -18,7 +18,7 @@ public interface RegistryStorage
 
 	Set<String> list(String name);
 
-	void disconnect(Channel channel);
+	void disconnect(String item, Channel channel);
 
 	ExecutorService getExecutorService();
 

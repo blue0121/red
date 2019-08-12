@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
  * @author Jin Zheng
  * @since 1.0 2019-05-13
  */
-public class RegistryListenerTest implements RegistryListener
+public class RegistryListenerTest implements RegistryCallback
 {
 	private static Logger logger = LoggerFactory.getLogger(RegistryListenerTest.class);
 
@@ -16,8 +16,14 @@ public class RegistryListenerTest implements RegistryListener
 	}
 
 	@Override
-	public void onReceive(RegistryInstance instance)
+	public void onSuccess(RegistryInstance data)
 	{
-		logger.info("Receive registry message, name: {}, host: {}", instance.getNameSet(), instance.getHostSet());
+		logger.info("Receive registry message, name: {}, host: {}", data.getNameSet(), data.getHostSet());
+	}
+
+	@Override
+	public void onFailure(Exception e)
+	{
+		logger.error("Receive registry message error, ", e);
 	}
 }

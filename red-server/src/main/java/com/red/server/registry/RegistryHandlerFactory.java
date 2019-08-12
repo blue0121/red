@@ -34,7 +34,7 @@ public class RegistryHandlerFactory
 		handlerMap.put(RegistryCommand.WATCH, new WatchRegistryHandler(channelGroup));
 		handlerMap.put(RegistryCommand.UNWATCH, new UnwatchRegistryHandler(channelGroup));
 		handlerMap.put(RegistryCommand.BIND, new BindRegistryHandler(channelGroup));
-		handlerMap.put(RegistryCommand.UNBIND, new UnbindRegistryHandler(channelGroup));
+		handlerMap.put(RegistryCommand.UNBIND, new UnbindRegistryHandler(registryStorage));
 	}
 
 	public static RegistryHandlerFactory getFactory()
@@ -95,7 +95,7 @@ public class RegistryHandlerFactory
 		{
 			try
 			{
-				registryStorage.disconnect(channel);
+				registryStorage.disconnect(null, channel);
 			}
 			catch (Throwable e)
 			{

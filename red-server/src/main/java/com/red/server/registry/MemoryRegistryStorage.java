@@ -101,9 +101,9 @@ public class MemoryRegistryStorage implements RegistryStorage
 	}
 
 	@Override
-	public void disconnect(Channel channel)
+	public void disconnect(String item, Channel channel)
 	{
-		String item = channelGroup.disconnect(channel);
+		item = channelGroup.unbindChannel(item, channel);
 		if (item == null || item.isEmpty())
 			return;
 

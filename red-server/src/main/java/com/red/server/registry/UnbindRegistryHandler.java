@@ -10,11 +10,11 @@ import io.netty.channel.Channel;
  */
 public class UnbindRegistryHandler implements RegistryHandler
 {
-	private final RegistryChannelGroup channelGroup;
+	private final RegistryStorage storage;
 
-	public UnbindRegistryHandler(RegistryChannelGroup channelGroup)
+	public UnbindRegistryHandler(RegistryStorage storage)
 	{
-		this.channelGroup = channelGroup;
+		this.storage = storage;
 	}
 
 	@Override
@@ -23,7 +23,7 @@ public class UnbindRegistryHandler implements RegistryHandler
 		if (message.getItemSet().size() != 1)
 			throw new RegistryChannelException("item size must be 1");
 
-		channelGroup.unbindChannel(message.getItem(), channel);
+		storage.disconnect(message.getItem(), channel);
 		RegistryMessage response = message.toResponse(ResponseCode.SUCCESS, "Unbind successful");
 		channel.writeAndFlush(response);
 	}

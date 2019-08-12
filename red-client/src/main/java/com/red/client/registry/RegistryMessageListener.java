@@ -1,9 +1,12 @@
 package com.red.client.registry;
 
 import com.red.client.MessageListener;
+import com.red.client.RedClientException;
+import com.red.client.net.FutureClient;
 import com.red.core.message.Message;
 import com.red.core.message.Protocol;
 import com.red.core.message.RegistryMessage;
+import com.red.core.message.ResponseCode;
 import com.red.core.util.AssertUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,26 +24,26 @@ public class RegistryMessageListener implements MessageListener
 {
 	private static Logger logger = LoggerFactory.getLogger(RegistryMessageListener.class);
 
-	private RegistryListener listener;
-	private Map<String, Set<RegistryListener>> listenerMap;
+	private RegistryCallback callback;
+	private Map<String, Set<RegistryCallback>> listenerMap;
 
 	public RegistryMessageListener()
 	{
 		this(null);
 	}
 
-	public RegistryMessageListener(RegistryListener listener)
+	public RegistryMessageListener(RegistryCallback callback)
 	{
-		this.listener = listener;
+		this.callback = callback;
 		this.listenerMap = new ConcurrentHashMap<>();
 	}
 
-	public void addRegistryCallback(String name, RegistryListener listener)
+	public void addRegistryCallback(String name, RegistryCallback listener)
 	{
 		AssertUtil.notEmpty(name, "name");
 		AssertUtil.notNull(listener, "RegistryListener");
 
-		Set<RegistryListener> set = listenerMap.putIfAbsent(name, new CopyOnWriteArraySet<>());
+		Set<RegistryCallback> set = listenerMap.putIfAbsent(name, new CopyOnWriteArraySet<>());
 		if (set == null)
 		{
 			set = listenerMap.get(name);
@@ -66,14 +69,23 @@ public class RegistryMessageListener implements MessageListener
 			return;
 
 		RegistryMessage registryMessage = (RegistryMessage) message;
-		RegistryInstance instance = RegistryInstance.from(registryMessage);
-		if (listener != null)
+		RegistryInstance instance = null;
+		RedClientException exception = null;
+		if (registryMessage.getCode() == ResponseCode.SUCCESS)
 		{
-			listener.onReceive(instance);
+			instance = RegistryInstance.from(registryMessage);
 		}
 		else
 		{
-			Set<RegistryListener> set = null;
+			exception = FutureClient.getException(registryMessage);
+		}
+		if (callback != null)
+		{
+			this.invoke(callback, instance, exception);
+		}
+		else
+		{
+			Set<RegistryCallback> set = null;
 			if (registryMessage.getName() != null)
 			{
 				set = listenerMap.get(registryMessage.getName());
@@ -90,10 +102,22 @@ public class RegistryMessageListener implements MessageListener
 			{
 				logger.debug("Receive registry message, name: {}, host: {}", instance.getNameSet(), instance.getHostSet());
 			}
-			for (RegistryListener listener : set)
+			for (RegistryCallback listener : set)
 			{
-				listener.onReceive(instance);
+				this.invoke(listener, instance, exception);
 			}
+		}
+	}
+
+	private void invoke(RegistryCallback callback, RegistryInstance instance, RedClientException exception)
+	{
+		if (instance != null)
+		{
+			callback.onSuccess(instance);
+		}
+		else if (exception != null)
+		{
+			callback.onFailure(exception);
 		}
 	}
 

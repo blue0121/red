@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class RegistryClientTest
 {
-	private final RegistryListener callback;
+	private final RegistryCallback callback;
 	private final RegistryClient registryClient;
 	private final NettyConnectionClient client;
 

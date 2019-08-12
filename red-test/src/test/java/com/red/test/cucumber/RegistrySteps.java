@@ -1,6 +1,7 @@
 package com.red.test.cucumber;
 
 import com.red.client.registry.Host;
+import com.red.client.registry.RegistryCallback;
 import com.red.client.registry.RegistryClient;
 import com.red.client.registry.RegistryInstance;
 import cucumber.api.java.After;
@@ -82,7 +83,19 @@ public class RegistrySteps
 		{
 			instance.addName(data.get(NAME));
 		}
-		client.watch(instance, ri -> instanceMap.add(name, ri) );
+		client.watch(instance, new RegistryCallback() {
+			@Override
+			public void onSuccess(RegistryInstance data)
+			{
+				instanceMap.add(name, data);
+			}
+
+			@Override
+			public void onFailure(Exception e)
+			{
+				logger.error("error, ", e);
+			}
+		});
 		logger.info("watch, {} - {}", name, instance.getNameSet());
 	}
 
@@ -145,18 +158,22 @@ public class RegistrySteps
 	{
 		Map<String, Set<Host>> map = instanceMap.get(client);
 		Map<String, RegistryInstance> instance = this.getRegistryInstance(dataTable);
-		if (map == null || map.isEmpty())
-		{
-			if (instance != null && !instance.isEmpty())
-			{
-				Assert.fail("can not receive");
-				return;
-			}
-		}
+		//System.out.println(map);
+		//System.out.println(instance);
+		if ((instance == null || instance.isEmpty()) && (map == null || map.isEmpty()))
+			return;
 
 		for (Map.Entry<String, RegistryInstance> entry : instance.entrySet())
 		{
-			Assert.assertEquals(entry.getValue().getHostSet(), map.get(entry.getKey()));
+			if (map == null && (entry.getValue().getHostSet() == null || entry.getValue().getHostSet().isEmpty()))
+				continue;
+
+			Set<Host> hostSet = map.get(entry.getKey());
+			if ((entry.getValue().getHostSet() == null || entry.getValue().getHostSet().isEmpty())
+				&& (hostSet == null && hostSet.isEmpty()))
+				continue;
+
+			Assert.assertEquals(entry.getValue().getHostSet(), hostSet);
 		}
 	}
 

@@ -50,19 +50,33 @@ public class RegistryChannelGroup
 		logger.info("Bind channel, host: {}, channel: {}", item, id);
 	}
 
-	public void unbindChannel(String item, Channel channel)
+	public String unbindChannel(String item, Channel channel)
 	{
-		if (item == null || item.isEmpty())
-			throw new RegistryChannelException("item is empty");
-
 		ChannelId id = channel.id();
-		ChannelId oldId = itemMap.get(item);
-		if (!id.equals(oldId))
+		String oldItem = idMap.get(id);
+		if (oldItem == null || oldItem.isEmpty())
+			return oldItem;
+
+		if (item != null && !item.equals(oldItem))
 			throw new RegistryChannelException("Can not unbind host: " + item);
 
-		itemMap.remove(item);
+		for (Map.Entry<String, Set<ChannelId>> entry : nameCache.entrySet())
+		{
+			Set<ChannelId> idSet = entry.getValue();
+			if (idSet == null || idSet.isEmpty())
+				continue;
+
+			boolean result = idSet.remove(id);
+			if (result)
+			{
+				logger.info("Disconnect channel [{}] from [{}]", channel.id(), entry.getKey());
+			}
+		}
 		idMap.remove(id);
-		logger.info("Unbind channel, host: {}, channel: {}", item, id);
+		itemMap.remove(oldItem);
+		logger.info("Unbind channel [{}] from [{}]", id, oldItem);
+
+		return oldItem;
 	}
 
 	public String getItem(Channel channel)

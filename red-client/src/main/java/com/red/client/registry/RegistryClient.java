@@ -12,23 +12,23 @@ public interface RegistryClient
 
 	RegistryInstance saveSync(RegistryInstance instance);
 
-	Future<RegistryInstance> saveAsync(RegistryInstance instance, RegistryListener listener);
+	Future<RegistryInstance> saveAsync(RegistryInstance instance, RegistryCallback callback);
 
 	void saveAtRate(RegistryInstance instance, long period, TimeUnit unit);
 
 	RegistryInstance deleteSync(RegistryInstance instance);
 
-	Future<RegistryInstance> deleteAsync(RegistryInstance instance, RegistryListener listener);
+	Future<RegistryInstance> deleteAsync(RegistryInstance instance, RegistryCallback callback);
 
 	RegistryInstance listSync(RegistryInstance instance);
 
-	Future<RegistryInstance> listAsync(RegistryInstance instance, RegistryListener listener);
+	Future<RegistryInstance> listAsync(RegistryInstance instance, RegistryCallback callback);
 
 	void bind(RegistryInstance instance);
 
 	void unbind(RegistryInstance instance);
 
-	void watch(RegistryInstance instance, RegistryListener listener);
+	void watch(RegistryInstance instance, RegistryCallback callback);
 
 	void unwatch(RegistryInstance instance);
 

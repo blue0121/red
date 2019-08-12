@@ -108,4 +108,10 @@ public class RegistryInstance
 	{
 		return nameSet;
 	}
+
+	@Override
+	public String toString()
+	{
+		return String.format("RegistryInstance[name=%s, item=%s]", nameSet, hostSet);
+	}
 }
