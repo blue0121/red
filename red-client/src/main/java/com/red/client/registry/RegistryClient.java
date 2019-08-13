@@ -1,6 +1,7 @@
 package com.red.client.registry;
 
-import java.util.concurrent.Future;
+import com.red.client.RedFuture;
+
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -12,17 +13,17 @@ public interface RegistryClient
 
 	RegistryInstance saveSync(RegistryInstance instance);
 
-	Future<RegistryInstance> saveAsync(RegistryInstance instance, RegistryCallback callback);
+	RedFuture<RegistryInstance> saveAsync(RegistryInstance instance, RegistryCallback callback);
 
 	void saveAtRate(RegistryInstance instance, long period, TimeUnit unit);
 
 	RegistryInstance deleteSync(RegistryInstance instance);
 
-	Future<RegistryInstance> deleteAsync(RegistryInstance instance, RegistryCallback callback);
+	RedFuture<RegistryInstance> deleteAsync(RegistryInstance instance, RegistryCallback callback);
 
 	RegistryInstance listSync(RegistryInstance instance);
 
-	Future<RegistryInstance> listAsync(RegistryInstance instance, RegistryCallback callback);
+	RedFuture<RegistryInstance> listAsync(RegistryInstance instance, RegistryCallback callback);
 
 	void bind(RegistryInstance instance);
 

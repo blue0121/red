@@ -104,15 +104,15 @@ public class NettyConnectionClient implements ConnectionClient, HandlerClient
 	}
 
 	@Override
-	public Future sendMessage(Message message)
+	public RedFuture<Message> sendMessage(Message message)
 	{
 		return channelClient.sendMessage(message, null);
 	}
 
 	@Override
-	public Future sendMessage(Message message, MessageListener listener)
+	public RedFuture<Message> sendMessage(Message message, MessageListener listener)
 	{
-		Future future = channelClient.sendMessage(message, listener);
+		RedFuture<Message> future = channelClient.sendMessage(message, listener);
 		Message response = channelClient.getMessage(message.getMessageId());
 		if (response != null)
 		{

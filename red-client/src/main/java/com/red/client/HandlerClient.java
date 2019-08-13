@@ -11,9 +11,9 @@ import java.util.concurrent.TimeUnit;
 public interface HandlerClient
 {
 
-	Future sendMessage(Message request);
+	RedFuture<Message> sendMessage(Message request);
 
-	Future sendMessage(Message request, MessageListener listener);
+	RedFuture<Message> sendMessage(Message request, MessageListener listener);
 
 	void sendMessageAtFixRate(Message message, long period, TimeUnit unit);
 

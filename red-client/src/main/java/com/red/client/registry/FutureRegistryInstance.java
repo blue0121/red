@@ -1,6 +1,7 @@
 package com.red.client.registry;
 
-import com.red.client.Future;
+import com.red.client.RedClientException;
+import com.red.client.RedFuture;
 import com.red.core.message.Message;
 import com.red.core.message.Protocol;
 import com.red.core.message.RegistryMessage;
@@ -13,11 +14,11 @@ import java.util.concurrent.TimeoutException;
  * @author Jin Zheng
  * @since 1.0 2019-05-13
  */
-public class FutureRegistryInstance implements java.util.concurrent.Future<RegistryInstance>
+public class FutureRegistryInstance implements RedFuture<RegistryInstance>
 {
-	private final Future future;
+	private final RedFuture<Message> future;
 
-	public FutureRegistryInstance(Future future)
+	public FutureRegistryInstance(RedFuture<Message> future)
 	{
 		this.future = future;
 	}
@@ -54,7 +55,7 @@ public class FutureRegistryInstance implements java.util.concurrent.Future<Regis
 		return this.toInstance(message);
 	}
 
-	public RuntimeException getException()
+	public RedClientException getException()
 	{
 		return future.getException();
 	}

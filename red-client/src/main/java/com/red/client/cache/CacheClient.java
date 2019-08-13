@@ -1,6 +1,6 @@
 package com.red.client.cache;
 
-import java.util.concurrent.Future;
+import com.red.client.RedFuture;
 
 /**
  * @author Jin Zheng
@@ -15,7 +15,7 @@ public interface CacheClient
 
 	CacheInstance getSync(String key);
 
-	Future<CacheInstance> getAsync(String key, CacheCallback callback);
+	RedFuture<CacheInstance> getAsync(String key, CacheCallback callback);
 
 	void deleteSync(String key);
 

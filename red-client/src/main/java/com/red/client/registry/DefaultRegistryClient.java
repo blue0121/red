@@ -2,11 +2,12 @@ package com.red.client.registry;
 
 import com.red.client.HandlerClient;
 import com.red.client.RedClientException;
+import com.red.client.RedFuture;
+import com.red.core.message.Message;
 import com.red.core.message.RegistryCommand;
 import com.red.core.message.RegistryMessage;
 import com.red.core.util.AssertUtil;
 
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -32,7 +33,7 @@ public class DefaultRegistryClient implements RegistryClient
 	}
 
 	@Override
-	public Future<RegistryInstance> saveAsync(RegistryInstance instance, RegistryCallback callback)
+	public RedFuture<RegistryInstance> saveAsync(RegistryInstance instance, RegistryCallback callback)
 	{
 		return this.invokeAsync(RegistryCommand.SAVE, instance, callback);
 	}
@@ -52,7 +53,7 @@ public class DefaultRegistryClient implements RegistryClient
 	}
 
 	@Override
-	public Future<RegistryInstance> deleteAsync(RegistryInstance instance, RegistryCallback callback)
+	public RedFuture<RegistryInstance> deleteAsync(RegistryInstance instance, RegistryCallback callback)
 	{
 		return this.invokeAsync(RegistryCommand.DELETE, instance, callback);
 	}
@@ -64,7 +65,7 @@ public class DefaultRegistryClient implements RegistryClient
 	}
 
 	@Override
-	public Future<RegistryInstance> listAsync(RegistryInstance instance, RegistryCallback callback)
+	public RedFuture<RegistryInstance> listAsync(RegistryInstance instance, RegistryCallback callback)
 	{
 		return this.invokeAsync(RegistryCommand.LIST, instance, callback);
 	}
@@ -103,7 +104,7 @@ public class DefaultRegistryClient implements RegistryClient
 			messageListener = new RegistryMessageListener(callback);
 		}
 		this.registryListener(message, callback);
-		com.red.client.Future future = handlerClient.sendMessage(message, messageListener);
+		RedFuture<Message> future = handlerClient.sendMessage(message, messageListener);
 		FutureRegistryInstance futureRegistryInstance = new FutureRegistryInstance(future);
 		return futureRegistryInstance;
 	}

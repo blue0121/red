@@ -3,9 +3,9 @@ package com.red.client.net;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.red.client.ConnectionListener;
-import com.red.client.Future;
 import com.red.client.MessageListener;
 import com.red.client.RedClientException;
+import com.red.client.RedFuture;
 import com.red.core.message.Message;
 import com.red.core.util.AssertUtil;
 import io.netty.channel.Channel;
@@ -98,7 +98,7 @@ public class ChannelClient
 		channel.eventLoop().scheduleAtFixedRate(() -> channel.writeAndFlush(message), 0, period, unit);
 	}
 
-	public Future sendMessage(Message message, MessageListener listener)
+	public RedFuture<Message> sendMessage(Message message, MessageListener listener)
 	{
 		AssertUtil.notNull(message, "Message");
 

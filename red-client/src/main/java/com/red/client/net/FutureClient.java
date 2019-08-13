@@ -1,8 +1,8 @@
 package com.red.client.net;
 
-import com.red.client.Future;
 import com.red.client.MessageListener;
 import com.red.client.RedClientException;
+import com.red.client.RedFuture;
 import com.red.client.cache.CacheClientException;
 import com.red.client.registry.RegistryClientException;
 import com.red.core.message.Message;
@@ -19,7 +19,7 @@ import java.util.concurrent.TimeoutException;
  * @author Jin Zheng
  * @since 1.0 2019-05-05
  */
-public class FutureClient implements Future
+public class FutureClient implements RedFuture<Message>
 {
 	private CountDownLatch latch;
 	private MessageListener listener;
