@@ -8,8 +8,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * @author Jin Zheng
@@ -21,13 +19,11 @@ public class MemoryRegistryStorage implements RegistryStorage
 
 	private final Map<String, Set<String>> registryMap;
 	private final RegistryChannelGroup channelGroup;
-	private final ExecutorService executorService;
 
 	public MemoryRegistryStorage(RegistryChannelGroup channelGroup)
 	{
 		this.registryMap = new HashMap<>();
 		this.channelGroup = channelGroup;
-		this.executorService = Executors.newSingleThreadExecutor();
 	}
 
 	@Override
@@ -104,6 +100,7 @@ public class MemoryRegistryStorage implements RegistryStorage
 	public void disconnect(String item, Channel channel)
 	{
 		item = channelGroup.unbindChannel(item, channel);
+		//logger.info("disconnect, item: {}", item);
 		if (item == null || item.isEmpty())
 			return;
 
@@ -119,12 +116,6 @@ public class MemoryRegistryStorage implements RegistryStorage
 				channelGroup.notify(entry.getKey(), itemSet);
 			}
 		}
-	}
-
-	@Override
-	public ExecutorService getExecutorService()
-	{
-		return executorService;
 	}
 
 }

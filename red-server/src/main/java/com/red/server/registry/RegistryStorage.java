@@ -3,7 +3,6 @@ package com.red.server.registry;
 import io.netty.channel.Channel;
 
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
 
 /**
  * @author Jin Zheng
@@ -19,7 +18,5 @@ public interface RegistryStorage
 	Set<String> list(String name);
 
 	void disconnect(String item, Channel channel);
-
-	ExecutorService getExecutorService();
 
 }

@@ -38,7 +38,7 @@ public class RegistrySteps
 	}
 
 	@After
-	public void stop()
+	public void stopAll()
 	{
 		clientFactory.stopAll();
 		instanceMap.clear();
@@ -48,6 +48,12 @@ public class RegistrySteps
 	public void start(String name)
 	{
 		clientFactory.start(name);
+	}
+
+	@Given("stop registry client {string}")
+	public void stop(String name)
+	{
+		clientFactory.stop(name);
 	}
 
 	@Given("registry client {string} {string} {string}")

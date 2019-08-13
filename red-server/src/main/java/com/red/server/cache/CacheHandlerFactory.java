@@ -21,7 +21,7 @@ import java.util.List;
 public class CacheHandlerFactory
 {
 	private static Logger logger = LoggerFactory.getLogger(CacheHandlerFactory.class);
-	private static CacheHandlerFactory factory;
+	private static volatile CacheHandlerFactory factory;
 
 	private final RedConfig redConfig = RedConfig.getInstance();
 	private final ScheduledQueue<CacheMessage> queue;

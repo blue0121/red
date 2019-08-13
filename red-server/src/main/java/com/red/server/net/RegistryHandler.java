@@ -22,11 +22,6 @@ public class RegistryHandler extends SimpleChannelInboundHandler<RegistryMessage
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, RegistryMessage message) throws Exception
 	{
-		if (logger.isDebugEnabled())
-		{
-			logger.debug("Receive registry message, command: {}, name: {}, item: {}", message.getCommand(),
-					message.getNameSet(), message.getItemSet());
-		}
 		RegistryHandlerFactory.getFactory().handle(message, ctx.channel());
 	}
 

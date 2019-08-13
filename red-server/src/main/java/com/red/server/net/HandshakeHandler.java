@@ -57,7 +57,7 @@ public class HandshakeHandler extends SimpleChannelInboundHandler<HandshakeMessa
 	{
 		Channel ch = ctx.channel();
 		remoteAddress = (InetSocketAddress) ch.remoteAddress();
-		logger.info("Client connected: {}", remoteAddress);
+		logger.info("Client connected: {}, channel: {}", remoteAddress, ch.id());
 
 		super.channelActive(ctx);
 	}
@@ -65,7 +65,8 @@ public class HandshakeHandler extends SimpleChannelInboundHandler<HandshakeMessa
 	@Override
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception
 	{
-		logger.info("Client disconnected: {}", remoteAddress);
+		Channel ch = ctx.channel();
+		logger.info("Client disconnected: {}, channel: {}", remoteAddress, ch.id());
 
 		super.channelInactive(ctx);
 	}

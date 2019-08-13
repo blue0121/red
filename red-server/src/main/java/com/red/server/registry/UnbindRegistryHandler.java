@@ -20,9 +20,6 @@ public class UnbindRegistryHandler implements RegistryHandler
 	@Override
 	public void handle(RegistryMessage message, Channel channel)
 	{
-		if (message.getItemSet().size() != 1)
-			throw new RegistryChannelException("item size must be 1");
-
 		storage.disconnect(message.getItem(), channel);
 		RegistryMessage response = message.toResponse(ResponseCode.SUCCESS, "Unbind successful");
 		channel.writeAndFlush(response);
