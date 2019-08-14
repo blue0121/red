@@ -2,6 +2,8 @@ package com.red.client.cache;
 
 import com.red.core.message.CacheCommand;
 import com.red.core.message.CacheMessage;
+import com.red.core.util.CompressUtil;
+import com.red.core.util.Constant;
 import com.red.core.util.JsonUtil;
 
 /**
@@ -32,7 +34,14 @@ public class CacheInstance
 	static CacheInstance from(CacheMessage message)
 	{
 		CacheInstance instance = new CacheInstance(message.getKey());
-		instance.value = message.getValue();
+		if (message.isCompress())
+        {
+            instance.value = CompressUtil.uncompress(message.getValue());
+        }
+		else
+        {
+            instance.value = message.getValue();
+        }
 		instance.ttl = message.getTtl();
 		return instance;
 	}
@@ -40,7 +49,15 @@ public class CacheInstance
 	CacheMessage build(byte state, CacheCommand command)
 	{
 		CacheMessage message = CacheMessage.create(state, command, key);
-		message.setValue(value);
+		if (value != null && value.length > Constant.COMPRESS_SIZE)
+        {
+            message.setValue(CompressUtil.compress(value));
+            message.setCompress(true);
+        }
+		else
+		{
+            message.setValue(value);
+        }
 		message.setTtl(ttl);
 		return message;
 	}

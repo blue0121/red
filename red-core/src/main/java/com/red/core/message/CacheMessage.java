@@ -12,6 +12,7 @@ public class CacheMessage extends Response
 	public static final byte PERSISTENCE = 0x2;
 
 	private byte state;
+	private boolean compress;
 	private CacheCommand command;
 	private String key;
 	private byte[] value;
@@ -53,6 +54,7 @@ public class CacheMessage extends Response
 		response.setCode(code);
 		response.setMessage(message);
 		response.setState(state);
+		response.setCompress(compress);
 		response.setCommand(command);
 		response.setKey(key);
 		return response;
@@ -76,6 +78,16 @@ public class CacheMessage extends Response
 	public void setState(byte state)
 	{
 		this.state = state;
+	}
+
+	public boolean isCompress()
+	{
+		return compress;
+	}
+
+	public void setCompress(boolean compress)
+	{
+		this.compress = compress;
 	}
 
 	public CacheCommand getCommand()

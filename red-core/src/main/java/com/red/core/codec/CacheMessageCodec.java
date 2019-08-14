@@ -21,6 +21,7 @@ public class CacheMessageCodec extends ResponseMessageCodec
 		super.encodeBody(message, out);
 		CacheMessage cache = (CacheMessage) message;
 		out.writeByte(cache.getState());
+		out.writeBoolean(cache.isCompress());
 		out.writeShort(cache.getCommand().value());
 		this.writeString(cache.getKey(), out);
 		this.writeBytes(cache.getValue(), out);
@@ -33,6 +34,7 @@ public class CacheMessageCodec extends ResponseMessageCodec
 		super.decodeBody(message, in);
 		CacheMessage cache = (CacheMessage) message;
 		cache.setState(in.readByte());
+		cache.setCompress(in.readBoolean());
 		cache.setCommand(CacheCommand.valueOf(in.readShort()));
 		cache.setKey(this.readString(in));
 		cache.setValue(this.readBytes(in));

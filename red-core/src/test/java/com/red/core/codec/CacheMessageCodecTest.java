@@ -36,6 +36,7 @@ public class CacheMessageCodecTest
 		String key = "blue";
 		long ttl = 10L;
 		CacheMessage message = CacheMessage.createPersistence(CacheCommand.GET, key);
+		message.setCompress(true);
 		message.setValue(key.getBytes());
 		message.setTtl(ttl);
 		codec.encode(message, buf);
@@ -49,6 +50,7 @@ public class CacheMessageCodecTest
 		Assert.assertEquals(ResponseCode.SUCCESS, message2.getCode());
 		Assert.assertNull(message2.getMessage());
 		Assert.assertEquals(CacheMessage.PERSISTENCE, message2.getState());
+		Assert.assertEquals(message.isCompress(), message2.isCompress());
 		Assert.assertEquals(key, message2.getKey());
 		Assert.assertArrayEquals(key.getBytes(), message2.getValue());
 		Assert.assertEquals(ttl, message2.getTtl());

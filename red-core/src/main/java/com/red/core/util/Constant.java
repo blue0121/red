@@ -17,6 +17,9 @@ public class Constant
 	public static final int MINOR_VERSION_MASK = 0xFFFF;
 	public static final Version DEFAULT_VERSION = Version.VER_1_0;
 
+	// compress
+	public static final int COMPRESS_SIZE = 200;
+
 
 	private Constant()
 	{
