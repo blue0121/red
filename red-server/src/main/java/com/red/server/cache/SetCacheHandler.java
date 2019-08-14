@@ -20,7 +20,8 @@ public class SetCacheHandler implements CacheHandler
 	@Override
 	public void handle(CacheMessage message, Channel channel)
 	{
-		storage.save(message.getKey(), message.getValue(), message.getTtl());
+		CacheObject object = new CacheObject(message.getValue(), message.getTtl());
+		storage.set(message.getKey(), object);
 		CacheMessage response = message.toResponse(ResponseCode.SUCCESS, "Set successful");
 		channel.writeAndFlush(response);
 	}

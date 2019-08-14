@@ -31,21 +31,23 @@ public class MemoryCacheStorage implements CacheStorage
 	}
 
 	@Override
-	public void save(String key, byte[] value, long ttl)
+	public void set(String key, CacheObject object)
 	{
 		AssertUtil.notEmpty(key, "Key");
-		CacheObject cacheObject = new CacheObject(value, ttl);
-		cache.put(key, cacheObject);
-		logger.debug("Save cache message, key: {}", key);
+		if (object != null)
+		{
+			cache.put(key, object);
+		}
+		logger.debug("Set cache message, key: {}", key);
 	}
 
 	@Override
-	public byte[] get(String key)
+	public CacheObject get(String key)
 	{
 		AssertUtil.notEmpty(key, "Key");
 		CacheObject cacheObject = cache.getIfPresent(key);
 		logger.debug("Get cache message, key: {}", key);
-		return cacheObject == null ? null : cacheObject.getValue();
+		return cacheObject;
 	}
 
 	@Override

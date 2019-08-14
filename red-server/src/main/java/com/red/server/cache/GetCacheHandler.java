@@ -20,9 +20,13 @@ public class GetCacheHandler implements CacheHandler
 	@Override
 	public void handle(CacheMessage message, Channel channel)
 	{
-		byte[] value = storage.get(message.getKey());
+		CacheObject object = storage.get(message.getKey());
 		CacheMessage response = message.toResponse(ResponseCode.SUCCESS, "Get successful");
-		response.setValue(value);
+		if (object != null)
+		{
+			response.setValue(object.getValue());
+			response.setTtl(object.expire());
+		}
 		channel.writeAndFlush(response);
 	}
 }

@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 public class CacheObjectExpiry implements Expiry<String, CacheObject>
 {
 	private static Logger logger = LoggerFactory.getLogger(CacheObjectExpiry.class);
-	private static final long NANO = 1000_000;
+	private static final long NANO = 1_000_000;
 
 	public CacheObjectExpiry()
 	{

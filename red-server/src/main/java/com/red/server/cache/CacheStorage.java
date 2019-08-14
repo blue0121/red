@@ -7,9 +7,9 @@ package com.red.server.cache;
 public interface CacheStorage
 {
 
-	void save(String key, byte[] value, long ttl);
+	void set(String key, CacheObject object);
 
-	byte[] get(String key);
+	CacheObject get(String key);
 
 	void delete(String key);
 

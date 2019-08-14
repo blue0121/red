@@ -10,15 +10,18 @@ public class CacheObject
 {
 	private byte[] value;
 	private long ttl;
+	private long timestamp;
 
 	public CacheObject()
 	{
+		this.timestamp = System.currentTimeMillis();
 	}
 
 	public CacheObject(byte[] value, long ttl)
 	{
 		this.value = value;
 		this.ttl = ttl;
+		this.timestamp = System.currentTimeMillis();
 	}
 
 	public static CacheObject from(CacheMessage message)
@@ -27,6 +30,14 @@ public class CacheObject
 		object.setValue(message.getValue());
 		object.setTtl(message.getTtl());
 		return object;
+	}
+
+	public long expire()
+	{
+		if (ttl <= 0)
+			return ttl;
+
+		return ttl + timestamp - System.currentTimeMillis();
 	}
 
 	public byte[] getValue()
@@ -47,5 +58,10 @@ public class CacheObject
 	public void setTtl(long ttl)
 	{
 		this.ttl = ttl;
+	}
+
+	public long getTimestamp()
+	{
+		return timestamp;
 	}
 }
