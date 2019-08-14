@@ -15,6 +15,7 @@ public class DefaultMessageListener implements MessageListener
 	private static Logger logger = LoggerFactory.getLogger(DefaultMessageListener.class);
 
 	private MessageListener registryListener;
+	private MessageListener cacheListener;
 
 	public DefaultMessageListener()
 	{
@@ -27,10 +28,20 @@ public class DefaultMessageListener implements MessageListener
 		{
 			registryListener.complete(message);
 		}
+		else if (message.getProtocol() == Protocol.CACHE && cacheListener != null)
+		{
+			cacheListener.complete(message);
+		}
 	}
 
 	public void setRegistryListener(MessageListener registryListener)
 	{
 		this.registryListener = registryListener;
 	}
+
+	public void setCacheListener(MessageListener cacheListener)
+	{
+		this.cacheListener = cacheListener;
+	}
+
 }

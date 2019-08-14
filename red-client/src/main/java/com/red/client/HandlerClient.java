@@ -23,4 +23,6 @@ public interface HandlerClient
 
 	void setRegistryListener(MessageListener registryListener);
 
+	void setCacheListener(MessageListener cacheListener);
+
 }

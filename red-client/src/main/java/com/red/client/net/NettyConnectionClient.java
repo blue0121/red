@@ -140,6 +140,12 @@ public class NettyConnectionClient implements ConnectionClient, HandlerClient
 	}
 
 	@Override
+	public void setCacheListener(MessageListener cacheListener)
+	{
+		this.messageListener.setCacheListener(cacheListener);
+	}
+
+	@Override
 	public MessageListener getMessageListener()
 	{
 		return this.messageListener;

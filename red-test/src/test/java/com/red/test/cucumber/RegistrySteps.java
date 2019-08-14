@@ -30,7 +30,7 @@ public class RegistrySteps
 	public static final String HOSTS_SPLIT = ",";
 	public static final String HOST_SPLIT = ":";
 
-	private RegistryClientFactory clientFactory = RegistryClientFactory.getInstance();
+	private ClientFactory clientFactory = ClientFactory.getInstance();
 	private RegistryInstanceMap instanceMap = RegistryInstanceMap.getInstance();
 
 	public RegistrySteps()

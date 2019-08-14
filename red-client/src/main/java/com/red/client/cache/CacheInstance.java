@@ -31,7 +31,8 @@ public class CacheInstance
 
 	static CacheInstance from(CacheMessage message)
 	{
-		CacheInstance instance = new CacheInstance(message.getKey(), message.getValue());
+		CacheInstance instance = new CacheInstance(message.getKey());
+		instance.value = message.getValue();
 		instance.ttl = message.getTtl();
 		return instance;
 	}
@@ -61,7 +62,18 @@ public class CacheInstance
 
 	public <T> T getValueObject()
 	{
+		if (value == null || value.length == 0)
+			return null;
+
 		return JsonUtil.fromBytes(value);
+	}
+
+	public void setValueObject(Object object)
+	{
+		if (object == null)
+			return;
+
+		this.value = JsonUtil.toBytes(object);
 	}
 
 	public void setValue(byte[] value)

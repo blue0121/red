@@ -1,9 +1,12 @@
 package com.red.test.cucumber;
 
+import com.red.client.cache.CacheClient;
+import com.red.client.cache.DefaultCacheClient;
 import com.red.client.config.RedConfig;
 import com.red.client.net.NettyConnectionClient;
 import com.red.client.registry.DefaultRegistryClient;
 import com.red.client.registry.RegistryClient;
+import com.red.core.util.AssertUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,30 +18,31 @@ import java.util.Map;
  * @author Jin Zheng
  * @since 1.0 2019-06-21
  */
-public class RegistryClientFactory
+public class ClientFactory
 {
-	private static Logger logger = LoggerFactory.getLogger(RegistryClientFactory.class);
+	private static Logger logger = LoggerFactory.getLogger(ClientFactory.class);
 
 	private Map<String, NettyConnectionClient> clientMap = new HashMap<>();
 	private Map<String, RegistryClient> registryClientMap = new HashMap<>();
+	private Map<String, CacheClient> cacheClientMap = new HashMap<>();
 	private RedConfig config = new RedConfig();
 	private String address = "localhost:7903";
 
-	private static RegistryClientFactory instance;
+	private static volatile ClientFactory instance;
 
-	private RegistryClientFactory()
+	private ClientFactory()
 	{
 	}
 
-	public static RegistryClientFactory getInstance()
+	public static ClientFactory getInstance()
 	{
 		if (instance == null)
 		{
-			synchronized (RegistryClientFactory.class)
+			synchronized (ClientFactory.class)
 			{
 				if (instance == null)
 				{
-					instance = new RegistryClientFactory();
+					instance = new ClientFactory();
 				}
 			}
 		}
@@ -47,6 +51,12 @@ public class RegistryClientFactory
 
 	public void start(String name)
 	{
+		AssertUtil.notEmpty(name, "name");
+		if (clientMap.containsKey(name))
+		{
+			logger.warn("client {} exist", name);
+			return;
+		}
 		NettyConnectionClient client = new NettyConnectionClient(address, config);
 		client.start();
 		logger.info("start client {}", name);
@@ -54,6 +64,7 @@ public class RegistryClientFactory
 		{
 			clientMap.put(name, client);
 			registryClientMap.put(name, new DefaultRegistryClient(client));
+			cacheClientMap.put(name, new DefaultCacheClient(client));
 		}
 	}
 
@@ -67,6 +78,7 @@ public class RegistryClientFactory
 		logger.info("stop client {}", name);
 		clientMap.remove(name);
 		registryClientMap.remove(name);
+		cacheClientMap.remove(name);
 	}
 
 	public synchronized void stopAll()
@@ -78,11 +90,17 @@ public class RegistryClientFactory
 		}
 		clientMap.clear();
 		registryClientMap.clear();
+		cacheClientMap.clear();
 	}
 
 	public RegistryClient getRegistryClient(String name)
 	{
 		return registryClientMap.get(name);
+	}
+
+	public CacheClient getCacheClient(String name)
+	{
+		return cacheClientMap.get(name);
 	}
 
 	public RegistryClient getRegistryClient()
