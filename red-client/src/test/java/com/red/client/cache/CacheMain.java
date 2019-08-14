@@ -30,8 +30,12 @@ public class CacheMain
     private static void test(CacheClient client, CacheListenerTest callback)
     {
         String key = "test";
-        String value = "testtest";
-        client.setSync(new CacheInstance(key, value));
+        StringBuilder value = new StringBuilder(1024);
+        for (int i = 0; i < 200; i++)
+        {
+            value.append(key);
+        }
+        client.setSync(new CacheInstance(key, value.toString()));
         String rs = client.getSync(key).getValueObject();
         System.out.println(rs);
         client.deleteSync(key);

@@ -22,10 +22,6 @@ public class CacheHandler extends SimpleChannelInboundHandler<CacheMessage>
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, CacheMessage message) throws Exception
 	{
-		if (logger.isDebugEnabled())
-		{
-			logger.debug("Receive cache message, command: {}, key: {}", message.getCommand(), message.getKey());
-		}
 		CacheHandlerFactory.getFactory().handle(message, ctx.channel());
 	}
 

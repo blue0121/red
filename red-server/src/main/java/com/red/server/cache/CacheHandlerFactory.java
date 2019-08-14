@@ -63,7 +63,10 @@ public class CacheHandlerFactory
 
 		MessageChannel<CacheMessage> data = new MessageChannel<>(message, channel);
 		this.queue.push(message.getKey(), data);
-		logger.debug("push data, key: {}", message.getKey());
+		int size = message.getValue() == null ? 0 : message.getValue().length;
+		logger.debug("push data, channel: {}, id: 0x{}, command: {}, key: {}, value size: {}",
+				channel.id(), Long.toHexString(message.getMessageId()),
+				message.getCommand(), message.getKey(), size);
 	}
 
 }
