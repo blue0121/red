@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+	
+	<Appenders>
+		<Console name="con" target="SYSTEM_OUT">
+			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] [%c{2.}] %p - %m%n" />
+		</Console>
+		
+		<RollingFile name="main" fileName="./log/main.log" filePattern="./log/main_%d{yyyy_MM_dd}_%i.log.gz" append="true">
+			<PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss,SSS} [%t] [%c{2.}] %p - %m%n" />
+			<Policies>
+				<OnStartupTriggeringPolicy />
+				<DefaultRolloverStrategy>
+					<Delete basePath="./log">
+						<IfFileName glob="*/main_*.log.gz" />
+						<IfLastModified age="100d" />
+					</Delete>
+				</DefaultRolloverStrategy>
+				<!--<CronTriggeringPolicy schedule="0 0 0 * * ?" />-->
+				<TimeBasedTriggeringPolicy interval="1"/>
+				<SizeBasedTriggeringPolicy size="100MB" />
+			</Policies>
+		</RollingFile>
+	</Appenders>
+	
+	<Loggers>
+		<Logger name="com.v2x.core" level="info" includeLocation="false" additivity="false">
+			<AppenderRef ref="main" />
+		</Logger>
+		<Logger name="com.v2x.client" level="info" includeLocation="false" additivity="false">
+			<AppenderRef ref="main" />
+		</Logger>
+		
+		<Root level="error" includeLocation="false">
+			<AppenderRef ref="main" />
+		</Root>
+	</Loggers>
+
+</Configuration>
