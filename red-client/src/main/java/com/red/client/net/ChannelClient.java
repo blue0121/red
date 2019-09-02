@@ -21,9 +21,7 @@ import java.net.InetSocketAddress;
 import java.time.Duration;
 import java.util.Random;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * @author Jin Zheng
@@ -39,6 +37,7 @@ public class ChannelClient
 	private final Cache<Long, Message> messageCache;
 	private final Set<ConnectionListener> connectionListenerSet;
 	private final CountDownLatch latch;
+	private final ExecutorService executorService;
 
 	public ChannelClient()
 	{
@@ -48,6 +47,7 @@ public class ChannelClient
 		this.futureCache = Caffeine.newBuilder().expireAfterWrite(Duration.ofMinutes(10)).build();
 		this.messageCache = Caffeine.newBuilder().expireAfterWrite(Duration.ofMinutes(10)).build();
 		this.connectionListenerSet = new CopyOnWriteArraySet<>();
+		this.executorService = Executors.newFixedThreadPool(2);
 	}
 
 	public void waitHandshake()
@@ -139,10 +139,13 @@ public class ChannelClient
 			return;
 
 		InetSocketAddress address = (InetSocketAddress) channel.remoteAddress();
-		for (ConnectionListener listener : connectionListenerSet)
+		executorService.submit(() ->
 		{
-			listener.connected(address);
-		}
+			for (ConnectionListener listener : connectionListenerSet)
+			{
+				listener.connected(address);
+			}
+		});
 	}
 
 	public void handlerDisconnected(Channel channel)
@@ -151,10 +154,13 @@ public class ChannelClient
 			return;
 
 		InetSocketAddress address = (InetSocketAddress) channel.remoteAddress();
-		for (ConnectionListener listener : connectionListenerSet)
+		executorService.submit(() ->
 		{
-			listener.disconnected(address);
-		}
+			for (ConnectionListener listener : connectionListenerSet)
+			{
+				listener.disconnected(address);
+			}
+		});
 	}
 
 	public Message getMessage(long messageId)
