@@ -21,7 +21,10 @@ import java.net.InetSocketAddress;
 import java.time.Duration;
 import java.util.Random;
 import java.util.Set;
-import java.util.concurrent.*;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Jin Zheng
@@ -39,7 +42,7 @@ public class ChannelClient
 	private final CountDownLatch latch;
 	private final ExecutorService executorService;
 
-	public ChannelClient()
+	public ChannelClient(ExecutorService executorService)
 	{
 		this.channelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 		this.random = new Random();
@@ -47,7 +50,7 @@ public class ChannelClient
 		this.futureCache = Caffeine.newBuilder().expireAfterWrite(Duration.ofMinutes(10)).build();
 		this.messageCache = Caffeine.newBuilder().expireAfterWrite(Duration.ofMinutes(10)).build();
 		this.connectionListenerSet = new CopyOnWriteArraySet<>();
-		this.executorService = Executors.newFixedThreadPool(2);
+		this.executorService = executorService;
 	}
 
 	public void waitHandshake()
@@ -84,7 +87,7 @@ public class ChannelClient
 		}
 
 		futureCache.invalidate(message.getMessageId());
-		future.done(message);
+		executorService.submit(() -> future.done(message));
 		return true;
 	}
 

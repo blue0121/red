@@ -12,10 +12,12 @@ import io.netty.channel.Channel;
 public class WatchRegistryHandler implements RegistryHandler
 {
 	private final RegistryChannelGroup channelGroup;
+	private final RegistryStorage registryStorage;
 
-	public WatchRegistryHandler(RegistryChannelGroup channelGroup)
+	public WatchRegistryHandler(RegistryChannelGroup channelGroup, RegistryStorage registryStorage)
 	{
 		this.channelGroup = channelGroup;
+		this.registryStorage = registryStorage;
 	}
 
 	@Override
@@ -27,8 +29,9 @@ public class WatchRegistryHandler implements RegistryHandler
 		for (String name : message.getNameSet())
 		{
 			channelGroup.watchChannel(name, channel);
+			RegistryMessage response = message.toResponse(ResponseCode.SUCCESS, "Watch successful");
+			response.addItemList(registryStorage.list(name));
+			channel.writeAndFlush(response);
 		}
-		RegistryMessage response = message.toResponse(ResponseCode.SUCCESS, "Watch successful");
-		channel.writeAndFlush(response);
 	}
 }

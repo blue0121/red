@@ -14,6 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -34,19 +36,20 @@ public class NettyConnectionClient implements ConnectionClient, HandlerClient
 	private ChannelFuture channelFuture;
 	private final ChannelClient channelClient;
 	private final DefaultMessageListener messageListener;
+	private final ExecutorService executorService;
 
 	public NettyConnectionClient(String address, RedConfig redConfig)
 	{
-		this.redConfig = redConfig;
-
 		String[] addrs = address.split(":");
 		if (addrs.length != 2)
 			throw new RedClientException("Invalid address: " + address);
 
-		this.channelClient = new ChannelClient();
+		this.redConfig = redConfig;
+		this.executorService = Executors.newFixedThreadPool(10);
+		this.channelClient = new ChannelClient(executorService);
 		this.remoteAddress = new InetSocketAddress(addrs[0], Integer.parseInt(addrs[1]));
 		this.initializer = new ClientInitializer(this);
-		this.messageListener = new DefaultMessageListener();
+		this.messageListener = new DefaultMessageListener(executorService);
 	}
 
 	@Override

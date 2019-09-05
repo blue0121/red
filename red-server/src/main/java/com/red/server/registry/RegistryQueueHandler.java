@@ -30,7 +30,7 @@ public class RegistryQueueHandler implements QueueHandler<RegistryMessage>
         handlerMap.put(RegistryCommand.SAVE, new SaveRegistryHandler(registryStorage));
         handlerMap.put(RegistryCommand.DELETE, new DeleteRegistryHandler(registryStorage));
         handlerMap.put(RegistryCommand.LIST, new ListRegistryHandler(registryStorage));
-        handlerMap.put(RegistryCommand.WATCH, new WatchRegistryHandler(channelGroup));
+        handlerMap.put(RegistryCommand.WATCH, new WatchRegistryHandler(channelGroup, registryStorage));
         handlerMap.put(RegistryCommand.UNWATCH, new UnwatchRegistryHandler(channelGroup));
         handlerMap.put(RegistryCommand.BIND, new BindRegistryHandler(channelGroup));
         handlerMap.put(RegistryCommand.UNBIND, new UnbindRegistryHandler(registryStorage));

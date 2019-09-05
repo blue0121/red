@@ -6,6 +6,8 @@ import com.red.core.message.Protocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.ExecutorService;
+
 /**
  * @author Jin Zheng
  * @since 2019-05-12
@@ -16,9 +18,11 @@ public class DefaultMessageListener implements MessageListener
 
 	private MessageListener registryListener;
 	private MessageListener cacheListener;
+	private final ExecutorService executorService;
 
-	public DefaultMessageListener()
+	public DefaultMessageListener(ExecutorService executorService)
 	{
+		this.executorService = executorService;
 	}
 
 	@Override
@@ -26,11 +30,11 @@ public class DefaultMessageListener implements MessageListener
 	{
 		if (message.getProtocol() == Protocol.REGISTRY && registryListener != null)
 		{
-			registryListener.complete(message);
+			executorService.submit(() ->registryListener.complete(message));
 		}
 		else if (message.getProtocol() == Protocol.CACHE && cacheListener != null)
 		{
-			cacheListener.complete(message);
+			executorService.submit(() -> cacheListener.complete(message));
 		}
 	}
 
