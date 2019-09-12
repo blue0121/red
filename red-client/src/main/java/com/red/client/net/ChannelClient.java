@@ -142,13 +142,16 @@ public class ChannelClient
 			return;
 
 		InetSocketAddress address = (InetSocketAddress) channel.remoteAddress();
-		executorService.submit(() ->
+		if (!executorService.isShutdown())
 		{
-			for (ConnectionListener listener : connectionListenerSet)
+			executorService.submit(() ->
 			{
-				listener.connected(address);
-			}
-		});
+				for (ConnectionListener listener : connectionListenerSet)
+				{
+					listener.connected(address);
+				}
+			});
+		}
 	}
 
 	public void handlerDisconnected(Channel channel)
@@ -157,13 +160,16 @@ public class ChannelClient
 			return;
 
 		InetSocketAddress address = (InetSocketAddress) channel.remoteAddress();
-		executorService.submit(() ->
+		if (!executorService.isShutdown())
 		{
-			for (ConnectionListener listener : connectionListenerSet)
+			executorService.submit(() ->
 			{
-				listener.disconnected(address);
-			}
-		});
+				for (ConnectionListener listener : connectionListenerSet)
+				{
+					listener.disconnected(address);
+				}
+			});
+		}
 	}
 
 	public Message getMessage(long messageId)

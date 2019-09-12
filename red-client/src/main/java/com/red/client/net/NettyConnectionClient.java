@@ -103,6 +103,7 @@ public class NettyConnectionClient implements ConnectionClient, HandlerClient
 			workerGroup = null;
 			logger.debug("EventLoopGroup closed.");
 		}
+		executorService.shutdown();
 		logger.info("Disconnected successful: {}", remoteAddress);
 	}
 
