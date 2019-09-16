@@ -33,7 +33,8 @@ public class RegistryClientTest
 	public void bind(String ip, int port)
 	{
 		RegistryInstance instance = new RegistryInstance();
-		instance.addHost(ip, port);
+		Host host = new Host(ip, port);
+		instance.addHost(host);
 		registryClient.bind(instance);
 	}
 

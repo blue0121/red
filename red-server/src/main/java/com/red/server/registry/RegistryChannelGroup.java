@@ -1,6 +1,7 @@
 package com.red.server.registry;
 
 import com.red.core.message.RegistryCommand;
+import com.red.core.message.RegistryItem;
 import com.red.core.message.RegistryMessage;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -24,37 +25,37 @@ public class RegistryChannelGroup
 
 	private final ChannelGroup channelGroup;
 	private final Map<String, Set<ChannelId>> nameCache;
-	private final Map<String, ChannelId> itemMap;
-	private final Map<ChannelId, String> idMap;
+	private final Map<RegistryItem, ChannelId> itemIdMap;
+	private final Map<ChannelId, RegistryItem> idItemMap;
 
 	public RegistryChannelGroup()
 	{
 		this.channelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 		this.nameCache = new HashMap<>();
-		this.itemMap = new HashMap<>();
-		this.idMap = new HashMap<>();
+		this.itemIdMap = new HashMap<>();
+		this.idItemMap = new HashMap<>();
 	}
 
-	public void bindChannel(String item, Channel channel)
+	public void bindChannel(RegistryItem item, Channel channel)
 	{
-		if (item == null || item.isEmpty())
+		if (item == null)
 			throw new RegistryChannelException("item is empty");
 
-		if (itemMap.containsKey(item))
+		if (itemIdMap.containsKey(item))
 			throw new RegistryChannelException("This host has been bind: " + item);
 
 		ChannelId id = channel.id();
-		itemMap.put(item, id);
-		idMap.put(id, item);
+		itemIdMap.put(item, id);
+		idItemMap.put(id, item);
 		channelGroup.add(channel);
 		logger.info("Bind channel, host: {}, channel: {}", item, id);
 	}
 
-	public String unbindChannel(String item, Channel channel)
+	public RegistryItem unbindChannel(RegistryItem item, Channel channel)
 	{
 		ChannelId id = channel.id();
-		String oldItem = idMap.get(id);
-		if (oldItem == null || oldItem.isEmpty())
+		RegistryItem oldItem = idItemMap.get(id);
+		if (oldItem == null)
 			return oldItem;
 
 		if (item != null && !item.equals(oldItem))
@@ -72,16 +73,16 @@ public class RegistryChannelGroup
 				logger.info("Disconnect channel [{}] from [{}]", channel.id(), entry.getKey());
 			}
 		}
-		idMap.remove(id);
-		itemMap.remove(oldItem);
+		idItemMap.remove(id);
+		itemIdMap.remove(oldItem);
 		logger.info("Unbind channel [{}] from [{}]", id, oldItem);
 
 		return oldItem;
 	}
 
-	public String getItem(Channel channel)
+	public RegistryItem getItem(Channel channel)
 	{
-		return idMap.get(channel.id());
+		return idItemMap.get(channel.id());
 	}
 
 	public void watchChannel(String name, Channel channel)
@@ -105,11 +106,11 @@ public class RegistryChannelGroup
 		}
 	}
 
-	public String disconnect(Channel channel)
+	public RegistryItem disconnect(Channel channel)
 	{
 		ChannelId id = channel.id();
-		String item = idMap.get(id);
-		if (item == null || item.isEmpty())
+		RegistryItem item = idItemMap.get(id);
+		if (item == null)
 			return item;
 
 		for (Map.Entry<String, Set<ChannelId>> entry : nameCache.entrySet())
@@ -124,14 +125,14 @@ public class RegistryChannelGroup
 				logger.info("Disconnect channel [{}] from [{}]", channel.id(), entry.getKey());
 			}
 		}
-		idMap.remove(id);
-		itemMap.remove(item);
+		idItemMap.remove(id);
+		itemIdMap.remove(item);
 		logger.info("Unbind channel [{}] from [{}]", id, item);
 
 		return item;
 	}
 
-	public void notify(String name, Collection<String> itemList)
+	public void notify(String name, Collection<RegistryItem> itemList)
 	{
 		Set<ChannelId> idSet = nameCache.get(name);
 		if (idSet == null || idSet.isEmpty())
@@ -148,6 +149,7 @@ public class RegistryChannelGroup
 			if (channel == null)
 				continue;
 
+			logger.info("Notify {}, item: {}", name, itemList);
 			channel.writeAndFlush(message).addListener(new WatchListener(message));
 		}
 	}

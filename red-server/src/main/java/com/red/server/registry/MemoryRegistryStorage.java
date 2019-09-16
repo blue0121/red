@@ -1,5 +1,6 @@
 package com.red.server.registry;
 
+import com.red.core.message.RegistryItem;
 import io.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +18,7 @@ public class MemoryRegistryStorage implements RegistryStorage
 {
 	private static Logger logger = LoggerFactory.getLogger(MemoryRegistryStorage.class);
 
-	private final Map<String, Set<String>> registryMap;
+	private final Map<String, Set<RegistryItem>> registryMap;
 	private final RegistryChannelGroup channelGroup;
 
 	public MemoryRegistryStorage(RegistryChannelGroup channelGroup)
@@ -31,13 +32,13 @@ public class MemoryRegistryStorage implements RegistryStorage
 	{
 		if (nameSet == null || nameSet.isEmpty())
 			throw new RegistryStorageException("nameSet is empty");
-		String item = channelGroup.getItem(channel);
-		if (item == null || item.isEmpty())
+		RegistryItem item = channelGroup.getItem(channel);
+		if (item == null)
 			throw new RegistryStorageException("No bind channel");
 
 		for (String name : nameSet)
 		{
-			Set<String> set = registryMap.computeIfAbsent(name, k -> new HashSet<>());
+			Set<RegistryItem> set = registryMap.computeIfAbsent(name, k -> new HashSet<>());
 			boolean isNotify = set.add(item);
 			if (isNotify)
 			{
@@ -55,13 +56,13 @@ public class MemoryRegistryStorage implements RegistryStorage
 	{
 		if (nameSet == null || nameSet.isEmpty())
 			throw new RegistryStorageException("nameSet is empty");
-		String item = channelGroup.getItem(channel);
-		if (item == null || item.isEmpty())
+		RegistryItem item = channelGroup.getItem(channel);
+		if (item == null)
 			throw new RegistryStorageException("No bind channel");
 
 		for (String name : nameSet)
 		{
-			Set<String> set = registryMap.get(name);
+			Set<RegistryItem> set = registryMap.get(name);
 			if (set == null || set.isEmpty())
 				continue;
 
@@ -78,13 +79,13 @@ public class MemoryRegistryStorage implements RegistryStorage
 	}
 
 	@Override
-	public Set<String> list(String name)
+	public Set<RegistryItem> list(String name)
 	{
 		if (name == null || name.isEmpty())
 			throw new RegistryStorageException("name is empty");
 
-		Set<String> itemSet = new HashSet<>();
-		Set<String> set = registryMap.get(name);
+		Set<RegistryItem> itemSet = new HashSet<>();
+		Set<RegistryItem> set = registryMap.get(name);
 		if (set != null && !set.isEmpty())
 		{
 			itemSet.addAll(set);
@@ -97,16 +98,16 @@ public class MemoryRegistryStorage implements RegistryStorage
 	}
 
 	@Override
-	public void disconnect(String item, Channel channel)
+	public void disconnect(RegistryItem item, Channel channel)
 	{
 		item = channelGroup.unbindChannel(item, channel);
 		//logger.info("disconnect, item: {}", item);
-		if (item == null || item.isEmpty())
+		if (item == null)
 			return;
 
-		for (Map.Entry<String, Set<String>> entry : registryMap.entrySet())
+		for (Map.Entry<String, Set<RegistryItem>> entry : registryMap.entrySet())
 		{
-			Set<String> itemSet = entry.getValue();
+			Set<RegistryItem> itemSet = entry.getValue();
 			if (itemSet == null || itemSet.isEmpty())
 				continue;
 

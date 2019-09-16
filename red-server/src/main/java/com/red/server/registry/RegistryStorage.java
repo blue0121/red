@@ -1,5 +1,6 @@
 package com.red.server.registry;
 
+import com.red.core.message.RegistryItem;
 import io.netty.channel.Channel;
 
 import java.util.Set;
@@ -15,8 +16,8 @@ public interface RegistryStorage
 
 	void delete(Set<String> nameSet, Channel channel);
 
-	Set<String> list(String name);
+	Set<RegistryItem> list(String name);
 
-	void disconnect(String item, Channel channel);
+	void disconnect(RegistryItem item, Channel channel);
 
 }

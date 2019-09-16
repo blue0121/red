@@ -1,6 +1,7 @@
 package com.red.core.codec;
 
 import com.red.core.message.Message;
+import com.red.core.message.RegistryItem;
 import com.red.core.message.RegistryMessage;
 import io.netty.buffer.ByteBuf;
 
@@ -30,11 +31,12 @@ public class RegistryMessageCodec extends ResponseMessageCodec
 			this.writeString(name, out);
 		}
 
-		Set<String> itemSet = registry.getItemSet();
+		Set<RegistryItem> itemSet = registry.getItemSet();
 		out.writeShort(itemSet.size());
-		for (String item : itemSet)
+		for (RegistryItem item : itemSet)
 		{
-			this.writeString(item, out);
+			this.writeString(item.getItem(), out);
+			this.writeString(item.getToken(), out);
 		}
 	}
 
@@ -54,7 +56,9 @@ public class RegistryMessageCodec extends ResponseMessageCodec
 		short itemSize = in.readShort();
 		for (short i = 0; i < itemSize; i++)
 		{
-			registry.addItem(this.readString(in));
+			String item = this.readString(in);
+			String token = this.readString(in);
+			registry.addItem(new RegistryItem(item, token));
 		}
 	}
 

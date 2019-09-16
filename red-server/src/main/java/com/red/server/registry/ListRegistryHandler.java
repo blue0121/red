@@ -1,5 +1,6 @@
 package com.red.server.registry;
 
+import com.red.core.message.RegistryItem;
 import com.red.core.message.RegistryMessage;
 import com.red.core.message.ResponseCode;
 import io.netty.channel.Channel;
@@ -25,7 +26,7 @@ public class ListRegistryHandler implements RegistryHandler
 		if (message.getNameSet().size() != 1)
 			throw new RegistryStorageException("name size must be 1");
 
-		Set<String> itemSet = storage.list(message.getName());
+		Set<RegistryItem> itemSet = storage.list(message.getName());
 		RegistryMessage response = message.toResponse(ResponseCode.SUCCESS, "List successful");
 		response.addItemList(itemSet);
 		channel.writeAndFlush(response);

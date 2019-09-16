@@ -8,8 +8,11 @@ import java.util.Objects;
  */
 public class Host
 {
+	public static final String SPLIT = ":";
+
 	private String ip;
 	private int port;
+	private String token;
 
 	public Host()
 	{
@@ -21,19 +24,30 @@ public class Host
 		this.port = port;
 	}
 
-	// parse string: host:ip
+	/**
+	 * parse string: host:ip
+	 * @param strHost
+	 * @return
+	 */
 	public static Host parse(String strHost)
 	{
-		String[] str = strHost.split(":");
+		String[] str = strHost.split(SPLIT);
 		return new Host(str[0], Integer.parseInt(str[1]));
+	}
+
+	/**
+	 * to string: host:ip
+	 * @return
+	 */
+	public String toAddr()
+	{
+		return String.format("%s:%d", ip, port);
 	}
 
 	@Override
 	public String toString()
 	{
-		StringBuilder str = new StringBuilder(32);
-		str.append(ip).append(":").append(port);
-		return str.toString();
+		return String.format("%s:%d", ip, port);
 	}
 
 	@Override
@@ -76,5 +90,15 @@ public class Host
 	public void setPort(int port)
 	{
 		this.port = port;
+	}
+
+	public String getToken()
+	{
+		return token;
+	}
+
+	public void setToken(String token)
+	{
+		this.token = token;
 	}
 }

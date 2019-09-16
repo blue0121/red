@@ -14,7 +14,7 @@ public class RegistryMessage extends Response
 {
 	private RegistryCommand command;
 	private Set<String> nameSet = new HashSet<>();
-	private Set<String> itemSet = new HashSet<>();
+	private Set<RegistryItem> itemSet = new HashSet<>();
 
 	public RegistryMessage()
 	{
@@ -48,12 +48,12 @@ public class RegistryMessage extends Response
 		return response;
 	}
 
-	public void addItem(String item)
+	public void addItem(RegistryItem item)
 	{
 		itemSet.add(item);
 	}
 
-	public void addItemList(Collection<String> itemList)
+	public void addItemList(Collection<RegistryItem> itemList)
 	{
 		if (itemList == null || itemList.isEmpty())
 			return;
@@ -61,7 +61,7 @@ public class RegistryMessage extends Response
 		itemSet.addAll(itemList);
 	}
 
-	public String getItem()
+	public RegistryItem getItem()
 	{
 		if (itemSet.isEmpty())
 			return null;
@@ -120,7 +120,7 @@ public class RegistryMessage extends Response
 		return nameSet;
 	}
 
-	public Set<String> getItemSet()
+	public Set<RegistryItem> getItemSet()
 	{
 		return itemSet;
 	}

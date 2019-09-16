@@ -1,6 +1,7 @@
 package com.red.client.registry;
 
 import com.red.core.message.RegistryCommand;
+import com.red.core.message.RegistryItem;
 import com.red.core.message.RegistryMessage;
 
 import java.util.Collection;
@@ -34,10 +35,11 @@ public class RegistryInstance
 	{
 		RegistryInstance instance = new RegistryInstance();
 		instance.addNameList(message.getNameSet());
-		for (String item : message.getItemSet())
+		for (RegistryItem item : message.getItemSet())
 		{
-			String[] items = item.split(SPLIT);
-			instance.addHost(items[0], Integer.parseInt(items[1]));
+			Host host = Host.parse(item.getItem());
+			host.setToken(item.getToken());
+			instance.addHost(host);
 		}
 		return instance;
 	}
@@ -47,7 +49,8 @@ public class RegistryInstance
 		RegistryMessage message = RegistryMessage.create(command, nameSet.toArray(new String[0]));
 		for (Host host : hostSet)
 		{
-			message.addItem(host.toString());
+			RegistryItem item = new RegistryItem(host.toAddr(), host.getToken());
+			message.addItem(item);
 		}
 		return message;
 	}
@@ -55,11 +58,6 @@ public class RegistryInstance
 	public void addHost(Host host)
 	{
 		hostSet.add(host);
-	}
-
-	public void addHost(String ip, int port)
-	{
-		hostSet.add(new Host(ip, port));
 	}
 
 	public void addHostList(Collection<Host> hostList)

@@ -237,7 +237,8 @@ public class RegistrySteps
 			for (String h : host.split(HOSTS_SPLIT))
 			{
 				String[] hh = h.trim().split(HOST_SPLIT);
-				instance.addHost(hh[0].trim(), Integer.parseInt(hh[1].trim()));
+				Host host2 = new Host(hh[0].trim(), Integer.parseInt(hh[1].trim()));
+				instance.addHost(host2);
 			}
 		}
 		return map;
