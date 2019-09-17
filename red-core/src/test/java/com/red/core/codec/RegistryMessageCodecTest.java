@@ -83,8 +83,8 @@ public class RegistryMessageCodecTest
 	public void test3()
 	{
 		RegistryMessage message = RegistryMessage.create(RegistryCommand.SAVE, "blue", "red2");
-		message.addItem(new RegistryItem("127.0.0.1:8080"));
-		message.addItem(new RegistryItem("127.0.0.1:8081"));
+		message.addItem(new RegistryItem("127.0.0.1:8080", "token1"));
+		message.addItem(new RegistryItem("127.0.0.1:8081", "token2"));
 		codec.encode(message, buf);
 		Assert.assertTrue(buf.readableBytes() > 0);
 
