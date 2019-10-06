@@ -30,6 +30,8 @@ public class WatchRegistryHandler implements RegistryHandler
 		{
 			channelGroup.watchChannel(name, channel);
 			RegistryMessage response = message.toResponse(ResponseCode.SUCCESS, "Watch successful");
+			response.clearName();
+			response.addName(name);
 			response.addItemList(registryStorage.list(name));
 			channel.writeAndFlush(response);
 		}

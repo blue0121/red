@@ -82,6 +82,16 @@ public class RegistryMessage extends Response
 		nameSet.addAll(nameList);
 	}
 
+	public void clearName()
+	{
+		nameSet.clear();
+	}
+
+	public void clearItem()
+	{
+		itemSet.clear();
+	}
+
 	public String getName()
 	{
 		if (nameSet.isEmpty())
