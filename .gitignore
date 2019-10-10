@@ -19,3 +19,5 @@ target/
 *.war
 *.ear
 
+# macOS files #
+.DS_Store
