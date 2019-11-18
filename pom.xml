@@ -4,17 +4,17 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	
-	<groupId>com.red</groupId>
+	<groupId>blue.red</groupId>
 	<artifactId>red</artifactId>
 	<packaging>pom</packaging>
-	<version>1.0</version>
+	<version>1.0.0</version>
 	<name>red</name>
 	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		
 		<!-- core -->
-		<red.version>1.0</red.version>
+		<red.version>1.0.0</red.version>
 		<slf4j.version>1.7.26</slf4j.version>
 		<log4j2.version>2.11.2</log4j2.version>
 		<fastjson.version>1.2.58</fastjson.version>
