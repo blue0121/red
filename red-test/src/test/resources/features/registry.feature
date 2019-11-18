@@ -31,7 +31,7 @@ Feature: registry service
     When registry client "client1" "save":
       | name  |
       | name1 |
-    Then verify registry client "client1" throw exception "com.red.client.registry.RegistryClientException"
+    Then verify registry client "client1" throw exception "blue.red.client.registry.RegistryClientException"
 
   Scenario: registry watch
     Given start registry client "client1"

@@ -46,7 +46,7 @@
 						<manifest>
 							<addClasspath>true</addClasspath>
 							<classpathPrefix>lib/</classpathPrefix>
-							<mainClass>com.red.server.ServerMain</mainClass>
+							<mainClass>blue.red.server.ServerMain</mainClass>
 						</manifest>
 						<manifestEntries>
 							<Class-Path>./</Class-Path>

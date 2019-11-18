@@ -8,10 +8,10 @@
 	</Appenders>
 	
 	<Loggers>
-		<Logger name="com.red.test" level="debug" includeLocation="false" additivity="false">
+		<Logger name="blue.red.test" level="debug" includeLocation="false" additivity="false">
 			<AppenderRef ref="con" />
 		</Logger>
-		<Logger name="com.red.core" level="debug" includeLocation="false" additivity="false">
+		<Logger name="blue.red.core" level="debug" includeLocation="false" additivity="false">
 			<AppenderRef ref="con" />
 		</Logger>
 		
