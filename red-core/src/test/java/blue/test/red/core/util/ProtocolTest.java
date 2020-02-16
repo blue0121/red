@@ -2,8 +2,8 @@ package blue.test.red.core.util;
 
 import blue.red.core.message.Protocol;
 import blue.red.core.util.Constant;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Jin Zheng
@@ -19,10 +19,10 @@ public class ProtocolTest
 	public void test1()
 	{
 		Protocol handshake = Protocol.valueOf(0x1);
-		Assert.assertNotNull(handshake);
-		Assert.assertEquals(Protocol.HANDSHAKE, handshake);
-		Assert.assertEquals(Constant.PROTOCOL | 0x1, handshake.value());
-		Assert.assertEquals(0x1, handshake.originalValue());
+		Assertions.assertNotNull(handshake);
+		Assertions.assertEquals(Protocol.HANDSHAKE, handshake);
+		Assertions.assertEquals(Constant.PROTOCOL | 0x1, handshake.value());
+		Assertions.assertEquals(0x1, handshake.originalValue());
 	}
 
 }

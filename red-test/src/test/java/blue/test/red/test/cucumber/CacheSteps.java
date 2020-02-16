@@ -3,9 +3,9 @@ package blue.test.red.test.cucumber;
 import blue.red.client.cache.CacheClient;
 import blue.red.client.cache.CacheInstance;
 import blue.red.test.cucumber.ClientFactory;
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.When;
-import org.junit.Assert;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.When;
+import org.junit.jupiter.api.Assertions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,9 +43,9 @@ public class CacheSteps
     @When("cache client {string} {string}:")
     public void handle(String name, String opt, List<Map<String, String>> dataTable)
     {
-        Assert.assertTrue("No Data", dataTable != null && !dataTable.isEmpty());
+        Assertions.assertTrue(dataTable != null && !dataTable.isEmpty());
         CacheClient client = clientFactory.getCacheClient(name);
-        Assert.assertNotNull("No Cache Client", client);
+        Assertions.assertNotNull(client);
 
         Map<String, CacheInstance> map = this.getCacheInstance(dataTable);
         if ("set".equals(opt))
@@ -67,7 +67,7 @@ public class CacheSteps
             for (Map.Entry<String, CacheInstance> entry : map.entrySet())
             {
                 CacheInstance dest = client.getSync(entry.getKey());
-                Assert.assertArrayEquals(entry.getValue().getValue(), dest.getValue());
+                Assertions.assertArrayEquals(entry.getValue().getValue(), dest.getValue());
             }
         }
     }

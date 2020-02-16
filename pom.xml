@@ -12,36 +12,36 @@
 	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<jdk.version>8</jdk.version>
 		
 		<!-- core -->
 		<red.version>1.0.0</red.version>
-		<slf4j.version>1.7.26</slf4j.version>
-		<log4j2.version>2.11.2</log4j2.version>
-		<fastjson.version>1.2.58</fastjson.version>
-		<netty.version>4.1.37.Final</netty.version>
-		<caffeine.version>2.7.0</caffeine.version>
+		<slf4j.version>1.7.30</slf4j.version>
+		<log4j2.version>2.13.0</log4j2.version>
+		<fastjson.version>1.2.62</fastjson.version>
+		<netty.version>4.1.45.Final</netty.version>
+		<caffeine.version>2.8.1</caffeine.version>
 		<snappy.version>1.1.7.3</snappy.version>
 
 		<!-- client -->
 		
 		<!-- server -->
-		<spring.version>5.1.4.RELEASE</spring.version>
-		<cglib.version>3.2.8</cglib.version>
-		<aspectjweaver.version>1.9.1</aspectjweaver.version>
 		
 		<!-- test -->
-		<junit.version>4.12</junit.version>
-		<mockito.version>2.23.4</mockito.version>
-		<cucumber.version>4.4.0</cucumber.version>
-		<jmeter.version>5.1.1</jmeter.version>
+		<junit.platform.version>1.6.0</junit.platform.version>
+		<junit.jupiter.version>5.6.0</junit.jupiter.version>
+		<mockito.version>3.2.4</mockito.version>
+		<cucumber.version>4.8.1</cucumber.version>
+		<jmeter.version>5.2.1</jmeter.version>
 		
 		<!-- maven plugins -->
 		<compiler.version>3.8.1</compiler.version>
-		<source.version>3.1.0</source.version>
-		<jar.version>3.1.2</jar.version>
+		<source.version>3.2.1</source.version>
+		<jar.version>3.2.0</jar.version>
 		<dependency.version>3.1.1</dependency.version>
-		<assembly.version>3.1.1</assembly.version>
+		<assembly.version>3.2.0</assembly.version>
 		<surefire.version>2.22.2</surefire.version>
+		<jdeps.version>3.1.2</jdeps.version>
 		
 	</properties>
 	
@@ -52,10 +52,10 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>${compiler.version}</version>
 				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-					<compilerVersion>1.8</compilerVersion>
-					<encoding>UTF-8</encoding>
+					<source>${jdk.version}</source>
+					<target>${jdk.version}</target>
+					<compilerVersion>${jdk.version}</compilerVersion>
+					<encoding>${project.build.sourceEncoding}</encoding>
 					<compilerArgs>
 						<arg>-parameters</arg>
 					</compilerArgs>

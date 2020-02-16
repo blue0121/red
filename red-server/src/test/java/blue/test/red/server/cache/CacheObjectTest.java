@@ -1,8 +1,8 @@
 package blue.test.red.server.cache;
 
 import blue.red.server.cache.CacheObject;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class CacheObjectTest
 {
@@ -17,10 +17,10 @@ public class CacheObjectTest
         CacheObject object = new CacheObject();
         object.setTtl(20);
         System.out.println(object.expire());
-        Assert.assertTrue(object.expire() > 0);
+        Assertions.assertTrue(object.expire() > 0);
         Thread.sleep(50);
         System.out.println(object.expire());
-        Assert.assertTrue(object.expire() <= 0);
+        Assertions.assertTrue(object.expire() <= 0);
     }
 
 }

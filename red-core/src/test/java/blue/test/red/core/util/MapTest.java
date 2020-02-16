@@ -1,8 +1,8 @@
 package blue.test.red.core.util;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +21,7 @@ public class MapTest
 	{
 	}
 
-	@Before
+	@BeforeEach
 	public void before()
 	{
 		map = new ConcurrentHashMap<>();
@@ -32,9 +32,9 @@ public class MapTest
 	{
 		List<String> list = map.putIfAbsent("blue", new ArrayList<>());
 		List<String> newList = map.get("blue");
-		Assert.assertNotNull(newList);
-		Assert.assertTrue(newList.isEmpty());
-		Assert.assertNull(list);
+		Assertions.assertNotNull(newList);
+		Assertions.assertTrue(newList.isEmpty());
+		Assertions.assertNull(list);
 
 	}
 
@@ -46,10 +46,10 @@ public class MapTest
 		map.put("blue", list);
 		list = map.putIfAbsent("blue", new ArrayList<>());
 		List<String> newList = map.get("blue");
-		Assert.assertNotNull(newList);
-		Assert.assertEquals(1, newList.size());
-		Assert.assertNotNull(list);
-		Assert.assertEquals(1, list.size());
+		Assertions.assertNotNull(newList);
+		Assertions.assertEquals(1, newList.size());
+		Assertions.assertNotNull(list);
+		Assertions.assertEquals(1, list.size());
 	}
 
 }

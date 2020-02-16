@@ -4,9 +4,9 @@ import blue.red.core.codec.RegistryMessageCodec;
 import blue.red.core.message.*;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,7 +26,7 @@ public class RegistryMessageCodecTest
 	{
 	}
 
-	@Before
+	@BeforeEach
 	public void before()
 	{
 		buf = Unpooled.buffer(200);
@@ -38,19 +38,19 @@ public class RegistryMessageCodecTest
 	{
 		RegistryMessage message = RegistryMessage.create(RegistryCommand.LIST, "blue");
 		codec.encode(message, buf);
-		Assert.assertTrue(buf.readableBytes() > 0);
+		Assertions.assertTrue(buf.readableBytes() > 0);
 
 		Protocol protocol = Protocol.valueOf(buf.readInt());
 		RegistryMessage message2 = (RegistryMessage) codec.decode(protocol, buf);
-		Assert.assertNotNull(message2);
-		Assert.assertEquals(message.getProtocol(), message2.getProtocol());
-		Assert.assertEquals(message.getVersion(), message2.getVersion());
-		Assert.assertEquals(message.getMessageId(), message2.getMessageId());
-		Assert.assertEquals(ResponseCode.SUCCESS, message2.getCode());
-		Assert.assertNull(message2.getMessage());
-		Assert.assertEquals("blue", message2.getName());
-		Assert.assertTrue(message2.getItemSet().isEmpty());
-		Assert.assertNull(message2.getItem());
+		Assertions.assertNotNull(message2);
+		Assertions.assertEquals(message.getProtocol(), message2.getProtocol());
+		Assertions.assertEquals(message.getVersion(), message2.getVersion());
+		Assertions.assertEquals(message.getMessageId(), message2.getMessageId());
+		Assertions.assertEquals(ResponseCode.SUCCESS, message2.getCode());
+		Assertions.assertNull(message2.getMessage());
+		Assertions.assertEquals("blue", message2.getName());
+		Assertions.assertTrue(message2.getItemSet().isEmpty());
+		Assertions.assertNull(message2.getItem());
 	}
 
 	@Test
@@ -60,23 +60,23 @@ public class RegistryMessageCodecTest
 		message.addItem(new RegistryItem("127.0.0.1:8080", "token1"));
 		message.addItem(new RegistryItem("127.0.0.1:8081", "token2"));
 		codec.encode(message, buf);
-		Assert.assertTrue(buf.readableBytes() > 0);
+		Assertions.assertTrue(buf.readableBytes() > 0);
 
 		Protocol protocol = Protocol.valueOf(buf.readInt());
 		RegistryMessage message2 = (RegistryMessage) codec.decode(protocol, buf);
-		Assert.assertNotNull(message2);
-		Assert.assertEquals(message.getProtocol(), message2.getProtocol());
-		Assert.assertEquals(message.getVersion(), message2.getVersion());
-		Assert.assertEquals(message.getMessageId(), message2.getMessageId());
-		Assert.assertEquals(ResponseCode.SUCCESS, message2.getCode());
-		Assert.assertNull(message2.getMessage());
+		Assertions.assertNotNull(message2);
+		Assertions.assertEquals(message.getProtocol(), message2.getProtocol());
+		Assertions.assertEquals(message.getVersion(), message2.getVersion());
+		Assertions.assertEquals(message.getMessageId(), message2.getMessageId());
+		Assertions.assertEquals(ResponseCode.SUCCESS, message2.getCode());
+		Assertions.assertNull(message2.getMessage());
 
 		Map<String, String> map = new HashMap<>();
 		map.put("127.0.0.1:8080", "token1");
 		map.put("127.0.0.1:8081", "token2");
 		for (RegistryItem item : message2.getItemSet())
 		{
-			Assert.assertEquals(map.get(item.getItem()), item.getToken());
+			Assertions.assertEquals(map.get(item.getItem()), item.getToken());
 		}
 	}
 
@@ -87,29 +87,29 @@ public class RegistryMessageCodecTest
 		message.addItem(new RegistryItem("127.0.0.1:8080", "token1"));
 		message.addItem(new RegistryItem("127.0.0.1:8081", "token2"));
 		codec.encode(message, buf);
-		Assert.assertTrue(buf.readableBytes() > 0);
+		Assertions.assertTrue(buf.readableBytes() > 0);
 
 		Protocol protocol = Protocol.valueOf(buf.readInt());
 		RegistryMessage message2 = (RegistryMessage) codec.decode(protocol, buf);
-		Assert.assertNotNull(message2);
-		Assert.assertEquals(message.getProtocol(), message2.getProtocol());
-		Assert.assertEquals(message.getVersion(), message2.getVersion());
-		Assert.assertEquals(message.getMessageId(), message2.getMessageId());
-		Assert.assertEquals(ResponseCode.SUCCESS, message2.getCode());
-		Assert.assertNull(message2.getMessage());
+		Assertions.assertNotNull(message2);
+		Assertions.assertEquals(message.getProtocol(), message2.getProtocol());
+		Assertions.assertEquals(message.getVersion(), message2.getVersion());
+		Assertions.assertEquals(message.getMessageId(), message2.getMessageId());
+		Assertions.assertEquals(ResponseCode.SUCCESS, message2.getCode());
+		Assertions.assertNull(message2.getMessage());
 
 		Map<String, String> map = new HashMap<>();
 		map.put("127.0.0.1:8080", "token1");
 		map.put("127.0.0.1:8081", "token2");
 		for (RegistryItem item : message2.getItemSet())
 		{
-			Assert.assertEquals(map.get(item.getItem()), item.getToken());
+			Assertions.assertEquals(map.get(item.getItem()), item.getToken());
 		}
 
 		Set<String> nameSet = new HashSet<>();
 		nameSet.add("blue");
 		nameSet.add("red2");
-		Assert.assertEquals(nameSet, message2.getNameSet());
+		Assertions.assertEquals(nameSet, message2.getNameSet());
 	}
 
 }

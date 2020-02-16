@@ -5,8 +5,8 @@ import blue.red.client.registry.RegistryInstance;
 import blue.red.core.message.RegistryCommand;
 import blue.red.core.message.RegistryItem;
 import blue.red.core.message.RegistryMessage;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -28,15 +28,15 @@ public class RegistryInstanceTest
 		message.addItem(new RegistryItem("localhost:8080"));
 		message.addItem(new RegistryItem("127.0.0.1:9000"));
 		RegistryInstance instance = RegistryInstance.from(message);
-		Assert.assertNotNull(instance);
-		Assert.assertEquals(1, instance.getNameSet().size());
-		Assert.assertEquals("com.blue.hello", instance.getName());
-		Assert.assertEquals(2, instance.getHostSet().size());
+		Assertions.assertNotNull(instance);
+		Assertions.assertEquals(1, instance.getNameSet().size());
+		Assertions.assertEquals("com.blue.hello", instance.getName());
+		Assertions.assertEquals(2, instance.getHostSet().size());
 
 		Set<Host> hostSet = new HashSet<>();
 		hostSet.add(new Host("localhost", 8080));
 		hostSet.add(new Host("127.0.0.1", 9000));
-		Assert.assertEquals(hostSet, instance.getHostSet());
+		Assertions.assertEquals(hostSet, instance.getHostSet());
 	}
 
 	@Test
@@ -47,12 +47,12 @@ public class RegistryInstanceTest
 		host.setToken("token");
 		instance.addHost(host);
 		RegistryMessage message = instance.build(RegistryCommand.SAVE);
-		Assert.assertNotNull(message);
-		Assert.assertEquals(RegistryCommand.SAVE, message.getCommand());
-		Assert.assertEquals("com.blue.hello", message.getName());
-		Assert.assertEquals(1, message.itemSize());
-		Assert.assertEquals("localhost:8080", message.getItem().getItem());
-		Assert.assertEquals("token", message.getItem().getToken());
+		Assertions.assertNotNull(message);
+		Assertions.assertEquals(RegistryCommand.SAVE, message.getCommand());
+		Assertions.assertEquals("com.blue.hello", message.getName());
+		Assertions.assertEquals(1, message.itemSize());
+		Assertions.assertEquals("localhost:8080", message.getItem().getItem());
+		Assertions.assertEquals("token", message.getItem().getToken());
 	}
 
 	@Test
@@ -60,10 +60,10 @@ public class RegistryInstanceTest
 	{
 		RegistryInstance instance = new RegistryInstance("com.blue.hello");
 		RegistryMessage message = instance.build(RegistryCommand.SAVE);
-		Assert.assertNotNull(message);
-		Assert.assertEquals(RegistryCommand.SAVE, message.getCommand());
-		Assert.assertEquals("com.blue.hello", message.getName());
-		Assert.assertEquals(0, message.itemSize());
+		Assertions.assertNotNull(message);
+		Assertions.assertEquals(RegistryCommand.SAVE, message.getCommand());
+		Assertions.assertEquals("com.blue.hello", message.getName());
+		Assertions.assertEquals(0, message.itemSize());
 	}
 
 }

@@ -1,8 +1,8 @@
 package blue.test.red.server.registry;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,7 +20,7 @@ public class RegistryChannelGroupTest
 	{
 	}
 
-	@Before
+	@BeforeEach
 	public void before()
 	{
 		idMap = new HashMap<>();
@@ -30,19 +30,19 @@ public class RegistryChannelGroupTest
 	@Test
 	public void testIsBindChannel()
 	{
-		Assert.assertFalse(isBindChannel("001", "red001"));
-		Assert.assertTrue(isBindChannel("001", "red001"));
-		Assert.assertFalse(isBindChannel("001", "red002"));
-		Assert.assertFalse(isBindChannel("002", "red002"));
-		Assert.assertFalse(isBindChannel("010", "red010"));
-		Assert.assertFalse(isBindChannel("010", "red011"));
-		Assert.assertFalse(isBindChannel("010", "red010"));
+		Assertions.assertFalse(isBindChannel("001", "red001"));
+		Assertions.assertTrue(isBindChannel("001", "red001"));
+		Assertions.assertFalse(isBindChannel("001", "red002"));
+		Assertions.assertFalse(isBindChannel("002", "red002"));
+		Assertions.assertFalse(isBindChannel("010", "red010"));
+		Assertions.assertFalse(isBindChannel("010", "red011"));
+		Assertions.assertFalse(isBindChannel("010", "red010"));
 		System.out.println(idMap);
 		System.out.println(nameMap);
-		Assert.assertEquals("red002", idMap.get("002"));
-		Assert.assertEquals("red010", idMap.get("010"));
-		Assert.assertEquals("002", nameMap.get("red002"));
-		Assert.assertEquals("010", nameMap.get("red010"));
+		Assertions.assertEquals("red002", idMap.get("002"));
+		Assertions.assertEquals("red010", idMap.get("010"));
+		Assertions.assertEquals("002", nameMap.get("red002"));
+		Assertions.assertEquals("010", nameMap.get("red010"));
 	}
 	public boolean isBindChannel(String id, String name)
 	{

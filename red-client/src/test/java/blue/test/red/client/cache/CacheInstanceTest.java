@@ -3,8 +3,8 @@ package blue.test.red.client.cache;
 import blue.red.client.cache.CacheInstance;
 import blue.red.core.message.CacheCommand;
 import blue.red.core.message.CacheMessage;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class CacheInstanceTest
 {
@@ -23,10 +23,10 @@ public class CacheInstanceTest
         }
         CacheInstance instance = new CacheInstance(key, value.toString());
         CacheMessage message = instance.build(CacheMessage.TRANSIENT, CacheCommand.SET);
-        Assert.assertNotNull(message);
-        Assert.assertEquals(key, message.getKey());
-        Assert.assertTrue(message.isCompress());
-        Assert.assertTrue(message.getValue().length < value.length());
+        Assertions.assertNotNull(message);
+        Assertions.assertEquals(key, message.getKey());
+        Assertions.assertTrue(message.isCompress());
+        Assertions.assertTrue(message.getValue().length < value.length());
     }
 
 }

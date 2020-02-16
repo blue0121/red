@@ -4,9 +4,9 @@ import blue.red.server.cache.CacheObject;
 import blue.red.server.cache.CacheObjectExpiry;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Jin Zheng
@@ -24,7 +24,7 @@ public class CaffeineCacheTest
 		this.removalListener = new CacheObjectRemovalListener();
 	}
 
-	@Before
+	@BeforeEach
 	public void before()
 	{
 		this.cache = Caffeine.newBuilder()
@@ -42,13 +42,13 @@ public class CaffeineCacheTest
 		CacheObject object = new CacheObject(key.getBytes(), ttl);
 		cache.put(key, object);
 		CacheObject object2 = cache.getIfPresent(key);
-		Assert.assertNotNull(object2);
-		Assert.assertArrayEquals(object.getValue(), object2.getValue());
+		Assertions.assertNotNull(object2);
+		Assertions.assertArrayEquals(object.getValue(), object2.getValue());
 
 		this.sleep(150);
 
 		CacheObject object3 = cache.getIfPresent(key);
-		Assert.assertNull(object3);
+		Assertions.assertNull(object3);
 	}
 
 	@Test
@@ -59,13 +59,13 @@ public class CaffeineCacheTest
 		CacheObject object = new CacheObject(key.getBytes(), ttl);
 		cache.put(key, object);
 		CacheObject object2 = cache.getIfPresent(key);
-		Assert.assertNotNull(object2);
-		Assert.assertArrayEquals(object.getValue(), object2.getValue());
+		Assertions.assertNotNull(object2);
+		Assertions.assertArrayEquals(object.getValue(), object2.getValue());
 
 		this.sleep(50);
 
 		CacheObject object3 = cache.getIfPresent(key);
-		Assert.assertNotNull(object3);
+		Assertions.assertNotNull(object3);
 
 		CacheObject object4 = new CacheObject(key.getBytes(), ttl);
 		cache.put(key, object4);
@@ -73,13 +73,13 @@ public class CaffeineCacheTest
 		this.sleep(50);
 
 		CacheObject object5 = cache.getIfPresent(key);
-		Assert.assertNotNull(object5);
+		Assertions.assertNotNull(object5);
 		cache.put(key, object4);
 
 		this.sleep(700);
 
 		CacheObject object6 = cache.getIfPresent(key);
-		Assert.assertNull(object6);
+		Assertions.assertNull(object6);
 
 	}
 

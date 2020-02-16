@@ -7,9 +7,9 @@ import blue.red.core.message.Response;
 import blue.red.core.message.ResponseCode;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Jin Zheng
@@ -25,7 +25,7 @@ public class ResponseMessageCodecTest
 	{
 	}
 
-	@Before
+	@BeforeEach
 	public void before()
 	{
 		buf = Unpooled.buffer(100);
@@ -38,15 +38,15 @@ public class ResponseMessageCodecTest
 	{
 		Response response = Response.from(request, ResponseCode.SUCCESS, null);
 		codec.encode(response, buf);
-		Assert.assertEquals(24, buf.readableBytes());
+		Assertions.assertEquals(24, buf.readableBytes());
 
 		Protocol protocol = Protocol.valueOf(buf.readInt());
 		Response response2 = (Response) codec.decode(protocol, buf);
-		Assert.assertEquals(response.getProtocol(), response2.getProtocol());
-		Assert.assertEquals(response.getVersion(), response2.getVersion());
-		Assert.assertEquals(response.getMessageId(), response2.getMessageId());
-		Assert.assertEquals(response.getCode(), response2.getCode());
-		Assert.assertNull(response2.getMessage());
+		Assertions.assertEquals(response.getProtocol(), response2.getProtocol());
+		Assertions.assertEquals(response.getVersion(), response2.getVersion());
+		Assertions.assertEquals(response.getMessageId(), response2.getMessageId());
+		Assertions.assertEquals(response.getCode(), response2.getCode());
+		Assertions.assertNull(response2.getMessage());
 	}
 
 	@Test
@@ -54,15 +54,15 @@ public class ResponseMessageCodecTest
 	{
 		Response response = Response.from(request, ResponseCode.HANDSHAKE, "Handshake error");
 		codec.encode(response, buf);
-		Assert.assertEquals(39, buf.readableBytes());
+		Assertions.assertEquals(39, buf.readableBytes());
 
 		Protocol protocol = Protocol.valueOf(buf.readInt());
 		Response response2 = (Response) codec.decode(protocol, buf);
-		Assert.assertEquals(response.getProtocol(), response2.getProtocol());
-		Assert.assertEquals(response.getVersion(), response2.getVersion());
-		Assert.assertEquals(response.getMessageId(), response2.getMessageId());
-		Assert.assertEquals(response.getCode(), response2.getCode());
-		Assert.assertEquals(response.getMessage(), response2.getMessage());
+		Assertions.assertEquals(response.getProtocol(), response2.getProtocol());
+		Assertions.assertEquals(response.getVersion(), response2.getVersion());
+		Assertions.assertEquals(response.getMessageId(), response2.getMessageId());
+		Assertions.assertEquals(response.getCode(), response2.getCode());
+		Assertions.assertEquals(response.getMessage(), response2.getMessage());
 	}
 
 }

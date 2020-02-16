@@ -5,9 +5,9 @@ import blue.red.core.message.HandshakeMessage;
 import blue.red.core.message.Protocol;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Jin Zheng
@@ -22,7 +22,7 @@ public class HandshakeMessageCodecTest
 	{
 	}
 
-	@Before
+	@BeforeEach
 	public void before()
 	{
 		buf = Unpooled.buffer(100);
@@ -34,15 +34,15 @@ public class HandshakeMessageCodecTest
 	{
 		HandshakeMessage message = HandshakeMessage.create("123");
 		codec.encode(message, buf);
-		Assert.assertEquals(23, buf.readableBytes());
+		Assertions.assertEquals(23, buf.readableBytes());
 
 		Protocol protocol = Protocol.valueOf(buf.readInt());
 		HandshakeMessage message2 = (HandshakeMessage) codec.decode(protocol, buf);
-		Assert.assertNotNull(message2);
-		Assert.assertEquals(message.getProtocol(), message2.getProtocol());
-		Assert.assertEquals(message.getVersion(), message2.getVersion());
-		Assert.assertEquals(message.getMessageId(), message2.getMessageId());
-		Assert.assertEquals(message.getToken(), message2.getToken());
+		Assertions.assertNotNull(message2);
+		Assertions.assertEquals(message.getProtocol(), message2.getProtocol());
+		Assertions.assertEquals(message.getVersion(), message2.getVersion());
+		Assertions.assertEquals(message.getMessageId(), message2.getMessageId());
+		Assertions.assertEquals(message.getToken(), message2.getToken());
 	}
 
 	@Test
@@ -50,15 +50,15 @@ public class HandshakeMessageCodecTest
 	{
 		HandshakeMessage message = HandshakeMessage.create(null);
 		codec.encode(message, buf);
-		Assert.assertEquals(20, buf.readableBytes());
+		Assertions.assertEquals(20, buf.readableBytes());
 
 		Protocol protocol = Protocol.valueOf(buf.readInt());
 		HandshakeMessage message2 = (HandshakeMessage) codec.decode(protocol, buf);
-		Assert.assertNotNull(message2);
-		Assert.assertEquals(message.getProtocol(), message2.getProtocol());
-		Assert.assertEquals(message.getVersion(), message2.getVersion());
-		Assert.assertEquals(message.getMessageId(), message2.getMessageId());
-		Assert.assertNull(message2.getToken());
+		Assertions.assertNotNull(message2);
+		Assertions.assertEquals(message.getProtocol(), message2.getProtocol());
+		Assertions.assertEquals(message.getVersion(), message2.getVersion());
+		Assertions.assertEquals(message.getMessageId(), message2.getMessageId());
+		Assertions.assertNull(message2.getToken());
 	}
 
 	@Test
@@ -66,15 +66,15 @@ public class HandshakeMessageCodecTest
 	{
 		HandshakeMessage message = HandshakeMessage.create("");
 		codec.encode(message, buf);
-		Assert.assertEquals(20, buf.readableBytes());
+		Assertions.assertEquals(20, buf.readableBytes());
 
 		Protocol protocol = Protocol.valueOf(buf.readInt());
 		HandshakeMessage message2 = (HandshakeMessage) codec.decode(protocol, buf);
-		Assert.assertNotNull(message2);
-		Assert.assertEquals(message.getProtocol(), message2.getProtocol());
-		Assert.assertEquals(message.getVersion(), message2.getVersion());
-		Assert.assertEquals(message.getMessageId(), message2.getMessageId());
-		Assert.assertNull(message2.getToken());
+		Assertions.assertNotNull(message2);
+		Assertions.assertEquals(message.getProtocol(), message2.getProtocol());
+		Assertions.assertEquals(message.getVersion(), message2.getVersion());
+		Assertions.assertEquals(message.getMessageId(), message2.getMessageId());
+		Assertions.assertNull(message2.getToken());
 	}
 
 }

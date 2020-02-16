@@ -6,11 +6,11 @@ import blue.red.client.registry.RegistryClient;
 import blue.red.client.registry.RegistryInstance;
 import blue.red.test.cucumber.ClientFactory;
 import blue.red.test.cucumber.RegistryInstanceMap;
-import cucumber.api.java.After;
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
-import org.junit.Assert;
+import io.cucumber.java.After;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
+import org.junit.jupiter.api.Assertions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,7 +62,7 @@ public class RegistrySteps
 	public void bind(String name, String opt, String host)
 	{
 		RegistryClient client = clientFactory.getRegistryClient(name);
-		Assert.assertNotNull("No Registry Client", client);
+		Assertions.assertNotNull(client);
 		RegistryInstance instance = new RegistryInstance();
 		instance.addHost(Host.parse(host));
 		if ("bind".equals(opt))
@@ -75,16 +75,16 @@ public class RegistrySteps
 		}
 		else
 		{
-			Assert.fail("error opt: " + opt);
+			Assertions.fail("error opt: " + opt);
 		}
 	}
 
 	@Given("registry client {string} watch:")
 	public void watch(String name, List<Map<String, String>> dataTable)
 	{
-		Assert.assertTrue("No Data", dataTable != null && !dataTable.isEmpty());
+		Assertions.assertTrue(dataTable != null && !dataTable.isEmpty());
 		RegistryClient client = clientFactory.getRegistryClient(name);
-		Assert.assertNotNull("No Registry Client", client);
+		Assertions.assertNotNull(client);
 
 		RegistryInstance instance = new RegistryInstance();
 		for (Map<String, String> data : dataTable)
@@ -110,9 +110,9 @@ public class RegistrySteps
 	@When("registry client {string} {string}:")
 	public void handle(String name, String opt, List<Map<String, String>> dataTable)
 	{
-		Assert.assertTrue("No Data", dataTable != null && !dataTable.isEmpty());
+		Assertions.assertTrue(dataTable != null && !dataTable.isEmpty());
 		RegistryClient client = clientFactory.getRegistryClient(name);
-		Assert.assertNotNull("No Registry Client", client);
+		Assertions.assertNotNull(client);
 
 		RegistryInstance nameInstance = new RegistryInstance();
 		for (Map<String, String> data : dataTable)
@@ -137,7 +137,7 @@ public class RegistrySteps
 				for (Map.Entry<String, RegistryInstance> entry : map.entrySet())
 				{
 					RegistryInstance dest = client.listSync(entry.getValue());
-					Assert.assertEquals(entry.getValue().getHostSet(), dest.getHostSet());
+					Assertions.assertEquals(entry.getValue().getHostSet(), dest.getHostSet());
 				}
 			}
 		}
@@ -181,7 +181,7 @@ public class RegistrySteps
 				&& (hostSet == null && hostSet.isEmpty()))
 				continue;
 
-			Assert.assertEquals(entry.getValue().getHostSet(), hostSet);
+			Assertions.assertEquals(entry.getValue().getHostSet(), hostSet);
 		}
 	}
 
@@ -189,7 +189,7 @@ public class RegistrySteps
 	public void verifyException(String client, String exception)
 	{
 		Set<String> set = instanceMap.getException(client);
-		Assert.assertTrue("Verify exception", set != null && set.contains(exception));
+		Assertions.assertTrue(set != null && set.contains(exception));
 	}
 
 	@Then("verify registry client {string} can not receive:")
@@ -208,7 +208,7 @@ public class RegistrySteps
 
 			for (Host host : entry.getValue().getHostSet())
 			{
-				Assert.assertFalse(hostSet.contains(host));
+				Assertions.assertFalse(hostSet.contains(host));
 			}
 		}
 	}

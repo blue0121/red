@@ -1,8 +1,8 @@
 package blue.test.red.core.util;
 
 import blue.red.core.util.CompressUtil;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class CompressUtilTest
 {
@@ -21,7 +21,7 @@ public class CompressUtilTest
         byte[] dest = CompressUtil.compress(src);
         System.out.println("dest size: " + dest.length);
         String str = new String(CompressUtil.uncompress(dest));
-        Assert.assertEquals(test, str);
+        Assertions.assertEquals(test, str);
     }
 
 }

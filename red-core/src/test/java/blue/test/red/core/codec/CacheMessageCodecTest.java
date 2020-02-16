@@ -7,9 +7,9 @@ import blue.red.core.message.Protocol;
 import blue.red.core.message.ResponseCode;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Jin Zheng
@@ -24,7 +24,7 @@ public class CacheMessageCodecTest
 	{
 	}
 
-	@Before
+	@BeforeEach
 	public void before()
 	{
 		buf = Unpooled.buffer(100);
@@ -44,17 +44,17 @@ public class CacheMessageCodecTest
 
 		Protocol protocol = Protocol.valueOf(buf.readInt());
 		CacheMessage message2 = (CacheMessage) codec.decode(protocol, buf);
-		Assert.assertNotNull(message2);
-		Assert.assertEquals(message.getProtocol(), message2.getProtocol());
-		Assert.assertEquals(message.getVersion(), message2.getVersion());
-		Assert.assertEquals(message.getMessageId(), message2.getMessageId());
-		Assert.assertEquals(ResponseCode.SUCCESS, message2.getCode());
-		Assert.assertNull(message2.getMessage());
-		Assert.assertEquals(CacheMessage.PERSISTENCE, message2.getState());
-		Assert.assertEquals(message.isCompress(), message2.isCompress());
-		Assert.assertEquals(key, message2.getKey());
-		Assert.assertArrayEquals(key.getBytes(), message2.getValue());
-		Assert.assertEquals(ttl, message2.getTtl());
+		Assertions.assertNotNull(message2);
+		Assertions.assertEquals(message.getProtocol(), message2.getProtocol());
+		Assertions.assertEquals(message.getVersion(), message2.getVersion());
+		Assertions.assertEquals(message.getMessageId(), message2.getMessageId());
+		Assertions.assertEquals(ResponseCode.SUCCESS, message2.getCode());
+		Assertions.assertNull(message2.getMessage());
+		Assertions.assertEquals(CacheMessage.PERSISTENCE, message2.getState());
+		Assertions.assertEquals(message.isCompress(), message2.isCompress());
+		Assertions.assertEquals(key, message2.getKey());
+		Assertions.assertArrayEquals(key.getBytes(), message2.getValue());
+		Assertions.assertEquals(ttl, message2.getTtl());
 	}
 
 }

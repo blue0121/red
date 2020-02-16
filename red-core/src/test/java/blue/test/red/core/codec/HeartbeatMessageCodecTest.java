@@ -5,9 +5,9 @@ import blue.red.core.message.HeartbeatMessage;
 import blue.red.core.message.Protocol;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Jin Zheng
@@ -22,7 +22,7 @@ public class HeartbeatMessageCodecTest
 	{
 	}
 
-	@Before
+	@BeforeEach
 	public void before()
 	{
 		buf = Unpooled.buffer(100);
@@ -34,15 +34,15 @@ public class HeartbeatMessageCodecTest
 	{
 		HeartbeatMessage message = HeartbeatMessage.createPing();
 		codec.encode(message, buf);
-		Assert.assertEquals(17, buf.readableBytes());
+		Assertions.assertEquals(17, buf.readableBytes());
 
 		Protocol protocol = Protocol.valueOf(buf.readInt());
 		HeartbeatMessage message2 = (HeartbeatMessage) codec.decode(protocol, buf);
-		Assert.assertNotNull(message2);
-		Assert.assertEquals(message.getProtocol(), message2.getProtocol());
-		Assert.assertEquals(message.getVersion(), message2.getVersion());
-		Assert.assertEquals(message.getMessageId(), message2.getMessageId());
-		Assert.assertEquals(message.getType(), message2.getType());
+		Assertions.assertNotNull(message2);
+		Assertions.assertEquals(message.getProtocol(), message2.getProtocol());
+		Assertions.assertEquals(message.getVersion(), message2.getVersion());
+		Assertions.assertEquals(message.getMessageId(), message2.getMessageId());
+		Assertions.assertEquals(message.getType(), message2.getType());
 	}
 
 }
