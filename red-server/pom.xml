@@ -52,11 +52,11 @@
 					<archive>
 						<manifest>
 							<addClasspath>true</addClasspath>
-							<classpathPrefix>lib/</classpathPrefix>
+							<classpathPrefix>./</classpathPrefix>
 							<mainClass>blue.red.server.ServerMain</mainClass>
 						</manifest>
 						<manifestEntries>
-							<Class-Path>./</Class-Path>
+							<Class-Path>../conf/</Class-Path>
 						</manifestEntries>
 					</archive>
 					<excludes>
@@ -66,7 +66,7 @@
 				</configuration>
 			</plugin>
 			
-			<plugin>
+			<!--<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
 				<version>${dependency.version}</version>
@@ -82,7 +82,7 @@
 						</configuration>
 					</execution>
 				</executions>
-			</plugin>
+			</plugin>-->
 			
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
