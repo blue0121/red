@@ -41,8 +41,7 @@
 		<dependency.version>3.1.1</dependency.version>
 		<assembly.version>3.2.0</assembly.version>
 		<surefire.version>2.22.2</surefire.version>
-		<jdeps.version>3.1.2</jdeps.version>
-		
+		<dockerfile.version>1.4.13</dockerfile.version>
 	</properties>
 	
 	<build>
