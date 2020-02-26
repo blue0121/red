@@ -49,16 +49,6 @@
 				<artifactId>maven-jar-plugin</artifactId>
 				<version>${jar.version}</version>
 				<configuration>
-					<archive>
-						<manifest>
-							<addClasspath>true</addClasspath>
-							<classpathPrefix>./</classpathPrefix>
-							<mainClass>blue.red.server.ServerMain</mainClass>
-						</manifest>
-						<manifestEntries>
-							<Class-Path>../conf/</Class-Path>
-						</manifestEntries>
-					</archive>
 					<excludes>
 						<exclude>*.xml</exclude>
 						<exclude>*.properties</exclude>

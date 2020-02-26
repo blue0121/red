@@ -2,7 +2,7 @@
 <Configuration>
 
 	<Properties>
-		<Property name="DIR">$${env:LOG_DIR}</Property>
+		<Property name="DIR">$${env:LOG_DIR:-logs}</Property>
 	</Properties>
 
 	<Appenders>

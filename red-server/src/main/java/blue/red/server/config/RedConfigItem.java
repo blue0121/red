@@ -11,17 +11,17 @@ public class RedConfigItem
 	public static final String TOKEN = "token";
 	public static final String TOKEN_VALUE = "token";
 
-	public static final String NETTY_THREAD = "netty.thread";
+	public static final String NETTY_THREAD = "netty_thread";
 	public static final int NETTY_THREAD_VALUE = Runtime.getRuntime().availableProcessors() * 2;
 
-	public static final String SESSION_HEARTBEAT = "session.heartbeat";
+	public static final String SESSION_HEARTBEAT = "session_heartbeat";
 	public static final int SESSION_HEARTBEAT_VALUE = 3;
-	public static final String SESSION_TIMEOUT = "session.timeout";
+	public static final String SESSION_TIMEOUT = "session_timeout";
 	public static final int SESSION_TIMEOUT_VALUE = 10;
 
-	public static final String CACHE_MEMORY_MAX_SIZE = "cache.memory.max_size";
+	public static final String CACHE_MEMORY_MAX_SIZE = "cache_memory_max_size";
 	public static final int CACHE_MEMORY_MAX_SIZE_VALUE = 10_000_000;
-	public static final String CACHE_MEMORY_PARTITION = "cache.memory.partition";
+	public static final String CACHE_MEMORY_PARTITION = "cache_memory_partition";
 	public static final int CACHE_MEMORY_PARTITION_VALUE = 4;
 
 

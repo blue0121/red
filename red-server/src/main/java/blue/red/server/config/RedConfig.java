@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class RedConfig
 {
 	private static Logger logger = LoggerFactory.getLogger(RedConfig.class);
-	public static final String CONFIG = "/red.properties";
+	public static final String CONFIG = "red.properties";
 
 	private Properties config;
 
@@ -27,6 +27,36 @@ public class RedConfig
 
 	private RedConfig()
 	{
+		this.config = new Properties();
+		ClassLoader loader = Thread.currentThread().getContextClassLoader();
+		try (InputStream is = loader.getResourceAsStream(CONFIG))
+		{
+			this.config.load(is);
+			this.updateEnv();
+			logger.info("Read config: {}{}", CONFIG, this);
+		}
+		catch (IOException e)
+		{
+			throw new IllegalArgumentException("Not found config: " + CONFIG);
+		}
+	}
+
+	private void updateEnv()
+	{
+		Map<String, String> env = System.getenv();
+		for (Map.Entry<Object, Object> entry : config.entrySet())
+		{
+			String key = entry.getKey().toString().toLowerCase();
+			if (!env.containsKey(key))
+			{
+				key = key.toUpperCase();
+				if (!env.containsKey(key))
+					continue;
+			}
+
+			String val = env.get(key);
+			config.setProperty(entry.getKey().toString(), val);
+		}
 	}
 
 	public static RedConfig getInstance()
@@ -38,16 +68,6 @@ public class RedConfig
 				if (instance == null)
 				{
 					instance = new RedConfig();
-					instance.config = new Properties();
-					try (InputStream is = RedConfig.class.getResourceAsStream(CONFIG))
-					{
-						instance.config.load(is);
-						logger.info("Read config: {}{}", CONFIG, instance);
-					}
-					catch (IOException e)
-					{
-						throw new IllegalArgumentException("Not found config: " + CONFIG);
-					}
 				}
 			}
 		}
@@ -66,8 +86,7 @@ public class RedConfig
 	{
 		AssertUtil.notEmpty(key, "Key");
 		String value = config.getProperty(key);
-		if (value == null || value.isEmpty())
-			return defaultValue;
+		if (value == null || value.isEmpty()) return defaultValue;
 
 		try
 		{
@@ -84,8 +103,7 @@ public class RedConfig
 	{
 		AssertUtil.notEmpty(key, "Key");
 		String value = config.getProperty(key);
-		if (value == null || value.isEmpty())
-			return defaultValue;
+		if (value == null || value.isEmpty()) return defaultValue;
 
 		try
 		{
@@ -102,8 +120,7 @@ public class RedConfig
 	{
 		AssertUtil.notEmpty(key, "Key");
 		String value = config.getProperty(key);
-		if (value == null || value.isEmpty())
-			return defaultValue;
+		if (value == null || value.isEmpty()) return defaultValue;
 
 		try
 		{
@@ -121,8 +138,7 @@ public class RedConfig
 		AssertUtil.notEmpty(key, "Key");
 		List<String> stringList = new ArrayList<>();
 		String value = config.getProperty(key);
-		if (value == null || value.isEmpty())
-			return stringList;
+		if (value == null || value.isEmpty()) return stringList;
 
 		String[] values = value.split("[\\s;,\\|]");
 		for (String val : values)
