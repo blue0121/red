@@ -11,8 +11,6 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.TimeUnit;
-
 /**
  * @author Jin Zheng
  * @since 2019-05-03
@@ -64,16 +62,4 @@ public class HandshakeHandler extends SimpleChannelInboundHandler<Response>
 		super.channelActive(ctx);
 	}
 
-	@Override
-	public void channelInactive(ChannelHandlerContext ctx) throws Exception
-	{
-		client.getChannelClient().handlerDisconnected(channel);
-		if (!client.isStop())
-		{
-			logger.warn("Disconnected, reconnect after {} ms: {}", redConfig.getReconnect() * RedConfig.MILLS, client.getRemoteAddress());
-			channel.eventLoop().schedule(() -> client.connect(), redConfig.getReconnect() * RedConfig.MILLS, TimeUnit.MILLISECONDS);
-		}
-
-		super.channelInactive(ctx);
-	}
 }

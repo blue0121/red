@@ -33,6 +33,7 @@ public class ClientInitializer extends ChannelInitializer<SocketChannel>
 	{
 		ChannelPipeline cp = ch.pipeline();
 		MessageCodeFactory factory = MessageCodeFactory.getFactory();
+		cp.addLast(new ReconnectHandler(client));
 		cp.addLast(new IdleStateHandler(redConfig.getSessionTimeout(), redConfig.getSessionHeartbeat(), redConfig.getSessionHeartbeat()));
 		cp.addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, MessageCodec.ZERO_LENGTH,
 				MessageCodec.LENGTH, MessageCodec.ZERO_LENGTH, MessageCodec.LENGTH));

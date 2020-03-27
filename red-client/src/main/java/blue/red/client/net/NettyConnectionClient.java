@@ -1,9 +1,15 @@
 package blue.red.client.net;
 
-import blue.red.client.*;
+import blue.red.client.ConnectionClient;
+import blue.red.client.ConnectionListener;
+import blue.red.client.HandlerClient;
+import blue.red.client.MessageListener;
+import blue.red.client.RedClientException;
+import blue.red.client.RedFuture;
 import blue.red.client.config.RedConfig;
 import blue.red.core.message.Message;
 import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelOption;
@@ -33,10 +39,11 @@ public class NettyConnectionClient implements ConnectionClient, HandlerClient
 	private boolean stop = false;
 	private Bootstrap bootstrap;
 	private EventLoopGroup workerGroup;
-	private ChannelFuture channelFuture;
+	private Channel channel;
 	private final ChannelClient channelClient;
 	private final DefaultMessageListener messageListener;
 	private final ExecutorService executorService;
+	private final RetryPolicy retryPolicy;
 
 	public NettyConnectionClient(String address, RedConfig redConfig)
 	{
@@ -50,51 +57,60 @@ public class NettyConnectionClient implements ConnectionClient, HandlerClient
 		this.remoteAddress = new InetSocketAddress(addrs[0], Integer.parseInt(addrs[1]));
 		this.initializer = new ClientInitializer(this);
 		this.messageListener = new DefaultMessageListener(executorService);
+		this.retryPolicy = new DefaultRetryPolicy(redConfig.getConnectTimeout() * RedConfig.MILLS);
+
+		this.init();
+	}
+
+	private void init()
+	{
+		workerGroup = new NioEventLoopGroup(redConfig.getNettyThread());
+		bootstrap = new Bootstrap();
+		bootstrap.group(workerGroup)
+				.channel(NioSocketChannel.class)
+				.option(ChannelOption.SO_KEEPALIVE, true)
+				.option(ChannelOption.TCP_NODELAY, true)
+				.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, redConfig.getConnectTimeout() * RedConfig.MILLS)
+				.handler(initializer);
 	}
 
 	@Override
 	public void start()
 	{
-		workerGroup = new NioEventLoopGroup(redConfig.getNettyThread());
-		bootstrap = new Bootstrap();
-		bootstrap.group(workerGroup)
-				.channel(NioSocketChannel.class).
-				option(ChannelOption.SO_KEEPALIVE, true)
-				.option(ChannelOption.TCP_NODELAY, true)
-				.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, redConfig.getConnectTimeout() * RedConfig.MILLS)
-				.handler(initializer);
-
 		this.connect();
 		channelClient.waitHandshake();
 	}
 
 	public void connect()
 	{
-		bootstrap.connect(remoteAddress).addListener(new ChannelFutureListener()
+		synchronized (bootstrap)
 		{
-			@Override
-			public void operationComplete(ChannelFuture future) throws Exception
+			ChannelFuture future = bootstrap.connect(remoteAddress);
+			future.addListener(new ChannelFutureListener()
 			{
-				if (!future.isSuccess())
+				@Override
+				public void operationComplete(ChannelFuture future) throws Exception
 				{
-					logger.warn("Disconnected, reconnect after {} ms: {}", redConfig.getReconnect() * RedConfig.MILLS, remoteAddress);
-					future.channel().eventLoop().schedule(() -> connect(), redConfig.getReconnect() * RedConfig.MILLS, TimeUnit.MILLISECONDS);
-					return;
+					if (!future.isSuccess())
+					{
+						future.channel().pipeline().fireChannelInactive();
+						return;
+					}
+					channel = future.channel();
+					logger.info("Connected successful: {}", remoteAddress);
 				}
-				channelFuture = future;
-				logger.info("Connected successful: {}", remoteAddress);
-			}
-		});
+			});
+		}
 	}
 
 	@Override
 	public void stop()
 	{
 		stop = true;
-		if (channelFuture != null)
+		if (channel != null)
 		{
-			channelFuture.channel().flush().close().syncUninterruptibly();
-			channelFuture = null;
+			channel.flush().close().syncUninterruptibly();
+			channel = null;
 			logger.debug("Channel closed.");
 		}
 		if (workerGroup != null)
@@ -173,5 +189,10 @@ public class NettyConnectionClient implements ConnectionClient, HandlerClient
 	public ChannelClient getChannelClient()
 	{
 		return channelClient;
+	}
+
+	public RetryPolicy getRetryPolicy()
+	{
+		return retryPolicy;
 	}
 }
