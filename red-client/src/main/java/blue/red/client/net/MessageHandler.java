@@ -36,4 +36,9 @@ public class MessageHandler extends SimpleChannelInboundHandler<Message>
 		}
 	}
 
+	@Override
+	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception
+	{
+		logger.warn("Error: ", cause);
+	}
 }

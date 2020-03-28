@@ -21,7 +21,8 @@ import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -47,16 +48,28 @@ public class NettyConnectionClient implements ConnectionClient, HandlerClient
 
 	public NettyConnectionClient(String address, RedConfig redConfig)
 	{
+		this(address, redConfig, null);
+	}
+
+	public NettyConnectionClient(String address, RedConfig redConfig, ExecutorService executorService)
+	{
 		String[] addrs = address.split(":");
 		if (addrs.length != 2)
 			throw new RedClientException("Invalid address: " + address);
 
 		this.redConfig = redConfig;
-		this.executorService = Executors.newFixedThreadPool(10);
-		this.channelClient = new ChannelClient(executorService);
+		if (executorService == null)
+		{
+			this.executorService = new ThreadPoolExecutor(100, 1000, 1, TimeUnit.MINUTES, new SynchronousQueue<>());
+		}
+		else
+		{
+			this.executorService = executorService;
+		}
+		this.channelClient = new ChannelClient(this.executorService);
 		this.remoteAddress = new InetSocketAddress(addrs[0], Integer.parseInt(addrs[1]));
 		this.initializer = new ClientInitializer(this);
-		this.messageListener = new DefaultMessageListener(executorService);
+		this.messageListener = new DefaultMessageListener(this.executorService);
 		this.retryPolicy = new DefaultRetryPolicy(redConfig.getConnectTimeout() * RedConfig.MILLS);
 
 		this.init();
@@ -101,6 +114,11 @@ public class NettyConnectionClient implements ConnectionClient, HandlerClient
 				}
 			});
 		}
+	}
+
+	public void disconnectListener(Channel channel)
+	{
+		channelClient.triggerConnectionListener(channel, ConnectionListener.DISCONNECTED);
 	}
 
 	@Override

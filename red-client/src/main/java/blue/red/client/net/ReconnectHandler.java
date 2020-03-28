@@ -39,7 +39,7 @@ public class ReconnectHandler extends ChannelInboundHandlerAdapter
 	{
 		this.retries++;
 		Channel channel = ctx.channel();
-		client.getChannelClient().handlerDisconnected(channel);
+		client.disconnectListener(channel);
 		boolean allow = retryPolicy.allowRetry(retries);
 		if (!client.isStop() && allow)
 		{

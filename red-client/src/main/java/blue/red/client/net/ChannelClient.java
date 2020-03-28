@@ -68,7 +68,7 @@ public class ChannelClient
 	public void addChannel(Channel channel)
 	{
 		channelGroup.add(channel);
-		this.handlerConnected(channel);
+		this.triggerConnectionListener(channel, ConnectionListener.CONNECTED);
 		this.latch.countDown();
 		logger.info("Add channel: {}", channel.id());
 	}
@@ -136,7 +136,7 @@ public class ChannelClient
 		}
 	}
 
-	private void handlerConnected(Channel channel)
+	public void triggerConnectionListener(Channel channel, String type)
 	{
 		if (connectionListenerSet.isEmpty())
 			return;
@@ -144,31 +144,20 @@ public class ChannelClient
 		InetSocketAddress address = (InetSocketAddress) channel.remoteAddress();
 		if (!executorService.isShutdown())
 		{
-			executorService.submit(() ->
+			for (ConnectionListener listener : connectionListenerSet)
 			{
-				for (ConnectionListener listener : connectionListenerSet)
+				switch (type)
 				{
-					listener.connected(address);
+					case ConnectionListener.CONNECTED:
+						executorService.submit(() -> listener.connected(address));
+						break;
+					case ConnectionListener.DISCONNECTED:
+						executorService.submit(() -> listener.disconnected(address));
+						break;
+					default:
+						throw new RedClientException("Unknown connection type: " + type);
 				}
-			});
-		}
-	}
-
-	public void handlerDisconnected(Channel channel)
-	{
-		if (connectionListenerSet.isEmpty())
-			return;
-
-		InetSocketAddress address = (InetSocketAddress) channel.remoteAddress();
-		if (!executorService.isShutdown())
-		{
-			executorService.submit(() ->
-			{
-				for (ConnectionListener listener : connectionListenerSet)
-				{
-					listener.disconnected(address);
-				}
-			});
+			}
 		}
 	}
 

@@ -8,6 +8,8 @@ import java.net.InetSocketAddress;
  */
 public interface ConnectionListener
 {
+	String CONNECTED = "connected";
+	String DISCONNECTED = "disconnected";
 
 	void connected(InetSocketAddress address);
 
